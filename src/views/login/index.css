@@ -1,0 +1,47 @@
+@media (min-width: 768px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: auto;
+        background-image: url("https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg");
+        background-repeat: no-repeat;
+        background-position: center 110px;
+        background-size: 100%;
+        position: relative;
+    }
+    .login-form {
+        width: 368px;
+    }
+    .ant-tabs-nav .ant-tabs-nav-wrap {
+        border-bottom: 1px solid transparent !important;
+    }
+    .login-form .title {
+        text-align: center;
+        margin-bottom: 88px;
+        display: flex;
+        align-items: center;
+    }
+    .logo {
+        width: 39px;
+        height: 32px;
+        margin-right: 22px;
+    }
+    .login-form .title span {
+        font-size: 28px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.85);
+        line-height: 33px;
+    }
+    .row .ant-form-item-control-input-content {
+        display: flex;
+        justify-content: space-between;
+    }
+    .btn .ant-btn-primary {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,8 @@
+.tag-content {
+    color: #1890ff;
+}
+
+.tag-content span {
+    margin-right: 10px;
+    cursor: pointer;
+}
