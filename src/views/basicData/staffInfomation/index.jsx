@@ -1,10 +1,18 @@
 import { withRouter } from "react-router-dom";
-import { Table, PageHeader, Button, Modal, Form, Input, message, Select } from "antd";
-import { requestUrl, onlyFormat } from "../../utils/config";
+import { Table, PageHeader, Button, Modal, Form, Input, message, Select, Tag } from "antd";
+import { requestUrl, onlyFormat } from "../../../utils/config";
 import { useEffect, useState } from "react";
 import "./index.css"
 const { confirm } = Modal;
 const { Option } = Select;
+const layout = {
+    labelCol: {
+        span: 4,
+    },
+    wrapperCol: {
+        span: 20,
+    },
+};
 function StaffInfo() {
     document.title = "员工信息";
     const [visible, setvisible] = useState(false);
@@ -14,11 +22,13 @@ function StaffInfo() {
     const [size, setSize] = useState(10);
     const [current, setCurrent] = useState(1);
     const [total, setTotal] = useState(0);
+    const [loading, setloading] = useState(true);
+    const [rowId, setRowId] = useState("");
     const [form] = Form.useForm();
     const positionArr = ["查布员", "值机员", "其他"]
     useEffect(() => {
         getPerson(1, 10);
-        form.resetFields();
+
     }, [])
     const getPerson = (page, size) => {
         fetch(requestUrl + `/api-basedata/person/findAll?companyId=1&page=${page}&size=${size}`, {
@@ -29,34 +39,46 @@ function StaffInfo() {
         })
             .then((res) => { return res.json() })
             .then((res) => {
-                setSize(res.data.size);
-                setCurrent(res.data.current);
-                setTotal(res.data.total)
-                setdata(res.data.records);
+                setloading(false);
+                if (res.code == 200) {
+                    setSize(res.data.size);
+                    setCurrent(res.data.current);
+                    setTotal(res.data.total)
+                    setdata(res.data.records);
+                    return;
+                }
+                message.error("请求错误！")
+
             })
     }
-    const handleOk = (param) => {
+    const handleOk = async (param) => {
+        const value = await form.validateFields();
+        console.log("表单数据", value)
         let data;
         // 新增
         if (editType == 2) {
             data = {
-                "code": param.code,
+                "code": value.code,
                 "companyId": 1,
-                "mobilePhoneNo": param.mobilePhoneNo,
-                "name": param.name,
-                "position": param.position
+                "mobilePhoneNo": value.mobilePhoneNo,
+                "name": value.name,
+                "position": value.position
             }
         } else {
             // 编辑
+            var index = positionArr.findIndex(function (item) {
+                return item == value.position;
+            });
             data = {
-                "code": param.code,
+                "code": value.code,
                 "companyId": 1,
                 "id": selectuser.id,
-                "mobilePhoneNo": param.mobilePhoneNo,
-                "name": param.name,
-                "position": param.position
+                "mobilePhoneNo": value.mobilePhoneNo,
+                "name": value.name,
+                "position": index + 1
             }
         }
+        setloading(false);
 
         fetch(requestUrl + "/api-basedata/person/saveOrModify", {
             method: "POST",
@@ -81,6 +103,12 @@ function StaffInfo() {
         seteditType(1)
     }
     const edit = (param, type) => {
+        form.setFieldsValue({
+            name: param.name,
+            code: param.code,
+            position: positionArr[param.position - 1],
+            mobilePhoneNo: param.mobilePhoneNo,
+        })
         setvisible(true);
         seteditType(type);
         setSelectuser(param);
@@ -137,6 +165,12 @@ function StaffInfo() {
     }
     const onGenderChange = (param) => {
     }
+    const setRowClassName = (record) => {
+        return record.id === rowId ? 'clickRowStyl' : '';
+    }
+    const onClickRow = (record) => {
+        setRowId(record.id)
+    }
     const columns = [
         {
             title: '姓名',
@@ -177,7 +211,7 @@ function StaffInfo() {
                 return <div className="tag-content">
                     <span onClick={() => { edit(record, 1) }}>编辑</span>
                     <span onClick={() => { delect(record) }}>删除</span>
-                    <span onClick={() => { disable(record) }}> {record.usedStatus == 1 ? '禁用' : '启用'}</span>
+                    <span onClick={() => { disable(record) }}>{record.usedStatus == 1 ? "禁用" : "启用"} </span>
                 </div>
             },
         },
@@ -187,10 +221,13 @@ function StaffInfo() {
         pageSize: size,
         current: current,
         onChange: (page, pageSize) => {
+            setloading(false);
             setCurrent(page);
             setSize(pageSize);
             getPerson(page, pageSize);
-        }
+        },
+        showSizeChanger: true,
+        showTotal: () => (`共${total}条`)
     }
     return <div className="right-container">
         <PageHeader
@@ -200,31 +237,54 @@ function StaffInfo() {
                     新建
                 </Button>,
             ]} />
-        <Table columns={columns} dataSource={data} rowKey={record => record.id} pagination={pagination} />
+        <Table
+            loading={loading}
+            columns={columns}
+            dataSource={data}
+            rowKey={record => record.id}
+            pagination={pagination}
+            scroll={{
+                scrollToFirstRowOnChange: true,
+                x: 1200,
+                y: 600
+            }}
+            rowClassName={(record) => {
+                return setRowClassName(record)
+            }}
+            onRow={record => {
+                return {
+                    onClick: event => { onClickRow(record) },
+                };
+            }}
+        />
         <Modal
+            className="customModal"
             destroyOnClose
-            title={editType == 1 ? "编辑" : "新增"}
+            title={editType == 1 ? "编辑员工" : "新建员工"}
             visible={visible}
-            footer={false}
+            footer={[
+                <span className="modalFooterBtn">{editType == 1 ? "保存编辑" : "保存并新增"}</span>,
+                <Button key="submit" type="primary" onClick={handleOk} >
+                    保存
+                </Button>,
+                <Button onClick={onCancel}>
+                    取消
+                </Button>
+            ]}
             onCancel={onCancel}
         >
             <Form
+                {...layout}
                 preserve={false}
                 form={form}
                 layout="horizontal"
                 name="form_in_modal"
                 onFinish={handleOk}
-                initialValues={{
-                    name: editType == 1 ? selectuser.name : "",
-                    code: editType == 1 ? selectuser.code : "",
-                    position: editType == 1 ? positionArr[selectuser.position] : "",
-                    mobilePhoneNo: editType == 1 ? selectuser.mobilePhoneNo : "",
-                }}
             >
                 <Form.Item label="姓名" name="name">
                     <Input placeholder="姓名" />
                 </Form.Item>
-                <Form.Item label="工号" name="code">
+                <Form.Item label="工号" name="code" rules={[{ required: true, message: "请输入工号" }]}>
                     <Input placeholder="工号" />
                 </Form.Item>
                 <Form.Item label="职位" name="position">
@@ -238,13 +298,8 @@ function StaffInfo() {
                         <Option value="3">其他</Option>
                     </Select>
                 </Form.Item>
-                <Form.Item label="手机号码" rules={[{ required: true, message: '请输入手机号码!' }]} name='mobilePhoneNo'>
-                    <Input placeholder="手机号码" type="number" />
-                </Form.Item>
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" style={{ marginRight: "10px" }}>保存</Button>
-
-                    <Button type="primary" onClick={onCancel}>取消</Button>
+                <Form.Item label="手机号码" name='mobilePhoneNo'>
+                    <Input placeholder="手机号码" type="number" maxLength="11" />
                 </Form.Item>
             </Form>
         </Modal>

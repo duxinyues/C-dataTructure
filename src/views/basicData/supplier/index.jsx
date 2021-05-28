@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
-import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader } from "antd";
-import { requestUrl, onlyFormat } from "../../utils/config";
+import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader, Tag } from "antd";
+import { requestUrl, onlyFormat } from "../../../utils/config";
 const { confirm } = Modal;
-function CustomerData() {
-    document.title = "客户";
+const layout = {
+    labelCol: {
+        span: 4,
+    },
+    wrapperCol: {
+        span: 20,
+    },
+};
+function Supplier() {
+    document.title = "供应商";
     const [data, setdata] = useState([]);
     const [visible, setvisible] = useState(false);
     const [editType, seteditType] = useState(0);
@@ -12,6 +20,7 @@ function CustomerData() {
     const [size, setSize] = useState(10);
     const [current, setCurrent] = useState(1);
     const [total, setTotal] = useState(0);
+    const [rowId, setRowId] = useState(0);
     const [form] = Form.useForm();
     const selectId = []
     useEffect(() => {
@@ -20,6 +29,14 @@ function CustomerData() {
     }, [])
 
     const modalClick = (param, type) => {
+        console.log("选中的数据==", param);
+        form.setFieldsValue({
+            name: param.name,
+            abbr: param.abbr,
+            contactPhone: param.contactPhone,
+            address: param.address ? param.address.split(" ") : "",
+            detailAddress: param.detailAddress
+        })
         setselectRecord(param);
         setvisible(true);
         seteditType(type)
@@ -27,35 +44,33 @@ function CustomerData() {
     const onCancel = () => {
         setvisible(false)
     }
-    const handleOk = (param) => {
+    const handleOk = async (param) => {
+        const value = await form.validateFields();
         let data;
         if (editType == 2) {
             // 新增
             data = {
-                "abbr": param.abbr,
+                "abbr": value.abbr,
                 "address": selectId.join(","),
                 "companyId": 1,
-                "contactPhone": param.contactPhone,
-                "detailAddress": param.detailAddress,
-                "name": param.name,
-                "tareWeight": param.tareWeight,
-                "weightDecimal": param.weightDecimal
+                "name": value.name,
+                "contactPhone": value.contactPhone,
+                "detailAddress": value.detailAddress,
             }
         } else {
+            edit(value.address, addressData)
             data = {
-                "abbr": param.abbr,
+                "abbr": value.abbr,
                 "address": selectId.join(","),
                 "companyId": 1,
-                "contactPhone": param.contactPhone,
-                "detailAddress": param.detailAddress,
-                "name": param.name,
-                "tareWeight": param.tareWeight,
-                "weightDecimal": param.weightDecimal,
+                "name": value.name,
+                "contactPhone": value.contactPhone,
+                "detailAddress": value.detailAddress,
                 "id": selectRecord.id
             }
         }
-
-        fetch(requestUrl + `/api-basedata/customer/saveOrModify`, {
+        console.log("选中数据", data)
+        fetch(requestUrl + `/api-basedata/supplier/saveOrModify`, {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token"),
@@ -65,6 +80,7 @@ function CustomerData() {
         })
             .then((res) => { return res.json() })
             .then((res) => {
+                console.log(res)
                 setvisible(false)
                 if (res.code == 200) {
                     getClothData(1, 10);
@@ -76,21 +92,19 @@ function CustomerData() {
     }
     const delect = (param) => {
         confirm({
-            title: "确定要删除该客户？",
+            title: "确定要删除该供应商吗？",
             okText: "确定",
             cancelText: "取消",
             onCancel() { },
             onOk() { delectRequest(param.id); }
         })
-
     }
-    // 删除
+    // 删除记录
     const delectRequest = (id) => {
-        fetch(requestUrl + `/api-basedata/customer/delete?id=${id}`, {
+        fetch(requestUrl + `/api-basedata/supplier/delete?id=${id}`, {
             method: "POST",
             headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
+                "Authorization": "bearer " + localStorage.getItem("access_token")
             },
         })
             .then(res => { return res.json() })
@@ -103,11 +117,10 @@ function CustomerData() {
                 message.error("删除失败！")
             })
     }
-
     // 禁用
     const disable = (param) => {
         const usedStatus = param.usedStatus == 1 ? 2 : 1;
-        fetch(requestUrl + `/api-basedata/customer/modifyEnabled?id=${param.id}&enabled=${usedStatus}`, {
+        fetch(requestUrl + `/api-basedata/supplier/modifyEnabled?id=${param.id}&enabled=${usedStatus}`, {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token")
@@ -124,7 +137,7 @@ function CustomerData() {
             })
     }
     const getClothData = (page, size) => {
-        fetch(requestUrl + `/api-basedata/customer/findAll?companyId=1&page=${page}&size=${size}`, {
+        fetch(requestUrl + `/api-basedata/supplier/findAll?companyId=1&page=${page}&size=${size}`, {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token")
@@ -133,18 +146,16 @@ function CustomerData() {
             .then(res => { return res.json() })
             .then(res => {
                 if (res.code == 200) {
-                    setSize(res.data.size);
                     setTotal(res.data.total);
-                    setCurrent(res.data.current)
+                    setSize(res.data.size);
+                    setCurrent(res.data.current);
                     setdata(res.data.records);
                 }
             })
     }
     const onChange = (value) => {
-        console.log("选中的", value)
         edit(value, addressData)
     }
-    // 获取地址
     const getData = () => {
         fetch(requestUrl + "/api-basedata/address/findAll", {
             method: "GET",
@@ -154,6 +165,7 @@ function CustomerData() {
         })
             .then((res) => { return res.json() })
             .then((res) => {
+                console.log(res)
                 addressMap(res.data)
                 setaddressData(res.data)
             })
@@ -182,11 +194,18 @@ function CustomerData() {
         })
 
     }
+    const setRowClassName = (record) => {
+        return record.id === rowId ? 'clickRowStyl' : '';
+    }
+    const onClickRow = (record) => {
+        setRowId(record.id)
+    }
     const columns = [
         {
             title: '编码',
             dataIndex: 'code',
             key: 'code',
+            width: 100
         },
         {
             title: '公司名称',
@@ -202,16 +221,7 @@ function CustomerData() {
             title: '联系号码',
             dataIndex: 'contactPhone',
             key: 'contactPhone',
-        },
-        {
-            title: '加重',
-            dataIndex: 'tareWeight',
-            key: 'tareWeight',
-        },
-        {
-            title: '小数位',
-            dataIndex: 'weightDecimal',
-            key: 'weightDecimal',
+            width:200
         },
         {
             title: '省市区',
@@ -237,12 +247,13 @@ function CustomerData() {
                 return <div className="tag-content">
                     <span onClick={() => { modalClick(record, 1) }}>编辑</span>
                     <span onClick={() => { delect(record) }}>删除</span>
-                    <span onClick={() => { disable(record) }}> {record.usedStatus == 1 ? "禁用" : "启用"} </span>
+                    <span onClick={() => { disable(record) }}>{record.usedStatus == 1 ? "禁用" : "启用"} </span>
                 </div>
             },
         },
     ]
     const pagination = {
+        showSizeChanger: true,
         total: total,
         pageSize: size,
         current: current,
@@ -250,11 +261,12 @@ function CustomerData() {
             setCurrent(page);
             setSize(pageSize);
             getClothData(page, pageSize);
-        }
+        },
+        showTotal: () => (`共${total}条`)
     }
     return <div className="right-container">
         <PageHeader
-            title="客户"
+            title="供应商"
             extra={[
                 <Button key="1" type="primary" onClick={() => { modalClick({}, 2) }}>
                     新增
@@ -265,29 +277,43 @@ function CustomerData() {
             dataSource={data}
             rowKey={record => record.id}
             pagination={pagination}
+            scroll={{
+                scrollToFirstRowOnChange: true,
+                x: 1200,
+                y: 600
+            }}
+            rowClassName={(record) => {
+                return setRowClassName(record)
+            }}
+            onRow={record => {
+                return {
+                    onClick: event => { onClickRow(record) },
+                };
+            }}
         />
 
         <Modal
             destroyOnClose={true}
-            title={editType == 1 ? "编辑" : "新增"}
+            title={editType == 1 ? "编辑供应商" : "新建供应商"}
             visible={visible}
-            footer={false}
+            footer={[
+                <span className="modalFooterBtn">{editType == 1 ? "保存编辑" : "保存并新增"}</span>,
+                <Button key="submit" type="primary" onClick={handleOk} >
+                    保存
+                </Button>,
+                <Button onClick={onCancel}>
+                    取消
+                </Button>
+            ]}
             onCancel={onCancel}
+            className="customModal"
         >
             <Form
+                {...layout}
                 form={form}
                 layout="horizontal"
                 name="form_in_modal"
                 onFinish={handleOk}
-                initialValues={{
-                    name: "",
-                    abbr: "",
-                    contactPhone: "",
-                    address: "",
-                    detailAddress: "",
-                    tareWeight: "",
-                    weightDecimal: ""
-                }}
                 preserve={false}
             >
                 <Form.Item label="名称" name="name" rules={[{ required: true, message: '请输入名称!' }]}>
@@ -300,7 +326,6 @@ function CustomerData() {
                     <Input placeholder="电话" />
                 </Form.Item>
                 <Form.Item label="地址" name="address" rules={[{ required: true, message: '请输入地址!' }]}>
-
                     <Cascader
                         options={addressData}
                         onChange={onChange}
@@ -310,18 +335,12 @@ function CustomerData() {
                 <Form.Item label="详细地址" name="detailAddress" rules={[{ required: true, message: '请输入详细地址!' }]}>
                     <Input placeholder="详细地址" />
                 </Form.Item>
-                <Form.Item label="重量" name="tareWeight" rules={[{ required: true, message: '请输入重量!' }]}>
-                    <Input placeholder="重量" />
-                </Form.Item>
-                <Form.Item label="小数位" name="weightDecimal" rules={[{ required: true, message: '请输入小数位!' }]}>
-                    <Input placeholder="小数位" />
-                </Form.Item>
-                <Form.Item>
+                {/* <Form.Item>
                     <Button type="primary" htmlType="submit" style={{ marginRight: "10px" }}>保存</Button>
                     <Button type="primary" onClick={onCancel}>取消</Button>
-                </Form.Item>
+                </Form.Item> */}
             </Form>
         </Modal>
     </div>
 }
-export default CustomerData
+export default Supplier

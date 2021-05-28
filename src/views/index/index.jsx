@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { Layout } from 'antd';
+import zhCN from 'antd/es/locale/zh_CN';
+import { Layout, ConfigProvider } from 'antd';
 import ContentMain from '../../components/ContentMain';
 import SiderNav from '../../components/SiderNav';
 import Avatar from '../Avatar'
 import './index.css';
-const { Header, Content, Footer } = Layout;
-export default class Index extends Component {
-    render() {
-        return (
-            <Layout>
+const { Header, Content } = Layout;
+export default function Index() {
+    return (
+        <Layout>
+            <ConfigProvider locale={zhCN}>
                 <SiderNav />
                 <Layout>
                     <Header style={{ background: '#fff', padding: 0, textAlign: "right" }} >
@@ -18,7 +19,7 @@ export default class Index extends Component {
                         <ContentMain />
                     </Content>
                 </Layout>
-            </Layout>
-        );
-    }
+            </ConfigProvider>
+        </Layout>
+    );
 }

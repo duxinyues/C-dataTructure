@@ -1,6 +1,6 @@
 import { PageHeader, Input, Form, Button, Cascader, message } from "antd";
 import { useState, useEffect } from "react";
-import { requestUrl } from "../../utils/config"
+import { requestUrl } from "../../../utils/config"
 import "./index.css";
 const { TextArea } = Input;
 function CompanyInfo() {
@@ -47,15 +47,15 @@ function CompanyInfo() {
             },
             body: JSON.stringify(param)
         })
-        .then((res) => { return res.json() })
-        .then((res) => { 
-            if(res.code==200){
-                getCompanyData();
-                message.success("编辑成功！");
-                return;
-            }
-            message.error("编辑失败！");
-        })
+            .then((res) => { return res.json() })
+            .then((res) => {
+                if (res.code == 200) {
+                    getCompanyData();
+                    message.success("编辑成功！");
+                    return;
+                }
+                message.error("编辑失败！");
+            })
     }
 
     const getData = () => {
@@ -67,6 +67,7 @@ function CompanyInfo() {
         })
             .then((res) => { return res.json() })
             .then((res) => {
+                console.log("地址信息", res)
                 addressMap(res.data)
                 setaddressData(res.data)
             })

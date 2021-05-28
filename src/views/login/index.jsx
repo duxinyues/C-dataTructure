@@ -20,9 +20,10 @@ const NormalLoginForm = (props) => {
     }).then((res) => {
       return res.json()
     }).then((res) => {
-      console.log("登录",res)
+      console.log("登录", res)
       if (res.code == 200) {
-        fakeAuth.setToken(res.data.access_token);
+        // fakeAuth.setToken(res.data.access_token);
+        fakeAuth.setToken(res.data.value);
         props.history.push('/home');
         message.success('登陆成功', 1);
         return;
@@ -37,7 +38,7 @@ const NormalLoginForm = (props) => {
     <div className="container">
       <div className="login-form">
         <div className="title">
-          <img src={img.logo} className="logo" />
+          <img src={img.logo} className="logo-img" />
           <span>数织通织造管理系统</span>
         </div>
         <Tabs defaultActiveKey="1" onChange={callback}>

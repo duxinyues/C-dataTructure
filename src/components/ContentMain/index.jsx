@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Switch, withRouter, Route, Redirect } from 'react-router-dom';
 import PrivateRoute from '../../router/PrivateRoute';
 import { routes } from '../../router/route';
-import NoMatch from '../../views/noMatch';
+import NoFind from '../../views/noFind';
 import './index.css';
 class ContentMain extends Component {
     render() {
@@ -13,7 +13,7 @@ class ContentMain extends Component {
                     {
                         routes.map((item,key) => {
                             return (
-                                item.path ? <PrivateRoute path={item.path} exact component={item.component} /> : <Route key={key} component={NoMatch} />
+                                item.path ? <PrivateRoute path={item.path} exact component={item.component} /> : <Route key={key} component={NoFind} />
                             )
                         })
                     }

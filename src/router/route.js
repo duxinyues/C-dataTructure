@@ -1,11 +1,12 @@
-import CompanyInfo from "../views/companyInfomation"
+import CompanyInfo from "../views/basicData/companyInfomation"
 import DataContent from "../views/dataContent"
-import StaffInfo from "../views/staffInfomation"
-import MachineData from "../views/machine"
-import ClothRecord from "../views/clothRecord"
-import CustomerData from "../views/customer"
-import Supplier from "../views/supplier"
-import NoMatch   from "../views/noMatch"
+import StaffInfo from "../views/basicData/staffInfomation"
+import MachineData from "../views/basicData/machine"
+import ClothRecord from "../views/basicData/clothRecord"
+import CustomerData from "../views/basicData/customer"
+import Supplier from "../views/basicData/supplier"
+import EnterStorage from "../views/inventory/enterStorage"
+import NoFind from "../views/noFind"
 export const routes = [
     {
         path: '/list/search',
@@ -30,11 +31,15 @@ export const routes = [
         component: Supplier
     },
     {
+        path: "/dashboard23",
+        component: EnterStorage
+    },
+    {
         path: "/home",
         component: DataContent
     },
     {
         path: "/404",
-        component:NoMatch
+        component: NoFind
     }
 ]

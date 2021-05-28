@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
-import { PageHeader, Table, Button, Form, Modal, Input, message } from "antd";
-import { requestUrl, onlyFormat } from "../../utils/config";
+import { PageHeader, Table, Button, Form, Modal, Input, message, Tag } from "antd";
+import { requestUrl, onlyFormat } from "../../../utils/config";
 const { confirm } = Modal;
 function ClothRecord() {
     document.title = "查布记录";
@@ -10,34 +10,39 @@ function ClothRecord() {
     const [selectRecord, setselectRecord] = useState();
     const [total, setTotal] = useState(0);
     const [current, setCurrent] = useState(1);
-    const [size, setsize] = useState(10)
+    const [size, setsize] = useState(10);
+    const [rowId, setRowId] = useState(0);
     const [form] = Form.useForm();
 
     useEffect(() => {
         getClothData(1, 10);
     }, [])
 
-    const modalClick = (param, type) => {
-        console.log(param)
-        setselectRecord(param)
+    const modalClick = async (param, type) => {
+        await form.setFieldsValue({
+            name: param.name
+        })
+        console.log("选中的数据=", param)
+        setselectRecord(param);
         setvisible(true);
         seteditType(type)
     };
     const onCancel = () => {
         setvisible(false)
     }
-    const handleOk = (param) => {
+    const handleOk = async (param) => {
+      const value =  await form.validateFields()
         let data;
         if (editType == 2) {
             data = {
                 "companyId": 1,
-                "name": param.name,
+                "name": value.name,
             }
         } else {
             data = {
                 "companyId": 1,
                 "id": selectRecord.id,
-                "name": param.name,
+                "name": value.name,
             }
         }
         fetch(requestUrl + `/api-basedata/clothInspection/saveOrModify`, {
@@ -126,6 +131,12 @@ function ClothRecord() {
                 }
             })
     }
+    const setRowClassName = (record) => {
+        return record.id === rowId ? 'clickRowStyl' : '';
+    }
+    const onClickRow = (record) => {
+        setRowId(record.id)
+    }
     const columns = [
         {
             title: '编码',
@@ -151,7 +162,7 @@ function ClothRecord() {
                 return <div className="tag-content">
                     <span onClick={() => { modalClick(record, 1) }}>编辑</span>
                     <span onClick={() => { delectClothRecord(record) }}>删除</span>
-                    <span onClick={() => { disableClothRecord(record) }}> {record.usedStatus == 1 ? "禁用" : "启用"} </span>
+                    <span onClick={() => { disableClothRecord(record) }}>{record.usedStatus == 1 ? "禁用" : "启用"} </span>
                 </div>
             },
         },
@@ -164,7 +175,9 @@ function ClothRecord() {
             setCurrent(page);
             setsize(pageSize);
             getClothData(page, pageSize);
-        }
+        },
+        showSizeChanger: true,
+        showTotal: () => (`共${total}条`)
     }
     return <div className="right-container">
         <PageHeader
@@ -179,13 +192,35 @@ function ClothRecord() {
             dataSource={clothData}
             rowKey={record => record.id}
             pagination={pagination}
+            scroll={{
+                scrollToFirstRowOnChange: true,
+                x: 1200,
+                y: 600
+            }}
+            rowClassName={(record) => {
+                return setRowClassName(record)
+            }}
+            onRow={record => {
+                return {
+                    onClick: () => { onClickRow(record) },
+                };
+            }}
         />
 
         <Modal
-            destroyOnClose={true}
-            title={editType == 1 ? "编辑" : "新增"}
+            className="customModal"
+            destroyOnClose
+            title={editType == 1 ? "编辑查布记录" : "新建查布记录"}
             visible={visible}
-            footer={false}
+            footer={[
+                <span className="modalFooterBtn">{editType == 1 ? "保存编辑" : "保存并新增"}</span>,
+                <Button key="submit" type="primary" onClick={handleOk} >
+                    保存
+                </Button>,
+                <Button onClick={onCancel}>
+                    取消
+                </Button>
+            ]}
             onCancel={onCancel}
         >
             <Form
@@ -193,19 +228,10 @@ function ClothRecord() {
                 layout="horizontal"
                 name="form_in_modal"
                 onFinish={handleOk}
-                initialValues={{
-                    name: selectRecord ? selectRecord.name : "",
-                    code: selectRecord ? selectRecord.code : "",
-                }}
                 preserve={false}
-
             >
                 <Form.Item label="名称" name="name" rules={[{ required: true, message: '请输入名称!' }]}>
                     <Input placeholder="名称" />
-                </Form.Item>
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" style={{ marginRight: "10px" }}>保存</Button>
-                    <Button type="primary" onClick={onCancel}>取消</Button>
                 </Form.Item>
             </Form>
         </Modal>

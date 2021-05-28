@@ -1,5 +1,5 @@
-// export const requestUrl = "http://8.135.107.120:8000"
-export const requestUrl = "http://192.168.0.14:8000";
+export const requestUrl = "http://8.135.107.120:8000"
+// export const requestUrl = "http://192.168.0.14:8000";
 export const onlyFormat = timeStamp => {
     const _timeStamp = timeStamp ? timeStamp : 0;
     var date = new Date(_timeStamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000

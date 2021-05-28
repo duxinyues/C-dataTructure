@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { fakeAuth } from "../../utils/fakeAuth";
-import { Avatar, Menu, Dropdown } from 'antd';
-import { connect } from "react-redux"
+import { Avatar, Menu, Dropdown, Input, Space, Badge } from 'antd';
+import { connect } from "react-redux";
 import './index.css';
+import img from "../../utils/imgManger"
+const { Search } = Input
 function Avatars(props) {
   const [headImgUrl, setheadImgUrl] = useState(props.user.headImgUrl)
   const _logout = () => {
     fakeAuth.signout();
     props.history.push('/login');
+  }
+  const onSearch = (value) => {
+    console.log(value)
   }
   const menu = (
     <Menu>
@@ -31,18 +36,26 @@ function Avatars(props) {
   );
   return (
     <div className="userInfo">
-      <Dropdown overlay={menu} placement="bottomCenter" className="dropMenu">
-        <Avatar
-          style={{
-            color: '#f56a00',
-            backgroundColor: '#fde3cf',
-          }}
-          size="large"
-          src={props.user.headImgUrl}
-        >
-        </Avatar>
-      </Dropdown>
-      <span>{props.user.nickname}</span>
+      <Space>
+        <Search onSearch={onSearch} />
+        <div className="msg-box">
+          <Badge>
+            <img src={img.msg} className="msg" alt="消息提示" />
+          </Badge>
+        </div>
+        <Dropdown overlay={menu} placement="bottomCenter" className="dropMenu">
+          <Avatar
+            style={{
+              color: '#f56a00',
+              backgroundColor: '#fde3cf',
+            }}
+            size="large"
+            src={props.user.headImgUrl}
+          >
+          </Avatar>
+        </Dropdown>
+        <span>{props.user.nickname}</span>
+      </Space>
     </div>
   )
 }

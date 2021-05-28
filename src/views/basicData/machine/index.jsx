@@ -1,8 +1,8 @@
 import { withRouter } from "react-router-dom";
-import { Table, PageHeader, Button, Modal, Form, Input, message, Select } from "antd";
+import { Table, PageHeader, Button, Modal, Form, Input, message, Select ,Tag} from "antd";
 import { useState, useEffect } from "react"
-import { requestUrl, onlyFormat } from "../../utils/config"
-import { machineConfigData } from "../../utils/mahineData";
+import { requestUrl, onlyFormat } from "../../../utils/config"
+import { machineConfigData } from "../../../utils/mahineData";
 const { confirm } = Modal;
 const { Option } = Select;
 function MachineData(props) {
@@ -14,41 +14,53 @@ function MachineData(props) {
     const [size, setSize] = useState(10);
     const [current, setCurrent] = useState(1);
     const [total, setTotal] = useState(0);
+    const [rowId,setRowId] = useState("");
     const [form] = Form.useForm();
     useEffect(() => {
         getMachineData(1, 10);
         form.resetFields();
     }, []);
 
-    const modalClick = (param, type) => {
+    const modalClick =  (param, type) => {
+        console.log("选中的数据",param)
+        form.setFieldsValue({
+            brand: param.brand,
+            code: param.code,
+            type: machineConfigData[param.type],
+            inches: param.inches,
+        })
         setselectmachine({})
         setvisible(true);
         seteditType(type);
         setselectmachine(param)
     }
     // 新增、修改
-    const handleOk = (param) => {
+    const handleOk = async (param) => {
+      const value=  await form.validateFields();
+      console.log("表单数据，",value);
+      console.log(editType)
         let data;
         if (editType == 2) {
             data = {
-                "brand": param.brand,
-                "code": param.code,
+                "brand": value.brand,
+                "code": value.code,
                 "companyId": 1,
-                "inches": param.inches,
-                "type": param.type
+                "inches": value.inches,
+                "type": value.type
             }
         } else {
-            console.log("选中的数据", selectmachine)
+            var index = machineConfigData.findIndex(function (item) {
+                return item == value.type;
+            });
             data = {
-                "brand": param.brand,
-                "code": param.code,
+                "brand": value.brand,
+                "code": value.code,
                 "companyId": 1,
                 "id": selectmachine.id,
-                "inches": param.inches,
-                "type": param.type
+                "inches": value.inches,
+                "type": index
             }
         }
-
         fetch(requestUrl + "/api-basedata/loom/saveOrModify", {
             method: "POST",
             headers: {
@@ -138,6 +150,12 @@ function MachineData(props) {
     const onGenderChange = (value) => {
         console.log("选中的机种", value)
     }
+    const setRowClassName = (record)=>{
+        return record.id === rowId ? 'clickRowStyl' : '';
+    }
+    const onClickRow = (record)=>{
+        setRowId(record.id)
+    }
     const columns = [
         {
             title: '品牌',
@@ -175,19 +193,14 @@ function MachineData(props) {
             render: (time) => (<span>{onlyFormat(time)}</span>)
         },
         {
-            title: '修改人id',
-            dataIndex: 'updatorId',
-            key: 'updatorId',
-        },
-        {
             title: '操作',
             key: 'tags',
             dataIndex: 'tags',
             render: (tags, record) => {
                 return <div className="tag-content">
-                    <span onClick={() => { modalClick(record, 1) }}>编辑</span>
+                   <span onClick={() => { modalClick(record, 1) }}>编辑</span>
                     <span onClick={() => { delectMachine(record) }}>删除</span>
-                    <span onClick={() => { disableMachine(record) }}> {record.usedStatus == 1 ? "禁用" : "启用"} </span>
+                    <span onClick={() => { disableMachine(record) }}>{record.usedStatus == 1 ? "禁用" :"启用"} </span>
                 </div>
             },
         },
@@ -200,7 +213,9 @@ function MachineData(props) {
             setCurrent(page);
             setSize(pageSize);
             getMachineData(page, pageSize)
-        }
+        },
+        showSizeChanger: true,
+        showTotal: () => (`共${total}条`)
     }
     return <div className="right-container">
         <PageHeader
@@ -215,12 +230,34 @@ function MachineData(props) {
             dataSource={machineData}
             rowKey={record => record.id}
             pagination={pagination}
+            scroll={{
+                scrollToFirstRowOnChange: true,
+                x: 1200,
+                y: 600
+            }}
+            rowClassName={(record)=>{
+                return setRowClassName(record)
+             }}
+             onRow={record => {
+                 return {
+                   onClick: event => {onClickRow(record)},
+                 };
+               }}
         />
         <Modal
+         className="customModal"
             destroyOnClose={true}
-            title={editType == 1 ? "编辑" : "新增"}
+            title={editType == 1 ? "编辑机台" : "新建机台"}
             visible={visible}
-            footer={false}
+            footer={[
+                <span className="modalFooterBtn">{editType == 1 ? "保存编辑" : "保存并新增"}</span>,
+                 <Button key="submit" type="primary" onClick={handleOk} >
+                     保存
+                 </Button>,
+                 <Button onClick={onCancel}>
+                     取消
+                 </Button>
+             ]}
             onCancel={onCancel}
         >
             <Form
@@ -228,12 +265,6 @@ function MachineData(props) {
                 layout="horizontal"
                 name="form_in_modal"
                 onFinish={handleOk}
-                initialValues={{
-                    brand: selectmachine.brand,
-                    code: selectmachine.code,
-                    type: machineConfigData[selectmachine.type],
-                    inches: selectmachine.inches,
-                }}
                 preserve={false}
 
             >
@@ -260,10 +291,10 @@ function MachineData(props) {
                 <Form.Item label="寸数" name="inches" rules={[{ required: true, message: '请输入寸数!' }]}>
                     <Input placeholder="寸数" type="number" />
                 </Form.Item>
-                <Form.Item>
+                {/* <Form.Item>
                     <Button type="primary" htmlType="submit" style={{ marginRight: "10px" }}>保存</Button>
                     <Button type="primary" onClick={onCancel}>取消</Button>
-                </Form.Item>
+                </Form.Item> */}
             </Form>
         </Modal>
     </div>

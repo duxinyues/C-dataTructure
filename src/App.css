@@ -1,4 +1,21 @@
-@import '~antd/dist/antd.css';
-.right-container{
+@import "~antd/dist/antd.css";
+.right-container {
     background: #fff;
+}
+
+/* .customModal .ant-form-item-label {
+    text-align: left !important;
+} */
+
+.clickRowStyl,
+.clickRowStyl:hover > td {
+    background-color: #e6f7ff !important;
+}
+
+.modalFooterBtn{
+    margin-right: 26px;
+    color: #1890ff;
+}
+.ant-table{
+    color: rgba(0, 0, 0, 0.65);
 }

@@ -1,18 +1,27 @@
 import { useState, useEffect } from "react";
-import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader } from "antd";
-import { requestUrl, onlyFormat } from "../../utils/config";
+import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader, Tag } from "antd";
+import { requestUrl, onlyFormat } from "../../../utils/config";
 const { confirm } = Modal;
-function Supplier() {
-    document.title = "供应商";
+const layout = {
+    labelCol: {
+        span: 4,
+    },
+    wrapperCol: {
+        span: 20,
+    },
+};
+function CustomerData() {
+    document.title = "客户";
     const [data, setdata] = useState([]);
+    const [loading, setloading] = useState(true);
     const [visible, setvisible] = useState(false);
     const [editType, seteditType] = useState(0);
     const [selectRecord, setselectRecord] = useState();
     const [addressData, setaddressData] = useState([]);
-    const [name, setName] = useState("");
     const [size, setSize] = useState(10);
     const [current, setCurrent] = useState(1);
     const [total, setTotal] = useState(0);
+    const [rowId, setRowId] = useState(0);
     const [form] = Form.useForm();
     const selectId = []
     useEffect(() => {
@@ -20,43 +29,56 @@ function Supplier() {
         getData()
     }, [])
 
-    const modalClick = (param, type) => {
-        console.log("选中的数据==", param)
-        if (type == 1) {
-            setName(param.name)
-        }
+    const modalClick = async (param, type) => {
+        await form.setFieldsValue({
+            name: param.name,
+            abbr: param.abbr,
+            contactPhone: param.contactPhone,
+            address: param.address ? param.address.split(" ") : "",
+            detailAddress: param.detailAddress,
+            tareWeight: param.tareWeight,
+            weightDecimal: param.weightDecimal
+        });
         setselectRecord(param);
         setvisible(true);
-        seteditType(type)
+        seteditType(type);
     };
     const onCancel = () => {
+        setselectRecord(false);
         setvisible(false)
     }
-    const handleOk = (param) => {
+    const handleOk = async (param) => {
+        console.log("表单数据")
+        const value = await form.validateFields();
         let data;
         if (editType == 2) {
             // 新增
             data = {
-                "abbr": param.abbr,
+                "abbr": value.abbr,
                 "address": selectId.join(","),
                 "companyId": 1,
-                "name": param.name,
-                "contactPhone": param.contactPhone,
-                "detailAddress": param.detailAddress,
+                "contactPhone": value.contactPhone,
+                "detailAddress": value.detailAddress,
+                "name": value.name,
+                "tareWeight": value.tareWeight,
+                "weightDecimal": value.weightDecimal
             }
         } else {
+            edit(value.address,addressData)
             data = {
-                "abbr": param.abbr,
+                "abbr": value.abbr,
                 "address": selectId.join(","),
                 "companyId": 1,
-                "name": param.name,
-                "contactPhone": param.contactPhone,
-                "detailAddress": param.detailAddress,
+                "contactPhone": value.contactPhone,
+                "detailAddress": value.detailAddress,
+                "name": value.name,
+                "tareWeight": value.tareWeight,
+                "weightDecimal": value.weightDecimal,
                 "id": selectRecord.id
             }
         }
-        console.log("选中数据", data)
-        fetch(requestUrl + `/api-basedata/supplier/saveOrModify`, {
+
+        fetch(requestUrl + `/api-basedata/customer/saveOrModify`, {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token"),
@@ -66,7 +88,6 @@ function Supplier() {
         })
             .then((res) => { return res.json() })
             .then((res) => {
-                console.log(res)
                 setvisible(false)
                 if (res.code == 200) {
                     getClothData(1, 10);
@@ -78,19 +99,21 @@ function Supplier() {
     }
     const delect = (param) => {
         confirm({
-            title: "确定要删除该供应商吗？",
+            title: "确定要删除该客户？",
             okText: "确定",
             cancelText: "取消",
             onCancel() { },
             onOk() { delectRequest(param.id); }
         })
+
     }
-    // 删除记录
+    // 删除
     const delectRequest = (id) => {
-        fetch(requestUrl + `/api-basedata/supplier/delete?id=${id}`, {
+        fetch(requestUrl + `/api-basedata/customer/delete?id=${id}`, {
             method: "POST",
             headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
+                "Authorization": "bearer " + localStorage.getItem("access_token"),
+                "Content-Type": "application/json"
             },
         })
             .then(res => { return res.json() })
@@ -103,10 +126,11 @@ function Supplier() {
                 message.error("删除失败！")
             })
     }
+
     // 禁用
     const disable = (param) => {
         const usedStatus = param.usedStatus == 1 ? 2 : 1;
-        fetch(requestUrl + `/api-basedata/supplier/modifyEnabled?id=${param.id}&enabled=${usedStatus}`, {
+        fetch(requestUrl + `/api-basedata/customer/modifyEnabled?id=${param.id}&enabled=${usedStatus}`, {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token")
@@ -122,8 +146,9 @@ function Supplier() {
                 param.usedStatus == 1 ? message.error("禁用失败！") : message.success("启用失败！");
             })
     }
+    // 获取列表数据
     const getClothData = (page, size) => {
-        fetch(requestUrl + `/api-basedata/supplier/findAll?companyId=1&page=${page}&size=${size}`, {
+        fetch(requestUrl + `/api-basedata/customer/findAll?companyId=1&page=${page}&size=${size}`, {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token")
@@ -132,16 +157,19 @@ function Supplier() {
             .then(res => { return res.json() })
             .then(res => {
                 if (res.code == 200) {
-                    setTotal(res.data.total);
+                    setloading(false)
                     setSize(res.data.size);
-                    setCurrent(res.data.current);
+                    setTotal(res.data.total);
+                    setCurrent(res.data.current)
                     setdata(res.data.records);
                 }
             })
     }
+    // 选择地址
     const onChange = (value) => {
         edit(value, addressData)
     }
+    // 获取地址
     const getData = () => {
         fetch(requestUrl + "/api-basedata/address/findAll", {
             method: "GET",
@@ -151,7 +179,6 @@ function Supplier() {
         })
             .then((res) => { return res.json() })
             .then((res) => {
-                console.log(res)
                 addressMap(res.data)
                 setaddressData(res.data)
             })
@@ -178,7 +205,14 @@ function Supplier() {
                 }
             }
         })
-
+    }
+    // 设置列表选中的class名称
+    const setRowClassName = (record) => {
+        return record.id === rowId ? 'clickRowStyl' : '';
+    }
+    // 列表行的点击事件
+    const onClickRow = (record) => {
+        setRowId(record.id)
     }
     const columns = [
         {
@@ -202,6 +236,16 @@ function Supplier() {
             key: 'contactPhone',
         },
         {
+            title: '加重',
+            dataIndex: 'tareWeight',
+            key: 'tareWeight',
+        },
+        {
+            title: '小数位',
+            dataIndex: 'weightDecimal',
+            key: 'weightDecimal',
+        },
+        {
             title: '省市区',
             dataIndex: 'address',
             key: 'address',
@@ -221,11 +265,12 @@ function Supplier() {
             title: '操作',
             key: 'tags',
             dataIndex: 'tags',
+            width: 200,
             render: (tags, record) => {
                 return <div className="tag-content">
                     <span onClick={() => { modalClick(record, 1) }}>编辑</span>
                     <span onClick={() => { delect(record) }}>删除</span>
-                    <span onClick={() => { disable(record) }}> {record.usedStatus == 1 ? "禁用" : "启用"} </span>
+                    <span onClick={() => { disable(record) }}>{record.usedStatus == 1 ? "禁用" : "启用"} </span>
                 </div>
             },
         },
@@ -238,7 +283,9 @@ function Supplier() {
             setCurrent(page);
             setSize(pageSize);
             getClothData(page, pageSize);
-        }
+        },
+        showSizeChanger: true,
+        showTotal: () => (`共${total}条`)
     }
     return <div className="right-container">
         <PageHeader
@@ -249,27 +296,47 @@ function Supplier() {
                 </Button>,
             ]} />
         <Table
+            loading={loading}
             columns={columns}
             dataSource={data}
             rowKey={record => record.id}
             pagination={pagination}
+            scroll={{
+                scrollToFirstRowOnChange: true,
+                x: 1200,
+                y: 600
+            }}
+            rowClassName={(record) => {
+                return setRowClassName(record)
+            }}
+            onRow={record => {
+                return {
+                    onClick: event => { onClickRow(record) },
+                };
+            }}
         />
-
         <Modal
+            className="customModal"
             destroyOnClose={true}
-            title={editType == 1 ? "编辑" : "新增"}
+            title={editType == 1 ? "编辑客户" : "新建供应商"}
             visible={visible}
-            footer={false}
+            footer={[
+                <span className="modalFooterBtn">{editType == 1 ? "保存编辑" : "保存并新增"}</span>,
+                <Button key="submit" type="primary" onClick={handleOk} >
+                    保存
+                </Button>,
+                <Button onClick={onCancel}>
+                    取消
+                </Button>
+            ]}
             onCancel={onCancel}
         >
             <Form
+                {...layout}
                 form={form}
                 layout="horizontal"
                 name="form_in_modal"
                 onFinish={handleOk}
-                initialValues={{
-                    name,
-                }}
                 preserve={false}
             >
                 <Form.Item label="名称" name="name" rules={[{ required: true, message: '请输入名称!' }]}>
@@ -282,6 +349,7 @@ function Supplier() {
                     <Input placeholder="电话" />
                 </Form.Item>
                 <Form.Item label="地址" name="address" rules={[{ required: true, message: '请输入地址!' }]}>
+
                     <Cascader
                         options={addressData}
                         onChange={onChange}
@@ -291,12 +359,14 @@ function Supplier() {
                 <Form.Item label="详细地址" name="detailAddress" rules={[{ required: true, message: '请输入详细地址!' }]}>
                     <Input placeholder="详细地址" />
                 </Form.Item>
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" style={{ marginRight: "10px" }}>保存</Button>
-                    <Button type="primary" onClick={onCancel}>取消</Button>
+                <Form.Item label="重量" name="tareWeight" rules={[{ required: true, message: '请输入重量!' }]}>
+                    <Input placeholder="重量" />
+                </Form.Item>
+                <Form.Item label="小数位" name="weightDecimal" rules={[{ required: true, message: '请输入小数位!' }]}>
+                    <Input placeholder="小数位" />
                 </Form.Item>
             </Form>
         </Modal>
     </div>
 }
-export default Supplier
+export default CustomerData

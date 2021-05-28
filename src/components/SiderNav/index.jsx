@@ -25,19 +25,17 @@ function SiderNav(props) {
                 setmenus(res.data.menus);
                 props.userData(res.data)
             }
-        }).catch((err) => {
-            console.log(err)
-        })
+        }).catch((err) => { })
     }, [])
-    const renderMenus = (menu,key) => {
+    const renderMenus = (menu, key) => {
         if (menu.children) {
             return <SubMenu key={key} title={
                 <span>
                     <span>{menu.name}</span>
                 </span>}>
                 {
-                    menu.children.map((item,key) => {
-                        return renderMenus(item,key)
+                    menu.children.map((item, key) => {
+                        return renderMenus(item, key)
                     })
                 }
             </SubMenu>
@@ -51,21 +49,22 @@ function SiderNav(props) {
             </Menu.Item>
         }
     }
+
+    const onCollapse = collapsed => {
+        setcollapsed(collapsed)
+    };
     return (
         <Sider
-            breakpoint="lg"
+            collapsible
+            collapsed={collapsed}
+            onCollapse={onCollapse}
             collapsedWidth="80"
             onBreakpoint={broken => {
                 console.log(broken);
             }}
-            onCollapse={(collapsed, type) => {
-                console.log(collapsed, type);
-            }}
+
         >
-            <div className="logoIcon">
-                {/* <img src={Logo} alt="system" className="Icon" /> */}
-                <span className="title">logo</span>
-            </div>
+            <div className="logo" >数织通织造管理系统</div>
             <Menu
                 defaultSelectedKeys={['1']}
                 defaultOpenKeys={['sub1', 'sub2']}
