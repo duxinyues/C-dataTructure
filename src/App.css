@@ -1,6 +1,7 @@
 @import "~antd/dist/antd.css";
 .right-container {
     background: #fff;
+    height: 90vh;
 }
 
 /* .customModal .ant-form-item-label {
@@ -12,10 +13,10 @@
     background-color: #e6f7ff !important;
 }
 
-.modalFooterBtn{
+.modalFooterBtn {
     margin-right: 26px;
     color: #1890ff;
 }
-.ant-table{
+.ant-table {
     color: rgba(0, 0, 0, 0.65);
 }

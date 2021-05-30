@@ -172,7 +172,7 @@ function MachineData(props) {
             title: '创建时间',
             dataIndex: 'createTime',
             key: 'createTime',
-            render: (time) => (<span>{onlyFormat(time)}</span>)
+            render: (time) => (<span>{onlyFormat(time,true)}</span>)
         },
 
         {
@@ -190,7 +190,7 @@ function MachineData(props) {
             title: '更新时间',
             dataIndex: 'updateTime',
             key: 'updateTime',
-            render: (time) => (<span>{onlyFormat(time)}</span>)
+            render: (time) => (<span>{onlyFormat(time,true)}</span>)
         },
         {
             title: '操作',

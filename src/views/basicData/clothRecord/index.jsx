@@ -152,7 +152,7 @@ function ClothRecord() {
             title: '更新时间',
             dataIndex: 'updateTime',
             key: 'updateTime',
-            render: (time) => (<span>{onlyFormat(time)}</span>)
+            render: (time) => (<span>{onlyFormat(time,true)}</span>)
         },
         {
             title: '操作',

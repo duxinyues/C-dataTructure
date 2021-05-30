@@ -55,6 +55,7 @@ function SiderNav(props) {
     };
     return (
         <Sider
+            width="208"
             collapsible
             collapsed={collapsed}
             onCollapse={onCollapse}

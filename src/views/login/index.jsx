@@ -1,18 +1,16 @@
-import React from 'react';
-import { withRouter } from 'react-router-dom';
-import { Form, Input, Button, Checkbox, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import React from 'react'
+import { withRouter } from 'react-router-dom'
+import { Form, Input, Button, Checkbox, message,Tabs } from 'antd'
+import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { connect } from "react-redux"
-import { fakeAuth } from '../../utils/fakeAuth';
+import { fakeAuth } from '../../utils/fakeAuth'
 import { login } from "../../actons/action"
 import { requestUrl } from "../../utils/config"
 import './index.css';
 import Footer from "../../components/Footer/index"
-import { Tabs } from 'antd';
 import img from "../../utils/imgManger"
 const { TabPane } = Tabs;
 const NormalLoginForm = (props) => {
-  console.log("props=", props)
   const onFinish = (params) => {
     fetch(requestUrl + `/api-uaa/oauth/token?username=${params.username}&password=${params.password}&grant_type=password&scope=app&client_id=webApp&client_secret=webApp`, {
       method: 'POST',
