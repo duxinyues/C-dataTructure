@@ -2,19 +2,17 @@ import { useState, useEffect } from "react"
 import { Table, PageHeader, Button, Input, Tag, Select, Typography } from "antd";
 import { onlyFormat, requestUrl, stockType } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
+import { createHashHistory } from "history";
 import "../style.css"
 
+const history = createHashHistory();
 const { TextArea } = Input;
 const { Option } = Select;
 const { Text } = Typography;
-document.title = "收纱入库"
-function EnterStorage(props) {
+document.title = "新增入库单"
+function CreateEnterStockOrder(props) {
     console.log(props)
-    const [disable, setdisable] = useState(true);
-    const [leftData, setleftData] = useState([]);
-    const [leftTotal, setleftTotal] = useState(0);
     const [yarn_stock_detail, setyarn_stock_detail] = useState({});
-    const [selectId, setSelectId] = useState(0)
     const data = {
         page: 1,
         size: 10,
@@ -22,29 +20,8 @@ function EnterStorage(props) {
     }
 
     useEffect(() => {
-        getData(data)
     }, [])
-
-    //  收纱入库
-    const getData = (param) => {
-        fetch(requestUrl + "/api-stock/yarnStockIo/findYarnStockInList", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(param)
-        })
-            .then(res => { return res.json() })
-            .then((res) => {
-                if (res.code == 200) {
-                    setleftData(res.data.records);
-                    setleftTotal(res.data.total);
-                    setSelectId(res.data.records[0].id)
-                    getYarnStockDetail(res.data.records[0].id)
-                }
-            })
-    }
+    
     // 入库单明细
     const getYarnStockDetail = (id) => {
         fetch(requestUrl + "/api-stock/yarnStockIo/findYarnStockInById?id=" + id, {
@@ -62,37 +39,11 @@ function EnterStorage(props) {
                 }
             })
     }
-    // 新增
-    const add = () => {
-        props.history.push({ state: { id: "", type: "add" }, pathname: "/dashboard23/createOrder" })
+    // 新增订单
+    const createOrder = ()=>{
+        history.goBack()
     }
-    const edit = () => {
-        props.history.push({ pathname: "/dashboard23/createOrder", state: { id: selectId, type: "edit" } })
-    }
-    const columns = [
-        {
-            title: '入库单号',
-            dataIndex: 'code',
-            key: 'code',
-        },
-        {
-            title: '客户',
-            dataIndex: 'customerName',
-            key: 'customerName',
-        },
-        {
-            title: '日期',
-            dataIndex: "bizDate",
-            key: "bizDate",
-            render: (beginTime) => (<span>{onlyFormat(beginTime, false)}</span>)
-        },
-        {
-            title: '状态',
-            dataIndex: 'billStatus',
-            key: 'billStatus',
-            render: (billStatus) => (<span>{billStatus == 1 ? <Tag color="green">已审核</Tag> : <Tag color="magenta">未审核</Tag>}</span>)
-        }
-    ];
+   
     const enter_yarn_colums = [
         {
             title: '纱别',
@@ -144,69 +95,21 @@ function EnterStorage(props) {
             key: 'weight',
         }
     ];
-    const enter_yarn_data = [
-        {
-            newsuttle: 111,
-            shortweights: "总欠重",
-            shortweight: "欠重",
-            suttle: 32,
-            specification: "规格",
-            number: 1,
-            customerNumber: "客户单号",
-            colorCode: "1000",
-            yarnBatch: 13223,
-            yarnType: "纱别"
-        },
-        {
-            newsuttle: 111,
-            shortweights: "总欠重",
-            shortweight: "欠重",
-            suttle: 154,
-            specification: "规格",
-            number: 2,
-            customerNumber: "客户单号",
-            colorCode: "1000",
-            yarnBatch: 13223,
-            yarnType: "纱别"
-        }
-    ];
-    const pagination = {
-        total: leftTotal,
-        simple: true,
-    }
+   
     return <div className="right-container">
         <PageHeader
-            title="收纱入库"
+            title="新增入库单"
             extra={[
-                <Button type="primary" onClick={add}>
-                    +新增
-                </Button>,
-                <Button onClick={edit}>
-                    编辑
+                <Button onClick={createOrder}>
+                    保存
                 </Button>,
                 <Button >
-                    删除
-                </Button>,
-                <Button >
-                    订单
-                </Button>,
-                <Button disabled >
-                    抽磅
+                    取消
                 </Button>,
             ]}
         />
         <div className="inventory-container">
-            <div className="left">
-                <Table
-                    columns={columns}
-                    dataSource={leftData}
-                    pagination={pagination}
-                    rowKey={(key) => {
-                        console.log("选中的行数", key)
-                    }}
-                />
-            </div>
-            <div className="right">
+            <div className="add-content">
                 <div className="detail-title">
                     创建：2021-05-24
                 </div>
@@ -214,21 +117,21 @@ function EnterStorage(props) {
                     <div className="row">
                         <div className="col">
                             <div className="label">入库单号</div>
-                            <Input disabled={disable} value={yarn_stock_detail.customerBillCode} />
+                            <Input value={yarn_stock_detail.customerBillCode} />
                         </div>
                         <div className="col">
                             <div className="label">客户</div>
-                            <Input disabled={disable} value={yarn_stock_detail.customerName} />
+                            <Input  value={yarn_stock_detail.customerName} />
                         </div>
                         <div className="col">
                             <div className="label">入库日期</div>
-                            <Input disabled={disable} value={onlyFormat(yarn_stock_detail.bizDate, false)} />
+                            <Input value={onlyFormat(yarn_stock_detail.bizDate, false)} />
                         </div>
                     </div>
                     <div className="row">
                         <div className="col">
                             <div className="label11">单据类型</div>
-                            <Select disabled={disable} value={stockType[yarn_stock_detail.billType]}  >
+                            <Select value={stockType[yarn_stock_detail.billType]}  >
                                 {
                                     stockType.map((item, key) => (<Option value={key} key={key}>{item}</Option>))
                                 }
@@ -239,7 +142,7 @@ function EnterStorage(props) {
                     <div className="row">
                         <div className="col">
                             <div className="label1">备注</div>
-                            <TextArea disabled={disable} autoSize={{ minRows: 2, maxRows: 6 }} value={yarn_stock_detail.remark} />
+                            <TextArea  autoSize={{ minRows: 2, maxRows: 6 }} value={yarn_stock_detail.remark} />
                         </div>
                     </div>
                 </div>
@@ -287,4 +190,4 @@ function EnterStorage(props) {
     </div>
 }
 
-export default withRouter(EnterStorage)
+export default withRouter(CreateEnterStockOrder)

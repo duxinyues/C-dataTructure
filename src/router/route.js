@@ -8,6 +8,7 @@ import Supplier from "../views/basicData/supplier"
 import EnterStorage from "../views/yarnInventory/enterStorage"
 import OutStorage from "../views/yarnInventory/outStorage"
 import EnterOutDetail from "../views/yarnInventory/enterOutDetail"
+import CreateEnterStockOrder from "../views/yarnInventory/enterStorage/createOrder"
 import NoFind from "../views/noFind"
 export const routes = [
     {
@@ -35,6 +36,10 @@ export const routes = [
     {
         path: "/dashboard23", // 收纱入库
         component: EnterStorage
+    },
+    {
+        path: "/dashboard23/createOrder", // 新建收纱入库订单
+        component: CreateEnterStockOrder
     },
     {
         path: "/dashboard24",  // 退纱出库

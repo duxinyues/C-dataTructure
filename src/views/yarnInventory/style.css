@@ -48,3 +48,8 @@ textarea {
 textarea {
     width: 202px !important;
 }
+
+.add-content {
+    width: 100%;
+    border: 1px solid red;
+}
