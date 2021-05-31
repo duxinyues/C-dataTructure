@@ -1,26 +1,25 @@
-import { useState, useEffect } from "react"
-import { Table, PageHeader, Button, Input, Tag, Select, Typography } from "antd";
-import { onlyFormat, requestUrl, stockType } from "../../../utils/config";
+import { useState, useEffect, useRef } from "react"
+import { Table, PageHeader, Button, Tag } from "antd";
+import { onlyFormat, requestUrl } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
+import OrderDetail from "./orderDetail";
+import CreateOrder from "./createOrder";
 import "../style.css"
 
-const { TextArea } = Input;
-const { Option } = Select;
-const { Text } = Typography;
 document.title = "收纱入库"
 function EnterStorage(props) {
-    console.log(props)
-    const [disable, setdisable] = useState(true);
     const [leftData, setleftData] = useState([]);
     const [leftTotal, setleftTotal] = useState(0);
     const [yarn_stock_detail, setyarn_stock_detail] = useState({});
-    const [selectId, setSelectId] = useState(0)
+    const [selectId, setSelectId] = useState(0);
+    const [detailType, setdetailType] = useState("detail"); // 用户操作类型
+    const [orderData, setorderData] = useState(); // 编辑入库单的字段
+    const [loading, setloading] = useState(true)
     const data = {
         page: 1,
         size: 10,
         companyId: 1
     }
-
     useEffect(() => {
         getData(data)
     }, [])
@@ -37,7 +36,9 @@ function EnterStorage(props) {
         })
             .then(res => { return res.json() })
             .then((res) => {
+                console.log(res)
                 if (res.code == 200) {
+                    setloading(false)
                     setleftData(res.data.records);
                     setleftTotal(res.data.total);
                     setSelectId(res.data.records[0].id)
@@ -64,10 +65,74 @@ function EnterStorage(props) {
     }
     // 新增
     const add = () => {
-        props.history.push({ state: { id: "", type: "add" }, pathname: "/dashboard23/createOrder" })
+        setdetailType("add")
     }
     const edit = () => {
-        props.history.push({ pathname: "/dashboard23/createOrder", state: { id: selectId, type: "edit" } })
+        setdetailType("edit")
+    }
+    const cancel = () => {
+        setdetailType("detail")
+    }
+    // 保存
+    const onSave = () => {
+        if (!orderData) return;
+        // 添加入库单
+        orderData.inDtls = [
+            {
+                "colorCode": "12",
+                "customerCode": "25435",
+                "inCheckDtls": [
+                    {
+                        "grossWeight": 0,
+                        "lackWeight": 0,
+                        "spec": 0,
+                        "tareWeight": 0,
+                        "weight": 0
+                    }
+                ],
+                "lackWeight": 0,
+                "netWeight": 0,
+                "pcs": 0,
+                "spec": 0,
+                "totalLackWeight": 0,
+                "weight": 0,
+                "yarnBrandBatch": "4654",
+                "yarnName": "测试名称"
+            }
+        ]
+        setloading(true)
+        if (detailType == "add") {
+            console.log("新增入库单")
+            console.log("获取子组件的参数==", orderData)
+        }
+        if (detailType == "edit") {
+            console.log("编辑入库单")
+            console.log("获取子组件的参数==", orderData)
+            console.log("选中数据==", yarn_stock_detail)
+            orderData.id = yarn_stock_detail.id;
+        }
+        console.log("新增或者编辑的表单字段==", orderData)
+        fetch(requestUrl + "/api-stock/yarnStockIo/inSaveOrModify", {
+            method: "POST",
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token"),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(orderData)
+        })
+            .then(res => { return res.json() })
+            .then(res => {
+                console.log(res)
+                if (res.code == 200) {
+                    getData(data);
+                    setdetailType("detail");
+                }
+            })
+    }
+    //  获取子组件参数
+    const save = (value) => {
+        console.log("这是子组件传递的参数==", value)
+        setorderData(value)
     }
     const columns = [
         {
@@ -90,92 +155,14 @@ function EnterStorage(props) {
             title: '状态',
             dataIndex: 'billStatus',
             key: 'billStatus',
-            render: (billStatus) => (<span>{billStatus == 1 ? <Tag color="green">已审核</Tag> : <Tag color="magenta">未审核</Tag>}</span>)
-        }
-    ];
-    const enter_yarn_colums = [
-        {
-            title: '纱别',
-            dataIndex: 'yarnName',
-            key: 'yarnName',
-        },
-        {
-            title: '纱牌/纱批',
-            dataIndex: 'yarnBrandBatch',
-            key: 'yarnBrandBatch',
-        },
-        {
-            title: '色号',
-            dataIndex: "colorCode",
-            key: "colorCode",
-        },
-        {
-            title: '客户单号',
-            dataIndex: 'customerCode',
-            key: 'customerCode',
-        }, {
-            title: '件数',
-            dataIndex: 'pcs',
-            key: 'pcs',
-        },
-        {
-            title: '规格',
-            dataIndex: 'spec',
-            key: 'spec',
-        },
-        {
-            title: '来纱净重',
-            dataIndex: 'netWeight',
-            key: 'netWeight',
-        },
-        {
-            title: '欠重',
-            dataIndex: 'lackWeight',
-            key: 'lackWeight',
-        },
-        {
-            title: '总欠重',
-            dataIndex: 'totalLackWeight',
-            key: 'totalLackWeight',
-        },
-        {
-            title: '实收净重',
-            dataIndex: 'weight',
-            key: 'weight',
-        }
-    ];
-    const enter_yarn_data = [
-        {
-            newsuttle: 111,
-            shortweights: "总欠重",
-            shortweight: "欠重",
-            suttle: 32,
-            specification: "规格",
-            number: 1,
-            customerNumber: "客户单号",
-            colorCode: "1000",
-            yarnBatch: 13223,
-            yarnType: "纱别"
-        },
-        {
-            newsuttle: 111,
-            shortweights: "总欠重",
-            shortweight: "欠重",
-            suttle: 154,
-            specification: "规格",
-            number: 2,
-            customerNumber: "客户单号",
-            colorCode: "1000",
-            yarnBatch: 13223,
-            yarnType: "纱别"
+            render: (billStatus) => (<div>{billStatus == 1 ? <span color="green">已审核</span> : <span color="magenta">未审核</span>}</div>)
         }
     ];
     const pagination = {
         total: leftTotal,
-        simple: true,
     }
     return <div className="right-container">
-        <PageHeader
+        {detailType == "detail" && <PageHeader
             title="收纱入库"
             extra={[
                 <Button type="primary" onClick={add}>
@@ -194,95 +181,39 @@ function EnterStorage(props) {
                     抽磅
                 </Button>,
             ]}
-        />
+        />}
+        {
+            (detailType == "add" || detailType == "edit") && <PageHeader
+                title="收纱入库"
+                extra={[
+                    <Button type="primary" onClick={onSave}>
+                        保存
+                    </Button>,
+                    <Button onClick={cancel}>
+                        取消
+                    </Button>,
+                ]}
+            />
+        }
         <div className="inventory-container">
             <div className="left">
                 <Table
+                    loading={loading}
                     columns={columns}
                     dataSource={leftData}
                     pagination={pagination}
-                    rowKey={(key) => {
-                        console.log("选中的行数", key)
+                    onRow={record => {
+                        return {
+                            onClick: () => {
+                                getYarnStockDetail(record.id)
+                            },
+                        };
                     }}
                 />
             </div>
-            <div className="right">
-                <div className="detail-title">
-                    创建：2021-05-24
-                </div>
-                <div className="detail-basicData">
-                    <div className="row">
-                        <div className="col">
-                            <div className="label">入库单号</div>
-                            <Input disabled={disable} value={yarn_stock_detail.customerBillCode} />
-                        </div>
-                        <div className="col">
-                            <div className="label">客户</div>
-                            <Input disabled={disable} value={yarn_stock_detail.customerName} />
-                        </div>
-                        <div className="col">
-                            <div className="label">入库日期</div>
-                            <Input disabled={disable} value={onlyFormat(yarn_stock_detail.bizDate, false)} />
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col">
-                            <div className="label11">单据类型</div>
-                            <Select disabled={disable} value={stockType[yarn_stock_detail.billType]}  >
-                                {
-                                    stockType.map((item, key) => (<Option value={key} key={key}>{item}</Option>))
-                                }
-
-                            </Select>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col">
-                            <div className="label1">备注</div>
-                            <TextArea disabled={disable} autoSize={{ minRows: 2, maxRows: 6 }} value={yarn_stock_detail.remark} />
-                        </div>
-                    </div>
-                </div>
-                <div className="enter-yarn-table">
-                    <Table
-                        columns={enter_yarn_colums}
-                        dataSource={yarn_stock_detail.inDtls}
-                        pagination={false}
-                        summary={pageData => {
-                            if (pageData.length == 0) return;
-                            let pcsTotal = 0;
-                            let netWeight = 0;
-                            let lackWeight = 0;
-                            let totalLackWeight = 0;
-                            let weight = 0;
-                            pageData.forEach(({ borrow, repayment }) => {
-                                pcsTotal += borrow.pcs;
-                                netWeight += borrow.netWeight;
-                                lackWeight += borrow.lackWeight;
-                                totalLackWeight += borrow.totalLackWeight;
-                                weight += borrow.weight;
-                                totalLackWeight += borrow.totalLackWeight
-                            });
-                            return (
-                                <>
-                                    <Table.Summary.Row>
-                                        <Table.Summary.Cell></Table.Summary.Cell>
-                                        <Table.Summary.Cell></Table.Summary.Cell>
-                                        <Table.Summary.Cell></Table.Summary.Cell>
-                                        <Table.Summary.Cell>合计：</Table.Summary.Cell>
-                                        <Table.Summary.Cell>{pcsTotal}</Table.Summary.Cell>
-                                        <Table.Summary.Cell></Table.Summary.Cell>
-                                        <Table.Summary.Cell>{netWeight}</Table.Summary.Cell>
-                                        <Table.Summary.Cell>{lackWeight}</Table.Summary.Cell>
-                                        <Table.Summary.Cell>{totalLackWeight}</Table.Summary.Cell>
-                                        <Table.Summary.Cell>{weight}</Table.Summary.Cell>
-                                    </Table.Summary.Row>
-                                </>
-                            );
-                        }}
-                    />
-                </div>
-            </div>
+            {detailType == "detail" && <OrderDetail data={yarn_stock_detail} />}
+            {detailType == "add" && <CreateOrder save={save} />}
+            {detailType == "edit" && <CreateOrder data={yarn_stock_detail} save={save} />}
         </div>
     </div>
 }

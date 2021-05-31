@@ -16,3 +16,5 @@ export const onlyFormat = (timeStamp, type) => {
 
 // 入库单类型
 export const stockType = ["采购入库", "调拨入库", "退料入库", "加工入库", "其他入库"]
+// 出库单据类型
+export const stockOutType = ["调拨出库", "销售出库", "退纱出库"]

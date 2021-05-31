@@ -8,8 +8,8 @@ import locale from 'antd/es/date-picker/locale/zh_CN';
 import "../style.css"
 const { TextArea } = Input;
 const { Option } = Select;
-document.title = "新增入库单"
-function CreateEnterStockOrder(props) {
+document.title = "新增退纱出库单"
+function CreateOutStockOrder(props) {
     console.log(props)
     const [customerId, setcustomerId] = useState("");
     const [bizDate, setbizDate] = useState("");
@@ -35,8 +35,6 @@ function CreateEnterStockOrder(props) {
         props.save({
             customerId: customerId,
             bizDate: bizDate,
-            billType: value,
-            remark: remark,
         })
     }
     // 选择客户
@@ -45,8 +43,6 @@ function CreateEnterStockOrder(props) {
         props.save({
             customerId: value,
             bizDate: bizDate,
-            billType: billType,
-            remark: remark,
         })
     }
     // 选择入库日期
@@ -55,8 +51,6 @@ function CreateEnterStockOrder(props) {
         props.save({
             customerId: customerId,
             bizDate: dateString,
-            billType: billType,
-            remark: remark,
         })
     }
     // 保存备注
@@ -65,8 +59,6 @@ function CreateEnterStockOrder(props) {
         props.save({
             customerId: customerId,
             bizDate: bizDate,
-            billType: billType,
-            remark: value,
         })
     }
     const enter_yarn_colums = [
@@ -156,12 +148,12 @@ function CreateEnterStockOrder(props) {
                         </Select>
                     </div>
                     <div className="col">
-                        <div className="label12">入库日期</div>
+                        <div className="label12">出库日期</div>
                         <DatePicker onChange={selectDate} locale={locale} defaultValue={moment(today)}
                             showToday />
                     </div>
                 </div>
-                <div className="row">
+                {/* <div className="row">
                     <div className="col">
                         <div className="label11">单据类型</div>
                         <Select onChange={selectStockType} value={stockType[stockTypeIndex]}>
@@ -170,13 +162,13 @@ function CreateEnterStockOrder(props) {
                             }
                         </Select>
                     </div>
-                </div>
-                <div className="row">
+                </div> */}
+                {/* <div className="row">
                     <div className="col">
                         <div className="label1">备注</div>
                         <TextArea autoSize={{ minRows: 2, maxRows: 6 }} value={yarn_stock_detail.remark} onChange={saveremark} />
                     </div>
-                </div>
+                </div> */}
             </div>
             <div className="enter-yarn-table">
                 <Table
@@ -221,4 +213,4 @@ function CreateEnterStockOrder(props) {
     </div>
 }
 
-export default withRouter(CreateEnterStockOrder)
+export default withRouter(CreateOutStockOrder)

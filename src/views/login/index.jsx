@@ -1,6 +1,6 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
-import { Form, Input, Button, Checkbox, message,Tabs } from 'antd'
+import { Form, Input, Button, Checkbox, message, Tabs } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { connect } from "react-redux"
 import { fakeAuth } from '../../utils/fakeAuth'

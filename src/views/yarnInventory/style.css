@@ -40,16 +40,39 @@ textarea {
     width: 100px;
 }
 .label11,
-.label1 {
+.label1,
+.label13,
+.label12 {
     width: 72px;
 }
 
 .col .ant-select,
+.ant-picker,
 textarea {
     width: 202px !important;
 }
 
 .add-content {
     width: 100%;
+}
+
+.search-content {
+    padding: 20px;
+}
+
+.search-content .ant-form-item-label > label {
+    width: 80px;
+    margin-right: 10px;
+}
+
+.col2 .ant-form-item-label > label {
+    display: flex;
+    justify-content: flex-end;
+}
+.search-btn {
     border: 1px solid red;
+}
+
+.col11 .ant-form-item-label > label {
+    margin-left: 20px;
 }

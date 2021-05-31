@@ -3,17 +3,13 @@ import { PageHeader, Form, Row, DatePicker, Input, Button, Select, Table } from 
 import { requestUrl } from "../../../utils/config"
 const { RangePicker } = DatePicker;
 const { Option } = Select;
-function EnterOutDetail() {
-    document.title = "出入明细"
+function StockList() {
+    document.title = "库存"
     const [form] = Form.useForm();
     const [date, setDate] = useState();
     const [customer, setcustomer] = useState([]);
     const [loading, setloading] = useState(true);
-    const [yarnStockIo, setyarnStockIo] = useState([]);
-    const [total, settotal] = useState(0);
-    const [size, setsize] = useState(10);
-    const [current, setcurrent] = useState(1)
-    // const yarnStockIo =[]
+    const [yarnStockIo, setyarnStockIo] = useState()
     useEffect(() => {
         getCustomer();
         getData({ page: 1, size: 10 })
@@ -21,12 +17,8 @@ function EnterOutDetail() {
     const onFinish = (value) => {
         console.log(value)
         const param = {
-            "beginTime": date ? date[0] : "",
-            "billType": value.billType,
-            "code": value.code,
             "customerBillCode": value.customerBillCode,
-            "customerId": value.customerId, // 客户ID
-            "endTime": date ? date[1] : "",
+            "customerId": value.customerId,
             "page": 1,
             "size": 10,
             "yarnBrandBatch": value.yarnBrandBatch,
@@ -39,9 +31,9 @@ function EnterOutDetail() {
     const selectDate = (date, dateString) => {
         setDate(dateString)
     }
-    //获取出入明细列表
+    //获取库存列表
     const getData = (param) => {
-        fetch(requestUrl + "/api-stock/yarnStockIo/findAll", {
+        fetch(requestUrl + "/api-stock/yarnStock/findAll", {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token"),
@@ -54,10 +46,7 @@ function EnterOutDetail() {
                 console.log(res)
                 if (res.code == 200) {
                     setloading(false);
-                    setyarnStockIo(res.data.records);
-                    settotal(res.data.total);
-                    setsize(res.data.size);
-                    setcurrent(res.data.current)
+                    setyarnStockIo(res.data.records)
                 }
             })
     }
@@ -81,98 +70,62 @@ function EnterOutDetail() {
     const selectcustomer = (value) => {
         console.log(value)
     }
-    const pagination = {
-        total: total,
-        pageSize: size,
-        current: current,
-        onChange: (page, pageSize) => {
-            setcurrent(page);
-            setsize(pageSize);
-            getData({ page: page, size: pageSize });
-        },
-        showSizeChanger: true,
-        showTotal: () => (`共${total}条`)
-    }
+
     const columns = [
         {
             title: "#",
             dataIndex: 'id',
-            key: 'id',
-        }, {
-            title: "出入库单号",
-            dataIndex: 'code',
-            key: 'code',
-        }, {
-            title: "类型",
-            dataIndex: 'billType',
-            key: 'billType',
-
-        }, {
-            title: "日期",
-            dataIndex: 'bizDate',
-            key: 'bizDate',
-        }, {
+            key: 'id'
+        },
+        {
             title: "客户",
             dataIndex: 'customerName',
-            key: 'customerName',
+            key: 'customerName'
+
         }, {
             title: "纱别",
             dataIndex: 'yarnName',
-            key: 'yarnName',
+            key: 'yarnName'
         }, {
             title: "纱牌/纱批",
             dataIndex: 'yarnBrandBatch',
-            key: 'yarnBrandBatch',
+            key: 'yarnBrandBatch'
         }, {
             title: "色号",
             dataIndex: 'colorCode',
-            key: 'colorCode',
-
+            key: 'colorCode'
         }, {
-            title: "缸号",
-            dataIndex: '',
-            key: '',
-        }, {
-            title: "件数",
-            dataIndex: 'pcs',
-            key: 'pcs',
-        }, {
-            title: "规格",
-            dataIndex: 'spec',
-            key: 'spec',
-        }, {
-            title: "欠重",
-            dataIndex: 'lackWeight',
-            key: 'lackWeight',
-        }, {
-            title: "总欠重"
-        }, {
-            title: "毛重"
-        }, {
-            title: "净重",
-            dataIndex: 'netWeight',
-            key: 'netWeight',
+            title: "缸号"
         }, {
             title: "客户单号",
-            dataIndex: 'customerBillCode',
-            key: 'customerBillCode',
+            dataIndex: 'inWeight',
+            key: 'inWeight'
         }, {
-            title: "备注",
-            dataIndex: 'remark',
-            key: 'remark',
+            title: "收纱",
+            dataIndex: 'inWeight',
+            key: 'inWeight'
         }, {
-            title: "状态",
-            dataIndex: 'billStatus',
-            key: 'billStatus',
-        },
+            title: "用纱",
+            dataIndex: 'usedWeight',
+            key: 'usedWeight'
+        }, {
+            title: "退纱",
+            dataIndex: 'returnWeight',
+            key: 'returnWeight'
+        }, {
+            title: "库存",
+            dataIndex: 'stockWeight',
+            key: 'stockWeight'
+        }, {
+            title: "更新时间",
+            dataIndex: 'updateTime',
+            key: 'updateTime'
+        }
     ]
     return <div className="right-container">
         <PageHeader
-            title="出入明细"
+            title="库存"
             extra={[
-                <Button>
-                    打印
-                </Button>,
                 <Button >
                     导出
                 </Button>,
@@ -182,12 +135,6 @@ function EnterOutDetail() {
             <div className="search-content">
                 <Form form={form} onFinish={onFinish}>
                     <Row gutter={24}>
-                        <Form.Item
-                            name="code"
-                            label="出入库单号"
-                        >
-                            <Input />
-                        </Form.Item>
                         <Form.Item
                             name="customerId"
                             label="客户"
@@ -200,24 +147,16 @@ function EnterOutDetail() {
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="date"
-                            label="日期"
-                            className="col11 col2"
+                            className="col2"
+                            name="yarnBrandBatch"
+                            label="纱牌/纱批"
                         >
-                            <RangePicker onChange={selectDate} />
+                            <Input />
                         </Form.Item>
                         <Form.Item
                             name="yarnName"
                             label="纱别"
-                            className="col11 col2"
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Row>
-                    <Row gutter={24}>
-                        <Form.Item
-                            name="yarnBrandBatch"
-                            label="纱牌/纱批"
+                            className="col2"
                         >
                             <Input />
                         </Form.Item>
@@ -234,11 +173,7 @@ function EnterOutDetail() {
                             </Button>
                             <Button
                                 style={{ margin: '0 8px' }}
-                                onClick={() => {
-                                    form.resetFields();
-                                    getData({ page: 1, size: 10 });
-                                    setDate([]);
-                                }}
+                                onClick={() => { form.resetFields(); }}
                             >
                                 清空
                             </Button>
@@ -252,9 +187,8 @@ function EnterOutDetail() {
             columns={columns}
             loading={loading}
             dataSource={yarnStockIo}
-            pagination={pagination}
         />
     </div>
 }
 
-export default EnterOutDetail
+export default StockList
