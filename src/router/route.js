@@ -9,6 +9,10 @@ import EnterStorage from "../views/yarnInventory/enterStorage"
 import OutStorage from "../views/yarnInventory/outStorage"
 import EnterOutDetail from "../views/yarnInventory/enterOutDetail"
 import StockList from "../views/yarnInventory/stockList"
+import InStock from "../views/greigecloth/inStock"
+import OutStock from "../views/greigecloth/outStock"
+import Stock from "../views/greigecloth/stock"
+import InSTockTable from "../views/greigecloth/inStock/inStockTable"
 import NoFind from "../views/noFind"
 export const routes = [
     {
@@ -32,6 +36,21 @@ export const routes = [
     {
         path: "/dashboard13", // 供应商
         component: Supplier
+    },
+    {
+        path: "/dashboard19", // 坯布出库
+        component: InStock
+    }, 
+    {
+        path: "/dashboard20",//  出库明细
+        component: OutStock
+    },
+    {
+        path: "/dashboard21",//  库存
+        component: Stock
+    },{
+        path: "/dashboard22",//  入库
+        component: InSTockTable
     },
     {
         path: "/dashboard23", // 收纱入库
