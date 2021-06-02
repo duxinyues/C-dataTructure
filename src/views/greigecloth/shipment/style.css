@@ -1,0 +1,12 @@
+.modal-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-content .left {
+    width: 68%;
+}
+
+.modal-content .right {
+    width: 31%;
+}

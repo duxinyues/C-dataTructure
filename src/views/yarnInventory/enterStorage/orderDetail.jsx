@@ -77,7 +77,8 @@ function OrderDetail(props) {
 
     return <div className="right">
         <div className="detail-title">
-            创建：2021-05-24
+            {/* 创建：2021-05-24 */} 
+            <Tag>审核</Tag>
         </div>
         <div className="detail-basicData">
             <div className="row">

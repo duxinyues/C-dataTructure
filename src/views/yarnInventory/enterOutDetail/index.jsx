@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { PageHeader, Form, Row, DatePicker, Input, Button, Select, Table } from "antd";
-import { requestUrl } from "../../../utils/config"
+import { PageHeader, Form, Row, DatePicker, Input, Button, Select, Table, message } from "antd";
+import { requestUrl, onlyFormat } from "../../../utils/config"
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 function EnterOutDetail() {
@@ -25,7 +25,7 @@ function EnterOutDetail() {
             "billType": value.billType,
             "code": value.code,
             "customerBillCode": value.customerBillCode,
-            "customerId": value.customerId, // 客户ID
+            "customerId": value.customerId,
             "endTime": date ? date[1] : "",
             "page": 1,
             "size": 10,
@@ -57,8 +57,11 @@ function EnterOutDetail() {
                     setyarnStockIo(res.data.records);
                     settotal(res.data.total);
                     setsize(res.data.size);
-                    setcurrent(res.data.current)
+                    setcurrent(res.data.current);
+                    return;
                 }
+
+                message.error(res.msg)
             })
     }
     // 获取客户列表
@@ -111,6 +114,7 @@ function EnterOutDetail() {
             title: "日期",
             dataIndex: 'bizDate',
             key: 'bizDate',
+            render: (time) => (<span>{onlyFormat(time,false)}</span>)
         }, {
             title: "客户",
             dataIndex: 'customerName',

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { Table, PageHeader, Button, Tag } from "antd";
-import { onlyFormat, requestUrl } from "../../../utils/config";
+import { onlyFormat, requestUrl, getNowFormatDate } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
 import Detail from "./detail";
 import CreateOrder from "./createOrder";
@@ -15,7 +15,9 @@ function OutStorage(props) {
     const [selectId, setSelectId] = useState(0);
     const [detailType, setdetailType] = useState("detail"); // 用户操作类型
     const [orderData, setorderData] = useState(); // 编辑入库单的字段
-    const [loading, seloading] = useState(true)
+    const [loading, seloading] = useState(true);
+    const [current, setcurrent] = useState(1);
+    const [size, setsize] = useState(10)
     const data = {
         page: 1,
         size: 10,
@@ -39,6 +41,8 @@ function OutStorage(props) {
                 console.log(res)
                 seloading(false)
                 if (res.code == 200 && res.data.records.length > 0) {
+                    setcurrent(res.data.current);
+                    setsize(res.data.size);
                     setleftData(res.data.records);
                     setleftTotal(res.data.total);
                     setSelectId(res.data.records[0].id)
@@ -97,7 +101,9 @@ function OutStorage(props) {
                 "yarnName": "测试名称"
             }
         ]
-        orderData.billType = 0
+        orderData.billType = 0; // 订单类型
+
+        if (orderData.bizDate == "") orderData.bizDate = getNowFormatDate()
         console.log("获取子组件的参数==", orderData)
         fetch(requestUrl + "/api-stock/yarnStockIo/outSaveOrModify", {
             method: "POST",
@@ -118,7 +124,6 @@ function OutStorage(props) {
     }
     //  获取子组件参数
     const save = (value) => {
-        console.log("子组件===", value)
         setorderData(value)
     }
     const columns = [
@@ -147,6 +152,16 @@ function OutStorage(props) {
     ];
     const pagination = {
         total: leftTotal,
+        pageSize: size,
+        current: current,
+        onChange: (page, pageSize) => {
+            getData({
+                page: page,
+                size: pageSize,
+            })
+        },
+        showSizeChanger: false,
+        showTotal: () => (`共${leftTotal}条`)
     }
     return <div className="right-container">
         {detailType == "detail" && <PageHeader

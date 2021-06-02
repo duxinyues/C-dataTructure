@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PageHeader, Form, Row, DatePicker, Input, Button, Select, Table } from "antd";
 import { requestUrl } from "../../../utils/config"
+import "./index.css"
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 function OutStock() {
@@ -13,7 +14,6 @@ function OutStock() {
     const [total, settotal] = useState(0);
     const [size, setsize] = useState(10);
     const [current, setcurrent] = useState(1)
-    // const yarnStockIo =[]
     useEffect(() => {
         getCustomer();
         getData({ page: 1, size: 10 })
@@ -41,7 +41,7 @@ function OutStock() {
     }
     //获取出入明细列表
     const getData = (param) => {
-        fetch(requestUrl + "/api-stock/yarnStockIo/findAll", {
+        fetch(requestUrl + "/api-stock/fabricStockIo/findAllDetail", {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token"),
@@ -99,85 +99,82 @@ function OutStock() {
             dataIndex: 'id',
             key: 'id',
         }, {
-            title: "出入库单号",
+            title: "单号",
             dataIndex: 'code',
             key: 'code',
         }, {
-            title: "类型",
+            title: "单据类型",
             dataIndex: 'billType',
             key: 'billType',
 
+        }, {
+            title: "客户",
+            dataIndex: 'customerId',
+            key: 'customerId',
         }, {
             title: "日期",
             dataIndex: 'bizDate',
             key: 'bizDate',
         }, {
-            title: "客户",
-            dataIndex: 'customerName',
-            key: 'customerName',
+            title: "状态",
+            dataIndex: 'billStatus',
+            key: 'billStatus',
         }, {
-            title: "纱别",
-            dataIndex: 'yarnName',
-            key: 'yarnName',
+            title: "生产单号",
+            dataIndex: 'knitOrderId',
+            key: 'knitOrderId',
         }, {
-            title: "纱牌/纱批",
-            dataIndex: 'yarnBrandBatch',
-            key: 'yarnBrandBatch',
-        }, {
-            title: "色号",
+            title: "客户单号",
             dataIndex: 'colorCode',
             key: 'colorCode',
 
         }, {
-            title: "缸号",
+            title: "坯布编码",
             dataIndex: '',
             key: '',
         }, {
-            title: "件数",
+            title: "布类",
             dataIndex: 'pcs',
             key: 'pcs',
         }, {
-            title: "规格",
+            title: "用料信息",
             dataIndex: 'spec',
             key: 'spec',
         }, {
-            title: "欠重",
+            title: "机号",
             dataIndex: 'lackWeight',
             key: 'lackWeight',
         }, {
-            title: "总欠重"
+            title: "针寸"
         }, {
-            title: "毛重"
+            title: "卷数",
+            dataIndex: "volQty"
         }, {
-            title: "净重",
+            title: "重量",
             dataIndex: 'netWeight',
             key: 'netWeight',
         }, {
-            title: "客户单号",
+            title: "金额",
             dataIndex: 'customerBillCode',
             key: 'customerBillCode',
         }, {
-            title: "备注",
+            title: "创建人",
             dataIndex: 'remark',
             key: 'remark',
-        }, {
-            title: "状态",
-            dataIndex: 'billStatus',
-            key: 'billStatus',
-        },
+        }
     ]
     return <div className="right-container">
-        <PageHeader
-            title="出货明细"
-            extra={[
-                <Button>
-                    打印
-                </Button>,
-                <Button >
-                    导出
-                </Button>,
-            ]}
-        />
+        <PageHeader>
+            <div className="left">
+                <span className="title">出库明细</span>
+
+                <RangePicker onChange={selectDate}  />
+            </div>
+            <div className="head-bth">
+                <Button>打印</Button>
+                <Button>导出</Button>
+            </div>
+        </PageHeader>
         <div className="inventory-container">
             <div className="search-content">
                 <Form form={form} onFinish={onFinish}>
@@ -199,31 +196,49 @@ function OutStock() {
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item
+                        {/* <Form.Item
                             name="date"
                             label="日期"
                             className="col11 col2"
                         >
                             <RangePicker onChange={selectDate} />
-                        </Form.Item>
+                        </Form.Item> */}
                         <Form.Item
                             name="yarnName"
-                            label="纱别"
+                            label="坯布编码"
                             className="col11 col2"
                         >
                             <Input />
+                        </Form.Item>
+                        <Form.Item
+                            name="yarnName"
+                            label="类型"
+                            className="col11 col2"
+                        >
+                            <Select onChange={selectcustomer} style={{ minWidth: "175px" }} >
+                                <Option value="0" >入库</Option>
+                                <Option value="1" >出库</Option>
+                            </Select>
                         </Form.Item>
                     </Row>
                     <Row gutter={24}>
                         <Form.Item
                             name="yarnBrandBatch"
-                            label="纱牌/纱批"
+                            label="布类"
+                        >
+                            <Input />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="customerBillCode"
+                            label="用料信息"
+                            className="col2"
                         >
                             <Input />
                         </Form.Item>
                         <Form.Item
                             name="customerBillCode"
-                            label="客户单号"
+                            label="机号"
                             className="col2"
                         >
                             <Input />

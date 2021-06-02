@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Table, Input, Select } from "antd";
+import { Table, Input, Select, Tag } from "antd";
 import { onlyFormat, stockType, stockOutType } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
 import "../style.css"
@@ -60,7 +60,7 @@ function Detail(props) {
 
     return <div className="right">
         <div className="detail-title">
-            创建：2021-05-24
+            <Tag>反审核</Tag>
         </div>
         <div className="detail-basicData">
             <div className="row">

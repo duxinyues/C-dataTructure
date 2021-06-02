@@ -1,6 +1,6 @@
 import { useEffect, useState, } from "react"
 import { Table, Input, Select, DatePicker } from "antd";
-import { stockType, requestUrl } from "../../../utils/config";
+import { requestUrl } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
 import 'moment/locale/zh-cn';
 import moment from "moment"
@@ -16,7 +16,6 @@ function CreateEnterStockOrder(props) {
     const [billType, setbillType] = useState(0);
     const [remark, setremark] = useState("")
     const [yarn_stock_detail, setyarn_stock_detail] = useState({});
-    const [stockTypeIndex, setstockTypeIndex] = useState(0);
     const [customer, setcustomer] = useState([])
     useEffect(() => {
         getCustomer()
@@ -28,17 +27,7 @@ function CreateEnterStockOrder(props) {
             setremark(props.data.remark);
         }
     }, []);
-    //选择订单类型
-    const selectStockType = (value) => {
-        setstockTypeIndex(value);
-        setbillType(value);
-        props.save({
-            customerId: customerId,
-            bizDate: bizDate,
-            billType: value,
-            remark: remark,
-        })
-    }
+
     // 选择客户
     const selectcustomer = (value) => {
         setcustomerId(value)
@@ -156,19 +145,15 @@ function CreateEnterStockOrder(props) {
                         </Select>
                     </div>
                     <div className="col">
-                        <div className="label12">入库日期</div>
-                        <DatePicker onChange={selectDate} locale={locale} defaultValue={moment(today)}
-                            showToday />
+                        <div className="label">收货方</div>
+                        <Input />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col">
-                        <div className="label11">单据类型</div>
-                        <Select onChange={selectStockType} value={stockType[stockTypeIndex]}>
-                            {
-                                stockType.map((item, key) => (<Option value={key} key={key}>{item}</Option>))
-                            }
-                        </Select>
+                        <div className="label12">出货时间</div>
+                        <DatePicker onChange={selectDate} locale={locale} defaultValue={moment(today)}
+                            showToday />
                     </div>
                 </div>
                 <div className="row">

@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react"
-import { Table, PageHeader, Button, Tag } from "antd";
-import { onlyFormat, requestUrl } from "../../../utils/config";
+import { Table, PageHeader, Button, Modal } from "antd";
+import { onlyFormat, requestUrl, getNowFormatDate } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import "../style.css"
 
-document.title = "收纱入库"
+document.title = "收纱入库";
+const { confirm } = Modal;
 function EnterStorage(props) {
     const [leftData, setleftData] = useState([]);
     const [leftTotal, setleftTotal] = useState(0);
@@ -14,11 +15,12 @@ function EnterStorage(props) {
     const [selectId, setSelectId] = useState(0);
     const [detailType, setdetailType] = useState("detail"); // 用户操作类型
     const [orderData, setorderData] = useState(); // 编辑入库单的字段
-    const [loading, setloading] = useState(true)
+    const [loading, setloading] = useState(true);
+    const [size, setSize] = useState(10);
+    const [current, setcurrent] = useState(1);
     const data = {
         page: 1,
         size: 10,
-        companyId: 1
     }
     useEffect(() => {
         getData(data)
@@ -36,11 +38,14 @@ function EnterStorage(props) {
         })
             .then(res => { return res.json() })
             .then((res) => {
-                console.log(res)
+                console.log("收纱入库==", res)
                 if (res.code == 200) {
-                    setloading(false)
+                    setloading(false);
+
                     setleftData(res.data.records);
                     setleftTotal(res.data.total);
+                    setSize(res.data.size);
+                    setcurrent(res.data.current);
                     setSelectId(res.data.records[0].id)
                     getYarnStockDetail(res.data.records[0].id)
                 }
@@ -101,16 +106,12 @@ function EnterStorage(props) {
             }
         ]
         setloading(true)
-        if (detailType == "add") {
-            console.log("新增入库单")
-            console.log("获取子组件的参数==", orderData)
-        }
+        if (detailType == "add") { }
         if (detailType == "edit") {
-            console.log("编辑入库单")
-            console.log("获取子组件的参数==", orderData)
-            console.log("选中数据==", yarn_stock_detail)
             orderData.id = yarn_stock_detail.id;
         }
+
+        if (orderData.bizDate == "") orderData.bizDate = getNowFormatDate();
         console.log("新增或者编辑的表单字段==", orderData)
         fetch(requestUrl + "/api-stock/yarnStockIo/inSaveOrModify", {
             method: "POST",
@@ -131,8 +132,33 @@ function EnterStorage(props) {
     }
     //  获取子组件参数
     const save = (value) => {
-        console.log("这是子组件传递的参数==", value)
         setorderData(value)
+    }
+    // 删除
+    const delect = () => {
+        confirm({
+            content: '确定要删除该条数据',
+            onOk() {
+                console.log('OK');
+                delectRequest(yarn_stock_detail.id)
+            },
+            onCancel() { },
+        });
+    }
+    const delectRequest = (id) => {
+        fetch(requestUrl + "/api-stock/yarnStockIo/removeInById?id=" + id, {
+            method: "POST",
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token"),
+            },
+        })
+            .then(res => { return res.json() })
+            .then(res => {
+                // 删除成功，刷新列表
+                if (res.code == 200) {
+                    getData(data)
+                }
+            })
     }
     const columns = [
         {
@@ -160,6 +186,16 @@ function EnterStorage(props) {
     ];
     const pagination = {
         total: leftTotal,
+        pageSize: size,
+        current: current,
+        onChange: (page, pageSize) => {
+            getData({
+                page: page,
+                size: pageSize,
+            })
+        },
+        showSizeChanger: false,
+        showTotal: () => (`共${leftTotal}条`)
     }
     return <div className="right-container">
         {detailType == "detail" && <PageHeader
@@ -171,7 +207,7 @@ function EnterStorage(props) {
                 <Button onClick={edit}>
                     编辑
                 </Button>,
-                <Button >
+                <Button onClick={delect}>
                     删除
                 </Button>,
                 <Button >

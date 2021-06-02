@@ -8,7 +8,8 @@ import locale from 'antd/es/date-picker/locale/zh_CN';
 import "../style.css"
 const { TextArea } = Input;
 const { Option } = Select;
-document.title = "新增入库单"
+document.title = "新增入库单";
+const today = moment();
 function CreateEnterStockOrder(props) {
     console.log(props)
     const [customerId, setcustomerId] = useState("");
@@ -17,7 +18,8 @@ function CreateEnterStockOrder(props) {
     const [remark, setremark] = useState("")
     const [yarn_stock_detail, setyarn_stock_detail] = useState({});
     const [stockTypeIndex, setstockTypeIndex] = useState(0);
-    const [customer, setcustomer] = useState([])
+    const [customer, setcustomer] = useState([]);
+    
     useEffect(() => {
         getCustomer()
         if (props.data) {
@@ -136,7 +138,7 @@ function CreateEnterStockOrder(props) {
                 }
             })
     }
-    const today = moment();
+    
     return <div className="right">
         <div className="add-content">
             <div className="detail-title">
@@ -174,7 +176,7 @@ function CreateEnterStockOrder(props) {
                 <div className="row">
                     <div className="col">
                         <div className="label1">备注</div>
-                        <TextArea autoSize={{ minRows: 2, maxRows: 6 }} value={yarn_stock_detail.remark} onChange={saveremark} />
+                        <TextArea autoSize={{ minRows: 2, maxRows: 6 }}  defaultValue={yarn_stock_detail.remark} onChange={saveremark} />
                     </div>
                 </div>
             </div>
