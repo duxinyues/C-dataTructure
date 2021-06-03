@@ -11,6 +11,7 @@ import Footer from "../../components/Footer/index"
 import img from "../../utils/imgManger"
 const { TabPane } = Tabs;
 const NormalLoginForm = (props) => {
+  console.log(props)
   const onFinish = (params) => {
     fetch(requestUrl + `/api-uaa/oauth/token?username=${params.username}&password=${params.password}&grant_type=password&scope=app&client_id=webApp&client_secret=webApp`, {
       method: 'POST',

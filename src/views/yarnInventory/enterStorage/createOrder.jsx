@@ -185,6 +185,7 @@ function CreateEnterStockOrder(props) {
                     columns={enter_yarn_colums}
                     dataSource={yarn_stock_detail.inDtls}
                     pagination={false}
+                    rowKey={(record, index) => record.id}
                     summary={pageData => {
                         if (pageData.length == 0) return;
                         let pcsTotal = 0;

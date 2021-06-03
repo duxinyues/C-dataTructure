@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
-import { Table, PageHeader, Button, Modal, Form, Input, Row, Select, Radio } from "antd";
-import { onlyFormat, requestUrl } from "../../../utils/config";
+import { Table, PageHeader, Button, Modal, Form, Input, Row, Select, Tag } from "antd";
+import { onlyFormat, requestUrl, getNowFormatDate } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
@@ -24,18 +24,22 @@ function InStock(props) {
     const [size, setsize] = useState(10);
     const [yarn_stock_detail, setyarn_stock_detail] = useState({});
     const [selectId, setSelectId] = useState(0);
-    const [detailType, setdetailType] = useState("detail"); // 用户操作类型
-    const [orderData, setorderData] = useState(); // 编辑入库单的字段
+    const [detailType, setdetailType] = useState("detail");
+    const [orderData, setorderData] = useState({});
     const [loading, setloading] = useState(true);
     const [visible, setvisible] = useState(false);
-    const [customer, setcustomer] = useState([]);
+    const [customer, setcustomer] = useState([{}]);
     const [form] = Form.useForm();
-    const [inventoryData, setinventoryData] = useState([]);
+    const [inventoryData, setinventoryData] = useState([]); // 弹窗库存
     const [modalCurrent, setmodalCurrent] = useState(1);
     const [modalTotal, setmodalTotal] = useState(10);
     const [modalsize, setmodalsize] = useState(10);
     const [barCodeData, setbarCodeData] = useState([]);
     const [selected, setselected] = useState([]);
+    const [fabricStockIoDtls, setfabricStockIoDtls] = useState([]);
+    const [barSum, setbarSum] = useState(0);
+    const [weightSum, setweightSum] = useState(0);
+    const [barcodeIds, setbarcodeIds] = useState();
     const data = {
         page: 1,
         size: 10,
@@ -92,7 +96,8 @@ function InStock(props) {
     // 新增
     const add = () => {
         setvisible(true);
-        getInventory({ page: 1, size: 10 })
+        getInventory({ page: 1, size: 10, customerId: customer[0].id });
+        setdetailType("add")
     }
     const edit = () => {
         setdetailType("edit")
@@ -104,11 +109,27 @@ function InStock(props) {
     const onSave = () => {
         if (!orderData) return;
         // 添加入库单
-        orderData.fabricStockIoDtls = []
-        setloading(true)
-        orderData.id = yarn_stock_detail.id;
+        // setloading(true)
+        console.log("选中条码是==", barcodeIds);
+        console.log("选中的重量是==", weightSum)
+        orderData.bizDate = orderData.bizDate ? orderData.bizDate : getNowFormatDate();
+        console.log("选中的信息==", yarn_stock_detail);
+        console.log("这是子组件传递的参数==", orderData);
+        if (detailType == "edit") { orderData.id = yarn_stock_detail.id; }
+        if (detailType == "add") {
+            orderData.code = yarn_stock_detail.knitOrderCode;
+            orderData.customerId = yarn_stock_detail.customerId;
+            orderData.flag = 0;
+            orderData.fabricStockIoDtls = [
+                {
+                    "barcodeIds": barcodeIds,
+                    "knitOrderId": yarn_stock_detail.knitOrderId,
+                    "volQty": yarn_stock_detail.volQty,
+                    "weight": weightSum
+                }
+            ]
+        }
         console.log("新增或者编辑的表单字段==", orderData)
-        return;
         fetch(requestUrl + "/api-stock/fabricStockIo/saveOrModify", {
             method: "POST",
             headers: {
@@ -125,10 +146,11 @@ function InStock(props) {
                     setdetailType("detail");
                 }
             })
+        setinventoryData();
+        setbarCodeData();
     }
     //  获取子组件参数
     const save = (value) => {
-        console.log("这是子组件传递的参数==", value)
         setorderData(value)
     }
     const selectcustomer = () => {
@@ -162,16 +184,26 @@ function InStock(props) {
     }
 
     const handleOk = () => {
-
+        setvisible(false);
+        setdetailType("add");
+        setinventoryData();
+        setbarCodeData();
     }
     // 弹窗表单
     const onFinish = (value) => {
         console.log(value)
+        if (value.customerId == undefined) { value.customerId = customer[0].id }
         getInventory({ ...value, page: 1, size: 10 })
     }
     // 关闭弹窗
     const closeModal = () => {
-        setvisible(false)
+        setvisible(false);
+        // setdetailType("detail");
+        setweightSum();
+        setbarSum();
+        setbarcodeIds();
+        setinventoryData();
+        setbarCodeData();
     }
     // 获取客户列表
     const getCustomer = () => {
@@ -201,17 +233,18 @@ function InStock(props) {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
                 if (res.code == 200) {
                     setmodalCurrent(res.data.current);
                     setinventoryData(res.data.records);
                     setmodalTotal(res.data.total);
                     setmodalsize(res.data.size);
+                    setbarCodeData([])
                 }
             })
     }
     // 条码
     const getBarCode = (param) => {
+        setselected([])
         fetch(requestUrl + "/api-stock/fabricStockIo/findBarcodeByLoomId?orderId=" + param.orderId + "&loomId=" + param.loomId, {
             method: "POST",
             headers: {
@@ -279,19 +312,42 @@ function InStock(props) {
     }
     const selectRow = (record) => {
         const _selected = [...selected];
+        const _fabricStockIoDtls = [...fabricStockIoDtls];
         if (_selected.indexOf(record.id) >= 0) {
             _selected.splice(_selected.indexOf(record.id), 1);
+            _fabricStockIoDtls.splice(_fabricStockIoDtls.indexOf(record), 1)
         } else {
             _selected.push(record.id);
+            _fabricStockIoDtls.push(record)
         }
-        setselected(_selected)
+
+        console.log(_fabricStockIoDtls)
+        let totalWeight = _fabricStockIoDtls.reduce((pre, cur) => {
+            return pre + cur.weight
+        }, 0)
+        console.log("总重量为==", totalWeight);
+        console.log(_selected)
+        setweightSum(totalWeight)
+        setbarcodeIds(_selected.join(","))
+        setselected(_selected);
+        setfabricStockIoDtls(_fabricStockIoDtls);
+        setbarSum(_fabricStockIoDtls.length);
     }
     const rowSelection = {
         selectedRowKeys: selected,
         onChange: (_selectedRowKeys, _selectedRows) => {
-            console.log(_selectedRowKeys);
-            console.log(_selectedRows);
-            setselected(_selectedRowKeys)
+            
+            const ids = _selectedRows.map((item) => {
+                return item.id;
+            })
+            let totalWeight = _selectedRows.reduce((pre, cur) => {
+                return pre + cur.weight
+            }, 0)
+            setweightSum(totalWeight);
+            setbarcodeIds(ids.join(","));
+            setselected(_selectedRowKeys);
+            setfabricStockIoDtls(_selectedRows);
+            setbarSum(_selectedRows.length);
         },
     };
     return <div className="right-container">
@@ -332,6 +388,7 @@ function InStock(props) {
                     columns={columns}
                     dataSource={leftData}
                     pagination={pagination}
+                    rowKey={(record, index) => record.id}
                     onRow={record => {
                         return {
                             onClick: () => {
@@ -342,8 +399,7 @@ function InStock(props) {
                 />
             </div>
             {detailType == "detail" && <OrderDetail data={yarn_stock_detail} />}
-            {detailType == "add" && <CreateOrder save={save} />}
-            {detailType == "edit" && <CreateOrder data={yarn_stock_detail} save={save} />}
+            {(detailType == "add" || detailType == "edit") && <CreateOrder save={save} data={yarn_stock_detail} />}
         </div>
 
         <Modal
@@ -352,12 +408,19 @@ function InStock(props) {
             title="选择条码"
             visible={visible}
             footer={[
-                <Button key="submit" type="primary" onClick={handleOk} >
-                    添加
-                </Button>,
-                <Button onClick={closeModal}>
-                    取消
-                </Button>
+                <div className="sum-title">
+                    {
+                        barSum > 0 && <p><span>已选{barSum}条</span> <span>共{weightSum}kg</span> <Tag color="green">清空</Tag></p>
+                    }
+                </div>,
+                <div className="right">
+                    <Button key="submit" type="primary" onClick={handleOk} >
+                        添加
+                    </Button>
+                    <Button onClick={closeModal}>
+                        取消
+                    </Button>
+                </div>,
             ]}
             onCancel={closeModal}
             width={1500}
@@ -367,6 +430,9 @@ function InStock(props) {
                 layout="horizontal"
                 onFinish={onFinish}
                 preserve={false}
+                initialValues={{
+                    customerId: customer[0].name
+                }}
             >
                 <Row gutter={24}>
                     <Form.Item
@@ -381,7 +447,7 @@ function InStock(props) {
                         label="客户"
                         style={{ marginLeft: "10px" }}
                     >
-                        <Select onChange={selectcustomer} style={{ width: "100px" }}>
+                        <Select onChange={selectcustomer} style={{ width: "100px" }} >
                             {
                                 customer.map((item, key) => (<Option value={item.id} key={key}>{item.name}</Option>))
                             }
@@ -440,12 +506,13 @@ function InStock(props) {
                         onRow={record => {
                             return {
                                 onClick: () => {
-                                    console.log("选中的数据==", record)
+                                    console.log("选中的数据==", record);
+                                    setyarn_stock_detail(record)
                                     getBarCode({ orderId: record.knitOrderId, loomId: record.loomId })
                                 },
                             };
                         }}
-                        rowKey={(record,index)=>record.id}F
+                        rowKey={(record, index) => record.id} F
                     />
                 </div>
                 <div className="right">
@@ -465,7 +532,7 @@ function InStock(props) {
                                 selectRow(record);
                             },
                         })}
-                        rowKey={(record,index)=>record.id}
+                        rowKey={(record, index) => record.id}
                     />
                 </div>
             </div>

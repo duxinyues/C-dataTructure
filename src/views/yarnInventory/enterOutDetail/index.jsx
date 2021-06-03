@@ -257,6 +257,7 @@ function EnterOutDetail() {
             loading={loading}
             dataSource={yarnStockIo}
             pagination={pagination}
+            rowKey={(record, index) => record.id}
         />
     </div>
 }

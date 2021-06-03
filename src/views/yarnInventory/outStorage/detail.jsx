@@ -99,6 +99,7 @@ function Detail(props) {
                 columns={enter_yarn_colums}
                 dataSource={props.data.outDtls}
                 pagination={false}
+                rowKey={(record, index) => record.id}
             />
         </div>
     </div>

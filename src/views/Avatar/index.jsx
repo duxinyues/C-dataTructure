@@ -9,7 +9,7 @@ const { Search } = Input
 function Avatars(props) {
   const [headImgUrl, setheadImgUrl] = useState(props.user.headImgUrl)
   const _logout = () => {
-    fakeAuth.signout();
+    // fakeAuth.signout();
     props.history.push('/login');
   }
   const onSearch = (value) => {

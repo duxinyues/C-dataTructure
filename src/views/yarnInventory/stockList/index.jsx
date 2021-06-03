@@ -201,6 +201,7 @@ function StockList() {
             columns={columns}
             loading={loading}
             dataSource={yarnStockIo}
+            rowKey={(record, index) => record.id}
         />
     </div>
 }

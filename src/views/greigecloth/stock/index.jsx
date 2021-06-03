@@ -1,47 +1,41 @@
 import { useEffect, useState } from "react";
-import { PageHeader, Form, Row, DatePicker, Input, Button, Select, Table } from "antd";
+import { PageHeader, Form, Row, Input, Button, Select, Table } from "antd";
 import { requestUrl } from "../../../utils/config"
-const { RangePicker } = DatePicker;
 const { Option } = Select;
 function Stock() {
     document.title = "库存"
     const [form] = Form.useForm();
-    const [date, setDate] = useState();
     const [customer, setcustomer] = useState([]);
     const [loading, setloading] = useState(true);
     const [yarnStockIo, setyarnStockIo] = useState([]);
     const [total, settotal] = useState(0);
     const [size, setsize] = useState(10);
     const [current, setcurrent] = useState(1)
-    // const yarnStockIo =[]
     useEffect(() => {
         getCustomer();
         getData({ page: 1, size: 10 })
     }, [])
     const onFinish = (value) => {
-        console.log(value)
         const param = {
-            "beginTime": date ? date[0] : "",
-            "billType": value.billType,
-            "code": value.code,
-            "customerBillCode": value.customerBillCode,
-            "customerId": value.customerId, // 客户ID
-            "endTime": date ? date[1] : "",
-            "page": 1,
-            "size": 10,
-            "yarnBrandBatch": value.yarnBrandBatch,
-            "yarnName": value.yarnName
+            page: 1,
+            size: 10,
+            customerBillCode: value.customerBillCode ? value.customerBillCode : "",
+            customerId: value.customerId ? value.customerId : "",
+            fabricType: value.fabricType ? value.fabricType : "",
+            greyFabricCode: value.greyFabricCode ? value.greyFabricCode : "",
+            knitOrderCode: value.knitOrderCode ? value.knitOrderCode : "",
+            loomId: value.loomId ? value.loomId : "",
+            needles: value.needles ? value.needles : "",
+            yarnInfo: value.yarnInfo ? value.yarnInfo : "",
         }
 
         console.log("查询表单字段", param)
         getData(param)
     }
-    const selectDate = (date, dateString) => {
-        setDate(dateString)
-    }
-    //获取出入明细列表
+
+    //获取坯布库存
     const getData = (param) => {
-        fetch(requestUrl + "/api-stock/yarnStockIo/findAll", {
+        fetch(requestUrl + "/api-stock/fabricStock/findAll", {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token"),
@@ -51,19 +45,19 @@ function Stock() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
+                console.log("坯布库存", res)
                 if (res.code == 200) {
                     setloading(false);
-                    setyarnStockIo(res.data.records);
-                    settotal(res.data.total);
-                    setsize(res.data.size);
-                    setcurrent(res.data.current)
+                    setyarnStockIo(res.data.page.records);
+                    settotal(res.data.page.total);
+                    setsize(res.data.page.size);
+                    setcurrent(res.data.page.current)
                 }
             })
     }
     // 获取客户列表
     const getCustomer = () => {
-        fetch(requestUrl + "/api-stock/stockCommon/findCustomerDown?companyId=1", {
+        fetch(requestUrl + "/api-stock/stockCommon/findCustomerDown", {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token")
@@ -71,15 +65,11 @@ function Stock() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
+                console.log("客户==", res)
                 if (res.code == 200) {
                     setcustomer(res.data)
                 }
             })
-    }
-    // 选择客户
-    const selectcustomer = (value) => {
-        console.log(value)
     }
     const pagination = {
         total: total,
@@ -99,76 +89,47 @@ function Stock() {
             dataIndex: 'id',
             key: 'id',
         }, {
-            title: "出入库单号",
-            dataIndex: 'code',
-            key: 'code',
-        }, {
-            title: "类型",
-            dataIndex: 'billType',
-            key: 'billType',
-
-        }, {
-            title: "日期",
-            dataIndex: 'bizDate',
-            key: 'bizDate',
-        }, {
-            title: "客户",
-            dataIndex: 'customerName',
-            key: 'customerName',
-        }, {
-            title: "纱别",
-            dataIndex: 'yarnName',
-            key: 'yarnName',
-        }, {
-            title: "纱牌/纱批",
-            dataIndex: 'yarnBrandBatch',
-            key: 'yarnBrandBatch',
-        }, {
-            title: "色号",
-            dataIndex: 'colorCode',
-            key: 'colorCode',
-
-        }, {
-            title: "缸号",
-            dataIndex: '',
-            key: '',
-        }, {
-            title: "件数",
-            dataIndex: 'pcs',
-            key: 'pcs',
-        }, {
-            title: "规格",
-            dataIndex: 'spec',
-            key: 'spec',
-        }, {
-            title: "欠重",
-            dataIndex: 'lackWeight',
-            key: 'lackWeight',
-        }, {
-            title: "总欠重"
-        }, {
-            title: "毛重"
-        }, {
-            title: "净重",
-            dataIndex: 'netWeight',
-            key: 'netWeight',
+            title: "生产单号",
+            dataIndex: 'knitOrderCode',
         }, {
             title: "客户单号",
             dataIndex: 'customerBillCode',
-            key: 'customerBillCode',
+
         }, {
-            title: "备注",
-            dataIndex: 'remark',
-            key: 'remark',
+            title: "客户",
+            dataIndex: 'customerName',
         }, {
-            title: "状态",
-            dataIndex: 'billStatus',
-            key: 'billStatus',
-        },
+            title: "坯布编码",
+            dataIndex: 'greyFabricCode',
+        }, {
+            title: "布类",
+            dataIndex: 'fabricType',
+        }, {
+            title: "用料信息",
+            dataIndex: 'yarnInfo',
+        }, {
+            title: "机号",
+            dataIndex: 'loomCode',
+
+        }, {
+            title: "客户颜色",
+            dataIndex: 'customerCode',
+        }, {
+            title: "卷数",
+            dataIndex: 'volQty',
+        }, {
+            title: "重量",
+            dataIndex: 'weight',
+        }, {
+            title: "针寸",
+            dataIndex: 'inches',
+        }, {
+            title: "规格"
+        }
     ]
     return <div className="right-container">
         <PageHeader
-            title="库存"
+            title="坯布库存"
             extra={[
                 <Button>
                     打印
@@ -183,8 +144,15 @@ function Stock() {
                 <Form form={form} onFinish={onFinish}>
                     <Row gutter={24}>
                         <Form.Item
-                            name="code"
-                            label="出入库单号"
+                            name="knitOrderCode"
+                            label="生产单号"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            name="customerBillCode"
+                            label="合同号"
+                            className="col2"
                         >
                             <Input />
                         </Form.Item>
@@ -193,37 +161,45 @@ function Stock() {
                             label="客户"
                             className="col2"
                         >
-                            <Select onChange={selectcustomer} style={{ minWidth: "175px" }} >
+                            <Select style={{ width: "175px" }}>
                                 {
                                     customer.map((item, key) => (<Option value={item.id} key={key}>{item.name}</Option>))
                                 }
                             </Select>
                         </Form.Item>
+                    </Row>
+                    <Row gutter={24}>
                         <Form.Item
-                            name="date"
-                            label="日期"
-                            className="col11 col2"
+                            name="greyFabricCode"
+                            label="坯布编码"
                         >
-                            <RangePicker onChange={selectDate} />
+                            <Input />
                         </Form.Item>
                         <Form.Item
-                            name="yarnName"
-                            label="纱别"
-                            className="col11 col2"
+                            name="fabricType"
+                            label="布类"
+                            className="col2"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            name="needles"
+                            label="针数"
+                            className="col2"
                         >
                             <Input />
                         </Form.Item>
                     </Row>
                     <Row gutter={24}>
                         <Form.Item
-                            name="yarnBrandBatch"
-                            label="纱牌/纱批"
+                            name="yarnInfo"
+                            label="用料信息"
                         >
                             <Input />
                         </Form.Item>
                         <Form.Item
-                            name="customerBillCode"
-                            label="客户单号"
+                            name="loomId"
+                            label="机号"
                             className="col2"
                         >
                             <Input />
@@ -237,7 +213,6 @@ function Stock() {
                                 onClick={() => {
                                     form.resetFields();
                                     getData({ page: 1, size: 10 });
-                                    setDate([]);
                                 }}
                             >
                                 清空
@@ -253,6 +228,7 @@ function Stock() {
             loading={loading}
             dataSource={yarnStockIo}
             pagination={pagination}
+            rowKey={(record, index) => record.id}
         />
     </div>
 }

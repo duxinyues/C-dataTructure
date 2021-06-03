@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import ReactToPrint from "react-to-print";
 import { PageHeader, Form, Row, DatePicker, Input, Button, Select, Table } from "antd";
-import { requestUrl } from "../../../utils/config"
+import { requestUrl, onlyFormat, getMonthFE } from "../../../utils/config"
+import moment from 'moment';
 import "./index.css"
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 function OutStock() {
     document.title = "出货明细"
     const [form] = Form.useForm();
-    const [date, setDate] = useState();
+    const [date, setDate] = useState([getMonthFE(1), getMonthFE(2)]);
     const [customer, setcustomer] = useState([]);
     const [loading, setloading] = useState(true);
     const [yarnStockIo, setyarnStockIo] = useState([]);
@@ -16,21 +18,22 @@ function OutStock() {
     const [current, setcurrent] = useState(1)
     useEffect(() => {
         getCustomer();
-        getData({ page: 1, size: 10 })
+        getData({ page: 1, size: 10, beginTime: date[0], endTime: date[1] })
     }, [])
     const onFinish = (value) => {
         console.log(value)
         const param = {
-            "beginTime": date ? date[0] : "",
-            "billType": value.billType,
-            "code": value.code,
-            "customerBillCode": value.customerBillCode,
-            "customerId": value.customerId, // 客户ID
-            "endTime": date ? date[1] : "",
-            "page": 1,
-            "size": 10,
-            "yarnBrandBatch": value.yarnBrandBatch,
-            "yarnName": value.yarnName
+            page: 1,
+            size: 10,
+            beginTime: date[0],
+            endTime: date[1],
+            code: value.code ? value.code : "",
+            customerId: value.customerId ? value.customerId : "",
+            fabricType: value.fabricType ? value.fabricType : "",
+            flag: value.flag ? value.flag : "",
+            greyFabricCode: value.greyFabricCode ? value.greyFabricCode : "",
+            loomId: value.loomId ? value.loomId : "",
+            yarnName: value.yarnName ? value.yarnName : "",
         }
 
         console.log("查询表单字段", param)
@@ -115,6 +118,7 @@ function OutStock() {
             title: "日期",
             dataIndex: 'bizDate',
             key: 'bizDate',
+            render: (time) => (<span>{onlyFormat(time, true)}</span>)
         }, {
             title: "状态",
             dataIndex: 'billStatus',
@@ -159,19 +163,23 @@ function OutStock() {
             key: 'customerBillCode',
         }, {
             title: "创建人",
-            dataIndex: 'remark',
-            key: 'remark',
+            dataIndex: 'creatorName',
+            key: 'creatorName',
         }
     ]
+    const componentRef = useRef();
     return <div className="right-container">
         <PageHeader>
             <div className="left">
                 <span className="title">出库明细</span>
-
-                <RangePicker onChange={selectDate}  />
+                <RangePicker onChange={selectDate} defaultValue={[moment(getMonthFE(1), "YYYY-MM-DD"), moment(getMonthFE(2), "YYYY-MM-DD")]} />
             </div>
             <div className="head-bth">
-                <Button>打印</Button>
+                <ReactToPrint
+                    trigger={() => <Button>打印</Button>}
+                    content={() => componentRef.current}
+                />
+
                 <Button>导出</Button>
             </div>
         </PageHeader>
@@ -181,7 +189,7 @@ function OutStock() {
                     <Row gutter={24}>
                         <Form.Item
                             name="code"
-                            label="出入库单号"
+                            label="单号"
                         >
                             <Input />
                         </Form.Item>
@@ -196,22 +204,16 @@ function OutStock() {
                                 }
                             </Select>
                         </Form.Item>
-                        {/* <Form.Item
-                            name="date"
-                            label="日期"
-                            className="col11 col2"
-                        >
-                            <RangePicker onChange={selectDate} />
-                        </Form.Item> */}
+
                         <Form.Item
-                            name="yarnName"
+                            name="greyFabricCode"
                             label="坯布编码"
                             className="col11 col2"
                         >
                             <Input />
                         </Form.Item>
                         <Form.Item
-                            name="yarnName"
+                            name="flag"
                             label="类型"
                             className="col11 col2"
                         >
@@ -223,21 +225,21 @@ function OutStock() {
                     </Row>
                     <Row gutter={24}>
                         <Form.Item
-                            name="yarnBrandBatch"
+                            name="fabricType"
                             label="布类"
                         >
                             <Input />
                         </Form.Item>
 
                         <Form.Item
-                            name="customerBillCode"
+                            name="yarnName"
                             label="用料信息"
                             className="col2"
                         >
                             <Input />
                         </Form.Item>
                         <Form.Item
-                            name="customerBillCode"
+                            name="loomId"
                             label="机号"
                             className="col2"
                         >

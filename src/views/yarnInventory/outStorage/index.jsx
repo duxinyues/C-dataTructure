@@ -195,6 +195,7 @@ function OutStorage(props) {
                     columns={columns}
                     dataSource={leftData}
                     pagination={pagination}
+                    rowKey={(record, index) => record.id}
                     onRow={record => {
                         return {
                             onClick: () => {
