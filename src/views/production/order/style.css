@@ -1,0 +1,71 @@
+.header-form {
+    padding-top: 10px !important;
+}
+
+
+.custom .ant-page-header-heading-extra {
+    display: flex;
+}
+
+.drop {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+    border: 1px solid #d9d9d9;
+}
+
+.basic-data {
+    width: 600px;
+    margin-left: 5px;
+}
+
+.detail-content {
+    max-height: 79vh;
+    overflow-y: scroll;
+    border: 1px solid red;
+
+}
+
+.clothing-data {
+    display: flex;
+}
+
+.clothing-right {
+    border: 1px solid red !important;
+    width: 85%;
+}
+
+.clothing-right table {
+    border-left: 1px solid green;
+}
+
+.c-row {
+    margin-bottom: 10px;
+}
+
+.c-col {
+    display: flex !important;
+    align-items: center;
+}
+
+.c-col.ant-col-16 .c-input {
+    width: 300px;
+}
+
+.c-col.ant-col-24 .c-input {
+    width: 500px;
+}
+
+.c-col .c-label {
+    margin-right: 5px;
+    width: 65px !important;
+    font-size: 12px;
+}
+
+.c-col .c-input {
+    width: 100px;
+}
+
+.c-right {
+    text-align: right;
+}

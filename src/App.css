@@ -1,4 +1,5 @@
 @import "~antd/dist/antd.css";
+
 .right-container {
     background: #fff;
     min-height: 80vh;
@@ -9,7 +10,7 @@
 } */
 
 .clickRowStyl,
-.clickRowStyl:hover > td {
+.clickRowStyl:hover>td {
     background-color: #e6f7ff !important;
 }
 
@@ -17,6 +18,26 @@
     margin-right: 26px;
     color: #1890ff;
 }
+
 .ant-table {
     color: rgba(0, 0, 0, 0.65);
+}
+
+.inventory-container {
+    display: flex;
+    border-top: 1px solid #f0f2f5;
+    height: 100%;
+}
+
+.inventory-container .left {
+    width: 30vw;
+    border: 1px solid #f0f2f5;
+}
+
+.inventory-container .right {
+    width: 70vw;
+}
+
+.detail-title {
+    border-bottom: 1px solid #f0f2f5;
 }

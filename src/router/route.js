@@ -13,6 +13,10 @@ import InStock from "../views/greigecloth/shipment"
 import OutStock from "../views/greigecloth/outStock"
 import Stock from "../views/greigecloth/stock"
 import InSTockTable from "../views/greigecloth/shipment/inStockTable"
+import Order from "../views/production/order"
+import CheckClothDetail from "../views/production/checkClothDetail"
+import CheckClothWage from "../views/production/checkClothWage"
+import ProductionSchedule from "../views/production/productionSchedule"
 import NoFind from "../views/noFind"
 export const routes = [
     {
@@ -38,9 +42,25 @@ export const routes = [
         component: Supplier
     },
     {
+        path: "/dashboard15",
+        component: Order
+    }, // 订单管理
+    {
+        path: "/dashboard16",
+        component: ProductionSchedule
+    }, //  生产进度
+    {
+        path: "/dashboard17",
+        component: CheckClothDetail
+    }, // 查布明细
+    {
+        path: "/dashboard18",
+        component: CheckClothWage
+    }, // 查布工资
+    {
         path: "/dashboard19", // 坯布出库
         component: InStock
-    }, 
+    },
     {
         path: "/dashboard20",//  出库明细
         component: OutStock
@@ -48,7 +68,7 @@ export const routes = [
     {
         path: "/dashboard21",//  库存
         component: Stock
-    },{
+    }, {
         path: "/dashboard22",//  坯布入库报表
         component: InSTockTable
     },

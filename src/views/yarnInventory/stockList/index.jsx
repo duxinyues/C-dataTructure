@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { PageHeader, Form, Row, DatePicker, Input, Button, Select, Table } from "antd";
+import { PageHeader, Form, Row, Input, Button, Select, Table } from "antd";
 import { requestUrl } from "../../../utils/config"
-const { RangePicker } = DatePicker;
 const { Option } = Select;
 function StockList() {
     document.title = "库存"

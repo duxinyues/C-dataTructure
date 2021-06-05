@@ -22,7 +22,6 @@ const NormalLoginForm = (props) => {
       console.log("登录", res)
       if (res.code == 200) {
         fakeAuth.setToken(res.data.access_token);
-        // fakeAuth.setToken(res.data.value);
         props.history.push('/home');
         message.success('登陆成功', 1);
         return;

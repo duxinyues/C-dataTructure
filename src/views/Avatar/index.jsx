@@ -7,9 +7,8 @@ import './index.css';
 import img from "../../utils/imgManger"
 const { Search } = Input
 function Avatars(props) {
-  const [headImgUrl, setheadImgUrl] = useState(props.user.headImgUrl)
   const _logout = () => {
-    // fakeAuth.signout();
+    fakeAuth.signout();
     props.history.push('/login');
   }
   const onSearch = (value) => {
@@ -50,7 +49,7 @@ function Avatars(props) {
               backgroundColor: '#fde3cf',
             }}
             size="large"
-            src={props.user.headImgUrl}
+            // src={props.user.headImgUrl}
           >
           </Avatar>
         </Dropdown>

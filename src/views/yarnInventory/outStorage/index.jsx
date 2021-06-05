@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react"
-import { Table, PageHeader, Button, Tag } from "antd";
+import { useState, useEffect } from "react"
+import { Table, PageHeader, Button } from "antd";
 import { onlyFormat, requestUrl, getNowFormatDate } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
 import Detail from "./detail";

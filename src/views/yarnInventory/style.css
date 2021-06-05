@@ -4,20 +4,7 @@ textarea {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
 }
-.inventory-container {
-    display: flex;
-    border-top: 1px solid #f0f2f5;
-    height: 100%;
-}
 
-.inventory-container .left {
-    width: 30vw;
-    border: 1px solid #f0f2f5;
-}
-
-.inventory-container .right {
-    width: 70vw;
-}
 
 .detail-title {
     padding-right: 10px;

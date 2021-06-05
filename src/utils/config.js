@@ -1,8 +1,8 @@
-// export const requestUrl = "http://8.135.107.120:8000";
-export const requestUrl = "http://192.168.2.75:8000";
+export const requestUrl = "http://8.135.107.120:8000";
+// export const requestUrl = "http://192.168.2.75:8000";
 export const onlyFormat = (timeStamp, type) => {
   if (!timeStamp) return;
-  var date = new Date(timeStamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+  var date = new Date(timeStamp);
   var Y = date.getFullYear() + '-';
   var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
   var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
@@ -18,8 +18,8 @@ export const onlyFormat = (timeStamp, type) => {
 export const stockType = ["采购入库", "调拨入库", "退料入库", "加工入库", "其他入库"]
 // 出库单据类型
 export const stockOutType = ["调拨出库", "销售出库", "退纱出库"]
-
-
+export const orderType = ["全部", "进行中", "已完工", "已作废"]
+export const orderSearch = ["单号", "客户", "合同号", "下单日期", "坯布编码", "布类", "类型", "针寸", "总针数", "规格", "备注", "纱支", "批次", "机号", "条码"]
 
 //获取今天日期，格式YYYY-MM-DD
 export function getNowFormatDate() {
