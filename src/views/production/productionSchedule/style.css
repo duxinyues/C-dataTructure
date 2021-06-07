@@ -1,0 +1,31 @@
+.productionSchedule .ant-page-header-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.pageTitle,
+.tabs {
+    display: flex;
+}
+
+.pageTitle {
+    align-items: flex-end;
+}
+
+.pageTitle span {
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.tabs {
+    align-items: center;
+}
+
+.tabs-item {
+    margin-right: 10px;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    cursor: pointer;
+}

@@ -17,13 +17,16 @@
 .basic-data {
     width: 600px;
     margin-left: 5px;
+    padding-top: 10px;
 }
 
 .detail-content {
     max-height: 79vh;
     overflow-y: scroll;
-    border: 1px solid red;
+}
 
+.detail-content em {
+    margin-right: 10px;
 }
 
 .clothing-data {
@@ -31,13 +34,12 @@
 }
 
 .clothing-right {
-    border: 1px solid red !important;
     width: 85%;
+    border-left: 1px solid #d9d9d9;
+    /* margin-left: 10px; */
 }
 
-.clothing-right table {
-    border-left: 1px solid green;
-}
+.clothing-right table {}
 
 .c-row {
     margin-bottom: 10px;
@@ -49,11 +51,11 @@
 }
 
 .c-col.ant-col-16 .c-input {
-    width: 300px;
+    width: 325px;
 }
 
 .c-col.ant-col-24 .c-input {
-    width: 500px;
+    width: 525px;
 }
 
 .c-col .c-label {
@@ -63,9 +65,40 @@
 }
 
 .c-col .c-input {
-    width: 100px;
+    width: 125px;
+}
+
+.c-col .ant-picker,
+.c-col .ant-select {
+    width: 125px !important;
 }
 
 .c-right {
     text-align: right;
+}
+
+.spec input {
+    width: 55px;
+}
+
+.spec input:nth-child(1) {
+    margin-right: 5px;
+}
+
+
+.spec input:nth-child(2) {
+    margin-left: 4px;
+}
+
+.edit-table .ant-card-body,
+.clothing-left .ant-card-body {
+    padding: 0;
+}
+
+.clothing-left .ant-pro-table {
+    width: 380px;
+}
+
+.clothing-left .ant-select {
+    min-width: 84px !important;
 }

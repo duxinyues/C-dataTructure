@@ -1,5 +1,5 @@
-export const requestUrl = "http://8.135.107.120:8000";
-// export const requestUrl = "http://192.168.2.75:8000";
+// export const requestUrl = "http://39.104.13.107:8000";
+export const requestUrl = "http://192.168.2.92:8000";
 export const onlyFormat = (timeStamp, type) => {
   if (!timeStamp) return;
   var date = new Date(timeStamp);
@@ -18,8 +18,27 @@ export const onlyFormat = (timeStamp, type) => {
 export const stockType = ["采购入库", "调拨入库", "退料入库", "加工入库", "其他入库"]
 // 出库单据类型
 export const stockOutType = ["调拨出库", "销售出库", "退纱出库"]
-export const orderType = ["全部", "进行中", "已完工", "已作废"]
-export const orderSearch = ["单号", "客户", "合同号", "下单日期", "坯布编码", "布类", "类型", "针寸", "总针数", "规格", "备注", "纱支", "批次", "机号", "条码"]
+export const orderType = [{ id: 1, title: "进行中" }, { id: 2, title: "未审核" }, { id: 3, title: "已完工" }, { id: 3, title: "已作废" }]
+export const orderSearch = [
+  { key: 1, title: "生产单号", type: "code" },
+  { key: 2, title: "客户", type: "customerName" },
+  { key: 3, title: "合同号", type: "customerBillCode" },
+  { key: 4, title: "下单日期", type: "beginTime" },
+  { key: 5, title: "坯布编码", type: "greyFabricCode" },
+  { key: 6, title: "布类", type: "fabricType" },
+  { key: 7, title: "针数", type: "needles" },
+  { key: 8, title: "寸数", type: "inches" },
+  { key: 8, title: "总针数", type: "totalInches" },
+  { key: 8, title: "规格", type: "techType" },
+  { key: 8, title: "备注", type: "remark" },
+  { key: 8, title: "纱支", type: "yarnName" },
+  { key: 8, title: "批次", type: "yarnBrandBatch" },
+  { key: 8, title: "机号", type: "loomId" },
+  { key: 8, title: "条码", type: "barcode" },
+  { key: 8, title: "类型", type: "type" },
+]
+
+export const newOrderType = [{key:1,name:"开幅"},{key:1,name:"抽针"},{key:1,name:"圆筒"}]
 
 //获取今天日期，格式YYYY-MM-DD
 export function getNowFormatDate() {

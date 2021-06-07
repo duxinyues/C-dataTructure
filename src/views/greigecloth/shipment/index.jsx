@@ -188,6 +188,8 @@ function InStock(props) {
         setdetailType("add");
         setinventoryData();
         setbarCodeData();
+        setbarSum(0);
+        setweightSum(0)
     }
     // 弹窗表单
     const onFinish = (value) => {
@@ -199,8 +201,8 @@ function InStock(props) {
     const closeModal = () => {
         setvisible(false);
         // setdetailType("detail");
-        setweightSum();
-        setbarSum();
+        setweightSum(0);
+        setbarSum(0);
         setbarcodeIds();
         setinventoryData();
         setbarCodeData();
@@ -336,7 +338,7 @@ function InStock(props) {
     const rowSelection = {
         selectedRowKeys: selected,
         onChange: (_selectedRowKeys, _selectedRows) => {
-            
+
             const ids = _selectedRows.map((item) => {
                 return item.id;
             })

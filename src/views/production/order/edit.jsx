@@ -1,5 +1,5 @@
 import React, { useImperativeHandle, forwardRef, useState, useEffect, } from "react"
-import { Col, Row, Input, Table, DatePicker, Select, message } from "antd";
+import { Col, Row, Input, Table, DatePicker, Select, Form, Modal, Button } from "antd";
 import { newOrderType, requestUrl, getNowFormatDate } from "../../../utils/config"
 import { EditableProTable } from '@ant-design/pro-table';
 import 'moment/locale/zh-cn';
@@ -10,14 +10,13 @@ const layout = {
     wrapperCol: { span: 20 },
 };
 
-let CreateOrder = (props, ref) => {
+let Edit = (props, ref) => {
     document.title = "新建订单";
     const today = moment();
     const [customer, setcustomer] = useState([{ id: 1, name: "111" }]);
     const [clothType, setclothType] = useState([]);
     const [materials, setmaterials] = useState(); //用料要求
     const [editableKeys, setEditableRowKeys] = useState();
-    const [editableKeysloom, setEditableRowKeysloom] = useState();
     const [bizDate, setbizDate] = useState(getNowFormatDate())
     const [customerId, setcustomerId] = useState();
     const [fabricType, setfabricType] = useState();
@@ -34,28 +33,15 @@ let CreateOrder = (props, ref) => {
     const [weight, setweight] = useState();
     const [yarnLength, setyarnLength] = useState();
     const [customerColor, setcustomerColor] = useState();
-    const [remark, setremark] = useState();
-    const [loom, setloom] = useState();
-    const [orderLooms, setorderLooms] = useState()
+    const [remark, setremark] = useState()
     useEffect(() => {
         getcustomer();
         getClothType();
-        getLoom();
     }, [])
     useImperativeHandle(ref, () => ({
         create: () => {
-            if (!customerId) { message.error("请选择客户！"); return; }
-            if (!fabricType) { message.error("请选择布类！"); return; }
-            if (!inches || !needles) { message.error("请先设置针寸！"); return; }
-            if (!type) { message.error("请设置类型！"); return; }
-            if (!code) { message.error("请输入客户单号！"); return; }
-            if (!materials) { message.error("必须添加用料信息"); return; }
-            if (!orderLooms) { message.error("必须添加机台信息"); return; }
             console.log("add 用料信息==", materials);
             materials.map((item) => {
-                delete item.id
-            })
-             orderLooms.map((item) => {
                 delete item.id
             })
             const param = {
@@ -69,11 +55,16 @@ let CreateOrder = (props, ref) => {
 
                 "inches": inches,
                 "needles": needles,
-                "orderLooms": orderLooms,
+                "orderLooms": [
+                    {
+                        "loomId": 1,
+                        "volQty": 0
+                    }
+                ],
                 "orderYarnInfos": materials,
                 "productPrice": productPrice,
                 "remark": remark,
-                "techType": techType1 ? techType1 : "" + "-" + techType2 ? techType2 : "",
+                "techType": techType1 +"-"+ techType2,
                 "totalInches": totalInches,
                 "type": type,
                 "weight": weight,
@@ -186,28 +177,6 @@ let CreateOrder = (props, ref) => {
                 }
             })
     }
-    const getLoom = () => {
-        fetch(requestUrl + "/api-production/order/getLoomDownList", {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-            }
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                const obj = {};
-                res.data.map((item) => {
-                    item.text = item.code
-                })
-                // for (var key in res.data) {
-                //     res.data[key].text = res.data[key].code
-                //     obj["key" + key] = res.data[key];
-
-                // }
-                console.log(obj)
-                setloom(res.data)
-            })
-    }
     const columns = [
         {
             title: '纱别',
@@ -237,25 +206,7 @@ let CreateOrder = (props, ref) => {
                 return null;
             },
         },]
-    const loomColumns = [
-        {
-            title: '机号',
-            key: 'loomId',
-            dataIndex: 'loomId',
-            valueType: 'select',
-            valueEnum: loom
-        },
-        {
-            title: "卷数",
-            dataIndex: "volQty"
-        }, {
-            title: '操作',
-            valueType: 'option',
-            render: () => {
-                return null;
-            },
-        },
-    ]
+
     return <React.Fragment>
         <div className="detail-title">
             新建订单
@@ -392,31 +343,11 @@ let CreateOrder = (props, ref) => {
                 </div>
                 <div className="clothing-data">
                     <div className="clothing-left">
-                        <EditableProTable
-                            columns={loomColumns}
-                            rowKey="id"
-                            value={orderLooms}
-                            onChange={(value) => {
-                                console.log("====", value)
-                            }}
-                            recordCreatorProps={{
-                                newRecordType: 'dataSource',
-                                record: () => ({
-                                    id: Date.now(),
-                                }),
-                            }}
-                            editable={{
-                                type: 'multiple',
-                                editableKeysloom,
-                                actionRender: (row, config, defaultDoms) => {
-                                    return [defaultDoms.delete];
-                                },
-                                onValuesChange: (record, recordList) => {
-                                    console.log("编辑行数据==", recordList)
-                                    setorderLooms(recordList)
-                                },
-                                onChange: setEditableRowKeysloom,
-                            }}
+                        <Table
+                            columns={[
+                                { title: "机台" },
+                                { title: "卷数" },
+                            ]}
                         />
                     </div>
                     <div className="clothing-right">
@@ -439,5 +370,5 @@ let CreateOrder = (props, ref) => {
     </React.Fragment>
 }
 
-CreateOrder = forwardRef(CreateOrder)
-export default CreateOrder
+Edit = forwardRef(Edit)
+export default Edit
