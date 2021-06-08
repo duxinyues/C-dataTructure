@@ -5,18 +5,34 @@ import { EditableProTable } from '@ant-design/pro-table';
 import 'moment/locale/zh-cn';
 import moment from "moment"
 const { Option } = Select;
-const layout = {
-    labelCol: { span: 4 },
-    wrapperCol: { span: 20 },
-};
+const defaultDataLoom =
+    new Array(1).fill(1).map((_, index) => {
+        return {
+            id: (Date.now() + index).toString(),
+            loomId: "",
+            volQty: ""
+        }
+    });
+
+const defaultData = new Array(1).fill(1).map((_, index) => {
+    return {
+        id: (Date.now() + index).toString(),
+        yarnName: "",
+        yarnBrandBatch: "",
+        rate: "",
+        knitWastage: '',
+        planWeight: ""
+    };
+});
 
 let CreateOrder = (props, ref) => {
     document.title = "新建订单";
     const today = moment();
     const [customer, setcustomer] = useState([{ id: 1, name: "111" }]);
     const [clothType, setclothType] = useState([]);
-    const [materials, setmaterials] = useState(); //用料要求
-    const [editableKeys, setEditableRowKeys] = useState();
+    const [materials, setmaterials] = useState(() => defaultData); //用料要求
+    const [editableKeys, setEditableRowKeys] = useState(() =>
+        defaultData.map((item) => item.id));
     const [editableKeysloom, setEditableRowKeysloom] = useState();
     const [bizDate, setbizDate] = useState(getNowFormatDate())
     const [customerId, setcustomerId] = useState();
@@ -51,11 +67,11 @@ let CreateOrder = (props, ref) => {
             if (!code) { message.error("请输入客户单号！"); return; }
             if (!materials) { message.error("必须添加用料信息"); return; }
             if (!orderLooms) { message.error("必须添加机台信息"); return; }
-            console.log("add 用料信息==", materials);
+            if (!weight) { message.error("请输入订单"); return; }
             materials.map((item) => {
                 delete item.id
             })
-             orderLooms.map((item) => {
+            orderLooms.map((item) => {
                 delete item.id
             })
             const param = {
@@ -80,6 +96,7 @@ let CreateOrder = (props, ref) => {
                 "yarnLength": yarnLength
             }
             console.log("订单参数==", param);
+            
             fetch(requestUrl + "/api-production/order/saveOrModify", {
                 method: "POST",
                 headers: {
@@ -194,17 +211,9 @@ let CreateOrder = (props, ref) => {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
-                const obj = {};
                 res.data.map((item) => {
                     item.text = item.code
                 })
-                // for (var key in res.data) {
-                //     res.data[key].text = res.data[key].code
-                //     obj["key" + key] = res.data[key];
-
-                // }
-                console.log(obj)
                 setloom(res.data)
             })
     }
@@ -232,11 +241,11 @@ let CreateOrder = (props, ref) => {
         {
             title: '操作',
             valueType: 'option',
-            width: 250,
             render: () => {
                 return null;
             },
         },]
+
     const loomColumns = [
         {
             title: '机号',
@@ -247,7 +256,7 @@ let CreateOrder = (props, ref) => {
         },
         {
             title: "卷数",
-            dataIndex: "volQty"
+            dataIndex: "volQty",
         }, {
             title: '操作',
             valueType: 'option',
@@ -361,9 +370,7 @@ let CreateOrder = (props, ref) => {
                     columns={columns}
                     rowKey="id"
                     value={materials}
-                    onChange={(value) => {
-                        console.log("====", value)
-                    }}
+                    onChange={setmaterials}
                     recordCreatorProps={{
                         newRecordType: 'dataSource',
                         record: () => ({
@@ -377,8 +384,6 @@ let CreateOrder = (props, ref) => {
                             return [defaultDoms.delete];
                         },
                         onValuesChange: (record, recordList) => {
-                            console.log("编辑行数据==", recordList)
-
                             setmaterials(recordList);
                         },
                         onChange: setEditableRowKeys,
@@ -396,9 +401,7 @@ let CreateOrder = (props, ref) => {
                             columns={loomColumns}
                             rowKey="id"
                             value={orderLooms}
-                            onChange={(value) => {
-                                console.log("====", value)
-                            }}
+                            onChange={setorderLooms}
                             recordCreatorProps={{
                                 newRecordType: 'dataSource',
                                 record: () => ({

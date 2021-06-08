@@ -5,6 +5,7 @@ import { orderType, orderSearch, requestUrl, } from "../../../utils/config"
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import EditOrder from "./edit";
+import { getLodop } from '../../../print/LodopFuncs';
 import "./style.css"
 const { Option } = Select;
 
@@ -17,7 +18,13 @@ function Order() {
     const [searchValue, setsearchValue] = useState("code");
     const [searchType, setsearchType] = useState();
     const [customer, setcustomer] = useState();
-    const [orderDetail, setorderDetail] = useState()
+    const [orderDetail, setorderDetail] = useState();
+    const [total, settotal] = useState();
+    const [current, setcurrent] = useState();
+    const [size, setsize] = useState();
+    const [loomData, setloomData] = useState();
+    const [billStatus, setbillStatus] = useState(3);
+    const [btnTex, setbtnTex] = useState("完工")
     const childRef = useRef();
     useEffect(() => {
         setcolumns([
@@ -60,14 +67,20 @@ function Order() {
             childRef.current.edit();
         }
     }
-
+    const openClothTicket = () => {
+        let LODOP = getLodop();
+        LODOP.PRINT_INIT("react使用打印插件CLodop");  //打印初始化
+        let strStyle = `<style> '</style> `;
+        LODOP.ADD_PRINT_HTM(100, "5%", "90%", 450, strStyle + document.getElementById("print").innerHTML);
+        LODOP.PREVIEW();  //最后一个打印(预览)语句
+    }
     //  获取创建订单组件的状态
     const getCreateOrderState = (value) => {
         console.log(value);
         if (value.state === "detail") {
             getOrderList({
-                "page": 1,
-                "size": 10,
+                "page": current,
+                "size": size,
                 "billStatus": 1
             })
         }
@@ -105,10 +118,12 @@ function Order() {
             .then(res => {
                 console.log(res)
                 if (res.code === 200) {
-
                     if (res.data.records.length === 0) return;
+                    settotal(res.data.total);
+                    setsize(res.data.size);
+                    setcurrent(res.data.current);
                     setorderList(res.data.records);
-                    getOrderDetail(res.data.records[1].id);
+                    getOrderDetail(res.data.records[0].id);
                 }
             })
     }
@@ -122,11 +137,33 @@ function Order() {
             .then(res => {
                 console.log("订单详情=", res)
                 if (res.code === 200) {
+
                     setorderDetail(res.data);
                     setspining(false);
                     setheadType("detail");
-
+                    const yarnBrandBatch = res.data.orderYarnInfos.map((item) => {
+                        return item.yarnBrandBatch
+                    });
+                    getBarCode(res.data.id, yarnBrandBatch.join(","))
                 }
+            })
+    }
+    const getBarCode = (id, yarnBrandBatch) => {
+        console.log(9000)
+        fetch(requestUrl + "/api-production/order/findloomAndBarcode?yarnBrandBatch=" + yarnBrandBatch + "&id=" + id, {
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token")
+            },
+        })
+            .then(res => { return res.json() })
+            .then(res => {
+                console.log("条码信息==", res)
+                if (res.code == 200) {
+                    setloomData(res.data)
+                }
+            })
+            .catch(err => {
+                console.log(err)
             })
     }
     const getCustomer = () => {
@@ -139,6 +176,7 @@ function Order() {
             .then(res => {
                 console.log(res)
                 if (res.code === 200) {
+
                     setcustomer(res.data)
                 }
             })
@@ -155,6 +193,29 @@ function Order() {
             setsearchType("type")
         }
 
+    }
+    const completeOrder = () => {
+        const _billStatus = billStatus
+        fetch(requestUrl + "/api-production/order/updateBillStatus?id=" + orderDetail.id + "&billStatus=" + _billStatus, {
+            method: "POST",
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token")
+            }
+        })
+            .then(res => { return res.json() })
+            .then(res => {
+                console.log(res)
+                if (res.code == 200) {
+                    if (billStatus == 3) {
+                        setbillStatus(1);
+                        setbtnTex("反完工")
+                    }
+                    if (billStatus == 1) {
+                        setbillStatus(3);
+                        setbtnTex("完工")
+                    }
+                }
+            })
     }
     const menu = (
         <Menu>
@@ -181,9 +242,9 @@ function Order() {
                 {headType === "detail" && <PageHeader className="custom" title="订单管理" extra={[
                     <Button key="3" type="primary" onClick={add}>+新建</Button>,
                     <Button key="2" onClick={edit}>编辑</Button>,
-                    <Button key="1">完工</Button>,
+                    <Button key="1" onClick={completeOrder}>{btnTex}</Button>,
                     <Button key="4">订单</Button>,
-                    <Button key="5">布票</Button>,
+                    <Button key="5" onClick={openClothTicket}>布票</Button>,
                     <Dropdown overlay={menu} trigger={['click']}>
                         <div className="drop">
                             更多 &nbsp; <DownOutlined />
@@ -195,6 +256,7 @@ function Order() {
                     <Button key="1" type="primary" onClick={onSave}>保存</Button>,
                     <Button key="2" onClick={cancel}>取消</Button>,
                 ]} />}
+                <div id="print"> 打印的内容</div>
                 <div className="inventory-container">
                     <div className="left">
                         <Form
@@ -202,7 +264,6 @@ function Order() {
                             onFinish={onFinish}
                             initialValues={{
                                 billStatus: orderType[0].title,
-                                // searchType: orderSearch[0]
                             }}
                         >
                             <Row>
@@ -225,20 +286,6 @@ function Order() {
 
                                 </div>
                                 <Form.Item name={searchValue}>
-                                    {/* {searchType === "customerName" && <Select style={{ width: "125px" }}>
-                                    {
-                                        customer.map((item, key) => {
-                                            console.log(item)
-                                            return (<Option value={item.id} >{item.neme}</Option>)
-                                        })
-                                    }
-
-                                </Select>}
-                                {searchType === "type" && <Select >
-                                    <Option value="1">开幅</Option>
-                                    <Option value="2">抽针</Option>
-                                    <Option value="3">圆筒</Option>
-                                </Select>} */}
                                     <Input />
                                 </Form.Item>
                                 <Form.Item>
@@ -254,11 +301,25 @@ function Order() {
                                     onClick: () => { getOrderDetail(record.id) },
                                 };
                             }}
+                            pagination={{
+                                total: total,
+                                pageSize: size,
+                                current: current,
+                                onChange: (page, pageSize) => {
+                                    getOrderList({
+                                        "page": page,
+                                        "size": pageSize,
+                                        "billStatus": 1
+                                    })
+                                },
+                                showSizeChanger: false,
+                                showTotal: () => (`共${total}条`)
+                            }}
                         />
                     </div>
                     <div className="right">
-                        {headType === "detail" && <OrderDetail orderData={orderDetail} />}
-                        {headType === "edit" && <EditOrder ref={childRef} editOrder={getCreateOrderState} />}
+                        {headType === "detail" && <OrderDetail orderData={orderDetail} loomData={loomData} />}
+                        {headType === "edit" && <EditOrder ref={childRef} editOrder={getCreateOrderState} orderData={orderDetail} loomData={loomData} />}
                         {headType === "add" && <CreateOrder createOrder={getCreateOrderState} ref={childRef} />}
                     </div>
                 </div>

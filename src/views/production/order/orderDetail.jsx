@@ -1,30 +1,11 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { Col, Row, Input, Tabs, Table } from "antd";
 import { newOrderType, requestUrl, onlyFormat } from "../../../utils/config";
 const { TabPane } = Tabs;
 function OrderDetail(props) {
-    console.log("订单数据==", props)
+    console.log(props)
     document.title = "订单管理";
 
-    const yarnBrandBatch = props.orderData.orderYarnInfos.map((item) => {
-        return item.yarnBrandBatch
-    })
-
-    useEffect(() => {
-        getBarCode()
-    }, [])
-
-    const getBarCode = () => {
-        fetch(requestUrl + "/api-production/order/findloomAndBarcode?yarnBrandBatch=" + yarnBrandBatch.join(",") + "&id=" + props.orderData.id, {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log("条码信息==", res)
-            })
-    }
     return <React.Fragment>
         <div className="detail-title">
             标题
@@ -92,24 +73,14 @@ function OrderDetail(props) {
                         <div className="c-label">订单数量</div>
                         <div className="c-input"><Input disabled value={props.orderData.weight} /></div>
                     </Col>
-                    {/* <Col span={8} className="c-col">
-                        <div className="c-label c-right">加工单价</div>
-                        <div className="c-input"><Input disabled /></div>
-                    </Col>
-                    <Col span={8} className="c-col">
-                        <div className="c-label c-right">订单数量</div>
-                        <div className="c-input"><Input disabled /></div>
-                    </Col> */}
+
                 </Row>
                 <Row className="c-row">
                     <Col span={16} className="c-col">
                         <div className="c-label">纱长</div>
                         <div className="c-input"><Input disabled value={props.orderData.yarnLength} /></div>
                     </Col>
-                    {/* <Col span={8} className="c-col">
-                        <div className="c-label c-right">磅布去皮</div>
-                        <div className="c-input"><Input disabled /></div>
-                    </Col> */}
+
                 </Row>
                 <Row className="c-row">
                     <Col span={16} className="c-col">
@@ -121,17 +92,13 @@ function OrderDetail(props) {
                         <div className="c-input"><Input disabled value={props.orderData.remark} /></div>
                     </Col>
                 </Row>
-                {/* <Row>
-                    <Col span={24} className="c-col">
-                        <div className="c-label">注意事项</div>
-                        <div className="c-input"><Input disabled /></div>
-                    </Col>
-                </Row> */}
+
             </div>
             <div>
                 <Tabs defaultActiveKey="1" >
                     <TabPane tab="用料要求" key="1">
                         <Table
+                            pagination={false}
                             columns={[
                                 { title: "纱别", dataIndex: "yarnName" },
                                 { title: "纱牌/纱批", dataIndex: "yarnBrandBatch" },
@@ -168,9 +135,11 @@ function OrderDetail(props) {
                     <div className="clothing-left">
                         <Table
                             columns={[
-                                { title: "机台" },
-                                { title: "卷数" },
+                                { title: "机台", dataIndex: "loomCode" },
+                                { title: "卷数", dataIndex: "volQty" },
                             ]}
+                            dataSource={props.loomData}
+                            pagination={false}
                         />
                     </div>
                     <div className="clothing-right">

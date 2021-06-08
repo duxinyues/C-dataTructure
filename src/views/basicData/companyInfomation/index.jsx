@@ -161,7 +161,6 @@ function CompanyInfo() {
                     <Button type="primary" htmlType="submit">保存</Button>
                 </Form.Item>
             </Form>
-
             <div className="company-logo">LOGO</div>
         </div>
     </div>

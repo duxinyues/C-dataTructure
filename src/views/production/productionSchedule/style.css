@@ -29,3 +29,8 @@
     align-items: flex-end;
     cursor: pointer;
 }
+
+.update .ant-picker {
+    border: 1px solid red;
+    width: 250px !important;
+}
