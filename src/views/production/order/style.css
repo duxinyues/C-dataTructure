@@ -102,3 +102,17 @@
 .clothing-left .ant-select {
     min-width: 84px !important;
 }
+
+.openCloth .ant-btn {
+    margin-left: 8px;
+}
+
+.openCloth .ant-form-item-control-input-content {
+    text-align: right;
+}
+
+.clothSvg {
+    position: fixed;
+    top: -100vh;
+    left: -100vw;
+}

@@ -38,7 +38,7 @@ export const orderSearch = [
   { key: 8, title: "类型", type: "type" },
 ]
 
-export const newOrderType = [{key:1,name:"开幅"},{key:1,name:"抽针"},{key:1,name:"圆筒"}]
+export const newOrderType = [{key:1,name:"开幅"},{key:2,name:"抽针"},{key:3,name:"圆筒"}]
 
 //获取今天日期，格式YYYY-MM-DD
 export function getNowFormatDate() {
