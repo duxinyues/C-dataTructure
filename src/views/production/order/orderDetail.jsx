@@ -1,10 +1,37 @@
-import React, { useEffect, useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Col, Row, Input, Tabs, Table } from "antd";
 import { newOrderType, requestUrl, onlyFormat } from "../../../utils/config";
 const { TabPane } = Tabs;
 function OrderDetail(props) {
     console.log(props)
     document.title = "订单管理";
+    const [barCode, setbarCode] = useState([]);
+    const [loomData, setloomData] = useState();
+    const [yarnInfoData, setyarnInfoData] = useState([])
+    const yarnBrandBatch = props.orderData.orderYarnInfos.map((item) => {
+        return item.yarnBrandBatch;
+    })
+    useEffect(() => {
+        props.orderData.orderYarnInfos.map((item) => {
+            console.log("用料信息纱批==", item.yarnBrandBatch.split(","))
+        })
+        setyarnInfoData(props.orderData.orderYarnInfos)
+        getBarCodes();
+    }, [])
+    console.log("订单纱批=", yarnBrandBatch)
+    const getBarCodes = () => {
+        fetch(requestUrl + "/api-production/order/findLoomDetialByOrderId?id=" + props.orderData.id + "&yarnBatch=" + yarnBrandBatch.join(","), {
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token")
+            },
+        })
+            .then(res => { return res.json() })
+            .then(res => {
+                console.log(res)
+                setloomData(res.data);
+                // setbarCode(res.data[0].barcodes)
+            })
+    }
 
     return <React.Fragment>
         <div className="detail-title">
@@ -106,7 +133,7 @@ function OrderDetail(props) {
                                 { title: "织损%", dataIndex: "knitWastage" },
                                 { title: "计划用量", dataIndex: "planWeight" },
                             ]}
-                            dataSource={props.orderData.orderYarnInfos}
+                            dataSource={yarnInfoData}
                         />
                     </TabPane>
                     <TabPane tab="查看收纱" key="2">
@@ -138,21 +165,34 @@ function OrderDetail(props) {
                                 { title: "机台", dataIndex: "loomCode" },
                                 { title: "卷数", dataIndex: "volQty" },
                             ]}
-                            dataSource={props.loomData}
+                            dataSource={loomData}
                             pagination={false}
+                            onRow={record => {
+                                return {
+                                    onClick: () => {
+                                        console.log("机台数据==", record.barcodes);
+                                        setbarCode(record.barcodes)
+                                    },
+                                };
+                            }}
                         />
                     </div>
                     <div className="clothing-right">
                         <Table
                             columns={[
-                                { title: "条码" },
-                                { title: "疋号" },
-                                { title: "入库重量" },
-                                { title: "入库时间" },
-                                { title: "出库时间" },
-                                { title: "纱牌/纱批" },
-                                { title: "查布记录" }
+                                { title: "条码", dataIndex: "barcode" },
+                                { title: "疋号", dataIndex: "seq" },
+                                { title: "入库重量", dataIndex: "weight" },
+                                { title: "入库时间", dataIndex: "inStockTime", render: (time) => (<span>{onlyFormat(time, true)}</span>) },
+                                { title: "出库时间", dataIndex: "outStockTime", render: (time) => (<span>{onlyFormat(time, true)}</span>) },
+                                { title: "纱牌/纱批", dataIndex: "yarnBrandBatch" },
+                                { title: "查布记录", dataIndex: "flawInfo" }
                             ]}
+                            pagination={false}
+                            dataSource={barCode}
+                            scroll={{
+                                y: 150
+                            }}
                         />
                     </div>
                 </div>

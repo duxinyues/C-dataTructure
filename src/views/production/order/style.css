@@ -36,10 +36,9 @@
 .clothing-right {
     width: 85%;
     border-left: 1px solid #d9d9d9;
-    /* margin-left: 10px; */
 }
 
-.clothing-right table {}
+
 
 .c-row {
     margin-bottom: 10px;
@@ -115,4 +114,44 @@
     position: fixed;
     top: -100vh;
     left: -100vw;
+}
+
+.outStockOrder {
+    border: 1px solid red;
+    background: #fff;
+    margin: 20px;
+}
+
+.p_table {
+    border: 1px solid blue;
+    width: 100%;
+}
+
+.footer-btn {
+    text-align: right;
+}
+
+/* 自定义表格 */
+.tableHead,
+.table-tr,
+.addRowInput {
+    display: flex;
+    align-items: center;
+}
+
+.table-td {
+    width: 100px;
+    border: 1px solid blue;
+    text-align: left;
+    margin: 0 10px 5px;
+}
+
+.addRow-item {
+    border: 1px solid red;
+}
+
+.table-cel {
+    border: 1px solid green;
+    width: 100px;
+    margin: 0 10px 5px;
 }

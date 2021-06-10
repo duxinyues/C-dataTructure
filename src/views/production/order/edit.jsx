@@ -36,7 +36,11 @@ let EditOrder = (props, ref) => {
     const [customerColor, setcustomerColor] = useState(props.orderData.customerColor);
     const [remark, setremark] = useState(props.orderData.remark);
     const [loom, setloom] = useState();
-    const [orderLooms, setorderLooms] = useState(defaultLoomData)
+    const [orderLooms, setorderLooms] = useState(defaultLoomData);
+    const [barCode, setbarCode] = useState([])
+    const yarnBrandBatch = props.orderData.orderYarnInfos.map((item) => {
+        return item.yarnBrandBatch;
+    })
     useEffect(() => {
         getcustomer();
         getClothType();
@@ -52,9 +56,6 @@ let EditOrder = (props, ref) => {
             if (!code) { message.error("请输入客户单号！"); return; }
             if (!materials) { message.error("必须添加用料信息"); return; }
             if (!orderLooms) { message.error("必须添加机台信息"); return; }
-            orderLooms.map((item) => {
-                item.volQty = 0
-            })
             const param = {
                 "bizDate": bizDate,
                 "customerBillCode": code,
@@ -97,6 +98,18 @@ let EditOrder = (props, ref) => {
                 })
         }
     }));
+    const getBarCodes = (loomId) => {
+        fetch(requestUrl + "/api-production/order/findBarcodeByOrderLoomId?orderLoomId=" + loomId + "&yarnBrandBatch=" + yarnBrandBatch[0], {
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token")
+            },
+        })
+            .then(res => { return res.json() })
+            .then(res => {
+                console.log(res)
+                setbarCode(res.data)
+            })
+    }
     // 选择日期
     const selectDate = (date, dateString) => {
         console.log(dateString);
@@ -310,7 +323,6 @@ let EditOrder = (props, ref) => {
                             </Select>
                         </div>
                     </Col>
-
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
@@ -379,7 +391,9 @@ let EditOrder = (props, ref) => {
                 </div>
                 <div className="clothing-data">
                     <div className="clothing-left">
-                        {/* <EditLoom loomData={orderLooms} loom={loom}/> */}
+                        {
+                            
+                        }
                         <EditableProTable
                             columns={loomColumns}
                             rowKey="id"

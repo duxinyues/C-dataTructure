@@ -13,7 +13,7 @@ class ContentMain extends Component {
                     {
                         routes.map((item,key) => {
                             return (
-                                item.path ? <PrivateRoute path={item.path} exact component={item.component} /> : <Route key={key} component={NoFind} />
+                                item.path ? <PrivateRoute path={item.path} exact component={item.component} key={key}  /> : <Route key={key} component={NoFind} />
                             )
                         })
                     }

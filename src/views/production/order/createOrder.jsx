@@ -2,18 +2,10 @@ import React, { useImperativeHandle, forwardRef, useState, useEffect, } from "re
 import { Col, Row, Input, Table, DatePicker, Select, message } from "antd";
 import { newOrderType, requestUrl, getNowFormatDate } from "../../../utils/config"
 import { EditableProTable } from '@ant-design/pro-table';
+import AddYarnInfo from "./addYarnInfo";
 import 'moment/locale/zh-cn';
 import moment from "moment"
 const { Option } = Select;
-const defaultDataLoom =
-    new Array(1).fill(1).map((_, index) => {
-        return {
-            id: (Date.now() + index).toString(),
-            loomId: "",
-            volQty: ""
-        }
-    });
-
 const defaultData = new Array(1).fill(1).map((_, index) => {
     return {
         id: (Date.now() + index).toString(),
@@ -96,7 +88,7 @@ let CreateOrder = (props, ref) => {
                 "yarnLength": yarnLength
             }
             console.log("订单参数==", param);
-            
+
             fetch(requestUrl + "/api-production/order/saveOrModify", {
                 method: "POST",
                 headers: {
@@ -265,6 +257,10 @@ let CreateOrder = (props, ref) => {
             },
         },
     ]
+
+    const saveValue = (value) => {
+        console.log(value)
+    }
     return <React.Fragment>
         <div className="detail-title">
             新建订单
@@ -365,6 +361,7 @@ let CreateOrder = (props, ref) => {
                 </Row>
             </div>
             <div className="edit-table">
+                {/* <AddYarnInfo saveValue={saveValue} /> */}
                 <EditableProTable
                     headerTitle="用料要求"
                     columns={columns}
@@ -389,7 +386,6 @@ let CreateOrder = (props, ref) => {
                         onChange: setEditableRowKeys,
                     }}
                 />
-
             </div>
             <div>
                 <div className="clothing">
