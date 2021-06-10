@@ -586,347 +586,111 @@ function Order() {
             visible={outStockOrder}
             onCancel={() => { setOutStockOrder(false) }}
             footer={null}
+            title="出库单"
         >
             <div ref={componentRef}  className="outStockOrder">
-                <table  class="p_table g_table g_table_autowidth table_print">
-                    <tbody>
-                        <tr >
-                            <th  colspan="4" class="p-title"><h1  contenteditable="true">东莞市鸿华针织有限公司出货单</h1></th>
-                        </tr>
-                        <tr  class="a2">
-                            <th  class="pl-10 pr-10 ft-14 border-line-th" style={{ textAlign: "center", position: "relative", whiteSpace: "nowrap" }}><span  class="page-style">1/1</span>
-                            </th>
-                            <th  colspan="2" class="border-line-th"><span  class="main-title"> 长安镇宵边第四工业区 Tel: 135-0009-2368 </span></th>
-                            <th  class="border-line-th">
-                            </th>
-                        </tr>
-                    </tbody>
-                    <tbody >
-                        <tr  class="f_thead">
-                            <td  class="tl" style={{ whiteSpace: "nowrap" }}>出库单号：200506001</td>
-                            <td  contenteditable="true" class="tl">客户：织厂100002349</td>
-                            <td  class="tl" style={{ whiteSpace: "nowrap" }}>出库日期：2020-05-06 13: 59</td>
-                            <td  class="tl" style={{ whiteSpace: "nowrap" }}>客户单号：</td>
-                        </tr>
-                        <tr  class="f_thead">
-                            <td  class="tl">坯布编码：</td>
-                            <td  class="tl">布类：花灰拉架棉盖丝单珠地</td>
-                            <td  class="tl">机号：1#</td>
-                            <td  class="tl">针寸：12G-18&quot; </td>
-                        </tr>
-                        <tr  class="f_thead">
-                            <td  colspan="3" class="tl pkkkkkk"></td>
-                            <td  colspan="1" class="tr" style={{ whiteSpace: "nowrap", paddingLeft: "5px", }}><span  class="pl-10">抽针</span>
-                                <div  class="unmytick" style={{ verticalAlign: "middle" }}></div> <span  class="pl-10">圆筒</span>
-                                <div  class="unmytick" style={{ verticalAlign: "middle" }}></div> <span  class="pl-10">开幅</span>
-                                <div  class="actmytick" style={{ verticalAlign: "middle" }}></div></td>
-                        </tr>
-                        <tr >
-                            <td  colspan="4">
-                                <table  class="table02 p_table" style={{ bordeTop: "1px solid rgb(0, 0, 0)" }}>
-                                    <tbody>
-                                        <tr >
-                                            <th  class="th_box">1</th>
-                                            <th  class="th_box" style={{ borderTop: "1px solid rgb(0, 0, 0)", borderRight: "none", borderBottom: "none", borderLeft: "none" }}></th>
-                                            <th  class="th_box" style={{ borderTop: "1px solid rgb(0, 0, 0)", borderRight: "none", borderBottom: "none", borderLeft: "none" }}></th>
-                                            <th  class="th_box" style={{ borderTop: "1px solid rgb(0, 0, 0)", borderRight: "none", borderBottom: "none", borderLeft: "none" }}></th>
-                                            <th  class="th_box" style={{ borderTop: "1px solid rgb(0, 0, 0)", borderRight: "none", borderBottom: "none", borderLeft: "none" }}></th>
-                                            <th  class="th_box" style={{ borderTop: "1px solid rgb(0, 0, 0)", borderRight: "none", borderBottom: "none", borderLeft: "none" }}></th>
-                                            <th  class="th_box" style={{ borderTop: "1px solid rgb(0, 0, 0)", borderRight: "none", borderBottom: "none", borderLeft: "none" }}></th>
-                                            <th  class="th_box" style={{ borderTop: "1px solid rgb(0, 0, 0)", borderRight: "none", borderBottom: "none", borderLeft: "none" }}></th>
-                                            <th  class="th_box" style={{ borderTop: "1px solid rgb(0, 0, 0)", borderRight: "none", borderBottom: "none", borderLeft: "none" }}></th>
-                                            <th  class="th_box" style={{ borderTop: "1px solid rgb(0, 0, 0)", borderRight: "none", borderBottom: "none", borderLeft: "none" }}></th>
-                                        </tr>
-                                    </tbody>
-                                    <tbody >
-                                        <tr  class="tr_h" style={{ verticalAlign: "top" }}>
-                                            <td  class="td_box" style={{ border: "none" }}>
-                                                <ul  class="td_list ul_box" style={{ padding: "0px", margin: "0px -1px 0px 0px", borderLeft: "1px solid rgb(0, 0, 0)", borderRight: " 1px solid rgb(0, 0, 0)" }}>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left">1</span> <span  class="print_qty">25.1</span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left">2</span> <span  class="print_qty">25.2</span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left">3</span> <span  class="print_qty">25.3</span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                </ul></td>
-                                            <td  class="td_box" style={{ border: "none" }}>
-                                                <ul  class="td_list ul_box" style={{ padding: " 0px", margin: "0px -1px 0px 0px", borderLeft: "1px solid rgb(0, 0, 0)", borderRight: "1px solid rgb(0, 0, 0)" }}>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                </ul></td>
-                                            <td  class="td_box" style={{ border: "none" }}>
-                                                <ul  class="td_list ul_box" style={{ padding: " 0px", margin: "0px -1px 0px 0px", borderLeft: "1px solid rgb(0, 0, 0)", borderRight: "1px solid rgb(0, 0, 0)" }}>
-
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                </ul></td>
-                                            <td  class="td_box" style={{ border: "none" }}>
-                                                <ul  class="td_list ul_box" style={{ padding: " 0px", margin: "0px -1px 0px 0px", borderLeft: "1px solid rgb(0, 0, 0)", borderRight: "1px solid rgb(0, 0, 0)" }}>
-
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                </ul></td>
-                                            <td  class="td_box" style={{ border: "none" }}>
-                                                <ul  class="td_list ul_box" style={{ padding: " 0px", margin: "0px -1px 0px 0px", borderLeft: "1px solid rgb(0, 0, 0)", borderRight: "1px solid rgb(0, 0, 0)" }}>
-
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                </ul></td>
-                                            <td  class="td_box" style={{ border: "none" }}>
-                                                <ul  class="td_list ul_box" style={{ padding: " 0px", margin: "0px -1px 0px 0px", borderLeft: "1px solid rgb(0, 0, 0)", borderRight: "1px solid rgb(0, 0, 0)" }}>
-
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                </ul></td>
-                                            <td  class="td_box" style={{ border: "none" }}>
-                                                <ul  class="td_list ul_box" style={{ padding: " 0px", margin: "0px -1px 0px 0px", borderLeft: "1px solid rgb(0, 0, 0)", borderRight: "1px solid rgb(0, 0, 0)" }}>
-
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                </ul></td>
-                                            <td  class="td_box" style={{ border: "none" }}>
-                                                <ul  class="td_list ul_box" style={{ padding: " 0px", margin: "0px -1px 0px 0px", borderLeft: "1px solid rgb(0, 0, 0)", borderRight: "1px solid rgb(0, 0, 0)" }}>
-
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                </ul></td>
-                                            <td  class="td_box" style={{ border: "none" }}>
-                                                <ul  class="td_list ul_box" style={{ padding: " 0px", margin: "0px -1px 0px 0px", borderLeft: "1px solid rgb(0, 0, 0)", borderRight: "1px solid rgb(0, 0, 0)" }}>
-
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                </ul></td>
-                                            <td  class="td_box" style={{ border: "none" }}>
-                                                <ul  class="td_list ul_box" style={{ padding: " 0px", margin: "0px -1px 0px 0px", borderLeft: "1px solid rgb(0, 0, 0)", borderRight: "1px solid rgb(0, 0, 0)" }}>
-
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                    <li  style={{ display: "flex", textAlign: "-webkit-match-parent", listStyle: "none" }}><span  class="c_td_left"></span> <span  class="print_qty"></span>
-                                                    </li>
-                                                </ul></td>
-                                        </tr>
-                                        <tr  style={{ height: "7px" }}></tr>
-                                        <tr >
-                                            <td  class="print_qty rb_box">75.6</td>
-                                            <td  class="print_qty rb_box" style={{ border: "none" }}></td>
-                                            <td  class="print_qty rb_box" style={{ border: "none" }}></td>
-                                            <td  class="print_qty rb_box" style={{ border: "none" }}></td>
-                                            <td  class="print_qty rb_box" style={{ border: "none" }}></td>
-                                            <td  class="print_qty rb_box" style={{ border: "none" }}></td>
-                                            <td  class="print_qty rb_box" style={{ border: "none" }}></td>
-                                            <td  class="print_qty rb_box" style={{ border: "none" }}></td>
-                                            <td  class="print_qty rb_box" style={{ border: "none" }}></td>
-                                            <td  class="print_qty rb_box" style={{ border: "none" }}></td>
-                                        </tr>
-
-                                        <tr >
-                                            <td  colspan="3" class="tl print_qty" style={{ paddingLeft: "10px" }}>共计: 3条</td>
-                                            <td  colspan="4" rowspan="2" class="tl pl-5" style={{ position: "relative" }}>
-                                                <div  style={{ float: "left", height: "100%", lineHeight: "1", paddingLeft: "10px", position: "absolute" }}>
-                                                    备注：
+                <div className="delivery-order">
+                    <div className="o-title">数织通出货单</div>
+                <div className="o-subtitle">
+                    <div className="o-page">第1页 共4页</div>
+                    <div className="o-address-info">深圳市福田区创新科技广场1期B座11楼1111-8-C11  Tel：读心悦  15351934772</div>
+                    <div>出货单号：2105260002</div>
+                </div>
+                  <div className="o-base-datta">
+                    <div className="ob-row">
+                        <div>客户：数织通</div>
+                        <div>日期：2021-06-10</div>
+                        <div>客户单号：2106100001</div>
+                        <div>坯布编码：34534645dvzf</div>
+                    </div>
+                    <div className="ob-row">
+                        <div>布类：布类111</div>
+                        <div>机号：1#</div>
+                        <div>针寸：20G-34°</div>
+                        <div></div>
+                    </div>
+                    <div className="ob-row">
+                    纱别：这是纱别
+                        <p>开福<input type="checkbox" checked/></p>
+                    </div>
+                  </div>
+                  <div className="o-barcode">
+                        <div className="o-col">
+                          <div className="col-title">1</div>
+                          <div className="col-row">
+                              <div>1</div>
+                              <div>25.90</div>
+                          </div>
+                          <div className="col-row">
+                              <div>2</div>
+                              <div>25.90</div>
+                          </div>
+                          <div className="col-row">
+                              <div>3</div>
+                              <div>25.90</div>
+                          </div>
+                          <div className="col-row">
+                              <div>4</div>
+                              <div>25.90</div>
+                          </div>
+                          <div className="col-row">
+                              <div>5</div>
+                              <div>25.90</div>
+                          </div>
+                          <div className="col-row">
+                              <div>6</div>
+                              <div>25.90</div>
+                          </div>
+                          <div className="col-row">
+                              <div>7</div>
+                              <div>25.90</div>
+                          </div>
+                          <div className="col-row">
+                              <div>8</div>
+                              <div>25.90</div>
+                          </div>
+                          <div className="col-row">
+                              <div>9</div>
+                              <div>25.90</div>
+                          </div>
+                          <div className="col-row">
+                              <div>10</div>
+                              <div>25.90</div>
+                          </div>
+                          <div className="col-row">
+                              <div>11</div>
+                              <div>25.90</div>
+                          </div>
+                        </div>
+                        <div className="o-col">
+                          <div className="col-title">2</div>
+                          <div className="col-row">
+                              <div>12</div>
+                              <div>25.90</div>
+                          </div>
+                        </div>
+                  </div>
+                  <div className="o-col-total">
+                            <div className="total-item">1000</div>
+                            <div className="total-item">1000</div>
+                        </div>
+                        <div className="o-footer-total">
+                            <div>
+                            <div className="o-barTotal">
+                                                    共计12条
                                                 </div>
-                                                <div  contenteditable="true" style={{ height: "100%", lineHeight: 1, overflow: "hidden", wordBreak: "break-all", textIndent: "3.5em", padding: "0px 3px" }}></div></td>
-                                            <td  colspan="3" rowspan="2" class="tl pl-5" >签收及盖章：</td>
-                                        </tr>
-                                        <tr >
-                                            <td  colspan="3" class="tl print_qty" >重量: 75.6kg</td>
-
-                                        </tr>
-                                        <tr >
-                                            <td  colspan="7" class="tl" style={{ border: "none" }}>
-                                                <div  style={{ float: "left", position: "absolute", lineHeight: 1, }}>
-                                                    注意：
+                                                <div className="o-weightTotal">
+                                                    重量：1000kg
                                                 </div>
-                                                <div  data-index="0" contenteditable="true" class="careful-div 0" style={{ overflow: "hidden", wordBreak: "break-all", textIndent: " 3em", lineHeight: 1 }}>
-                                                    收货时请核对规格、数量，如有质量问题，请于七天内书面通知复核，一经裁剪，恕不负责。
-                                                </div></td>
-                                            <td  colspan="3" class="tl" style={{ border: "none" }}>
-                                                <div  style={{ float: "left", position: "absolute", lineHeight: 1, marginLeft: "10px" }}>
-                                                    制表：
-                                                </div>
-                                                <div  contenteditable="true" style={{ overflow: "hidden", wordBreak: "break-all", textIndent: "4em", lineHeight: 1 }}>
-                                                    员工822
-                                                </div></td>
-                                        </tr>
-                                    </tbody>
-                                </table></td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </div>
+                            <div className="o-remark">备注：中深色</div>
+                            <div className="o-accept">签收及盖章</div>
+                        </div>
+                    <div className="o-note">
+                        <span>备注:收货时请核对规格、数量，如有质量问题，请于7天内书面通知复核，一经裁剪，恕不负责。</span>
+                        <span>制表：数织通</span>
+                    </div>
+                </div>
             </div>
             <div className="footer-btn">
             <ReactToPrint trigger={() => <Button>打印</Button>} content={() => componentRef.current} />
