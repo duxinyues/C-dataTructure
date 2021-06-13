@@ -1,0 +1,35 @@
+.basic-head,
+.basic-table {
+    display: flex;
+    justify-content: space-between;
+}
+
+.basic-item {
+    width: 25%;
+    background: #fff;
+    margin: 0 10px 10px 0;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.basic-item .scale {
+    border-bottom: 1px solid #999;
+    padding-bottom: 10px;
+}
+
+.basic-table {
+    margin-top: 10px;
+}
+
+.basic-table .left {
+    width: 68%;
+    background: #fff;
+    padding: 10px;
+}
+
+.basic-table .right {
+    padding: 10px;
+    margin-left: 10px;
+    width: 30%;
+    background: #fff;
+}

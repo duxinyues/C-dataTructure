@@ -1,6 +1,6 @@
 
-// export const requestUrl = "http://39.104.13.107:8000";
-export const requestUrl = "http://192.168.2.92:8000";
+export const requestUrl = "http://39.104.13.107:8000";
+// export const requestUrl = "http://192.168.2.92:8000";
 export const onlyFormat = (timeStamp, type) => {
   if (!timeStamp) return;
   var date = new Date(timeStamp);

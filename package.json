@@ -10,6 +10,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "antd": "^4.15.6",
+    "bizcharts": "^4.1.10",
     "jsbarcode": "^3.11.4",
     "node-sass": "^6.0.0",
     "rc-resize-observer": "^1.0.0",
