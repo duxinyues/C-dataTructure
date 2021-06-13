@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Table, PageHeader, Button, Modal, Form, Input, Row, Select, Tag } from "antd";
 import { onlyFormat, requestUrl, getNowFormatDate } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
+import DeliveryOrder from "./deliveryOrder"
 import "../../yarnInventory/style.css"
 import "./style.css"
 const { confirm } = Modal;
@@ -40,6 +41,8 @@ function InStock(props) {
     const [barSum, setbarSum] = useState(0);
     const [weightSum, setweightSum] = useState(0);
     const [barcodeIds, setbarcodeIds] = useState();
+    const [outStockOrder, setOutStockOrder] = useState(false);
+    const [deliveryOrder, setDeliveryOrder] = useState({});
     const data = {
         page: 1,
         size: 10,
@@ -61,7 +64,7 @@ function InStock(props) {
         })
             .then(res => { return res.json() })
             .then((res) => {
-                console.log(res)
+                console.log("坯布列表===", res)
                 if (res.code == 200) {
                     setloading(false)
                     if (res.data.total == 0) {
@@ -104,6 +107,24 @@ function InStock(props) {
     }
     const cancel = () => {
         setdetailType("detail")
+    }
+    // 细码
+    const openOutStockOrder = () => {
+        fetch(requestUrl + "/api-stock/fabricStockIo/printOutBoundBill?id=" + selectId, {
+            method: "POST",
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token"),
+            },
+        })
+            .then(res => { return res.json() })
+            .then(res => {
+                console.log("出货单==", res)
+                if (res.code === 200) {
+
+                    setDeliveryOrder(res.data);
+                    setOutStockOrder(true);
+                }
+            })
     }
     // 保存
     const onSave = () => {
@@ -352,8 +373,13 @@ function InStock(props) {
             setbarSum(_selectedRows.length);
         },
     };
+
+    const modalState = (value)=>{
+        console.log(value);
+        setOutStockOrder(value)
+    }
     return <div className="right-container">
-        {detailType == "detail" && <PageHeader
+        {detailType === "detail" && <PageHeader
             title="坯布出货"
             extra={[
                 <Button type="primary" onClick={add}>
@@ -368,10 +394,13 @@ function InStock(props) {
                 <Button disabled={disabled}>
                     导出
                 </Button>,
+                <Button onClick={openOutStockOrder}>
+                    细码
+                </Button>,
             ]}
         />}
         {
-            (detailType == "add" || detailType == "edit") && <PageHeader
+            (detailType === "add" || detailType === "edit") && <PageHeader
                 title="坯布出货"
                 extra={[
                     <Button type="primary" onClick={onSave}>
@@ -394,14 +423,15 @@ function InStock(props) {
                     onRow={record => {
                         return {
                             onClick: () => {
-                                getYarnStockDetail(record.id)
+                                setSelectId(record.id);
+                                getYarnStockDetail(record.id);
                             },
                         };
                     }}
                 />
             </div>
-            {detailType == "detail" && <OrderDetail data={yarn_stock_detail} />}
-            {(detailType == "add" || detailType == "edit") && <CreateOrder save={save} data={yarn_stock_detail} />}
+            {detailType === "detail" && <OrderDetail data={yarn_stock_detail} />}
+            {(detailType === "add" || detailType === "edit") && <CreateOrder save={save} data={yarn_stock_detail} />}
         </div>
 
         <Modal
@@ -539,6 +569,7 @@ function InStock(props) {
                 </div>
             </div>
         </Modal>
+        {outStockOrder && <DeliveryOrder deliveryOrder={deliveryOrder} modalState={modalState}/>}
     </div>
 }
 

@@ -3,8 +3,8 @@ import { PageHeader, Table, Form, Row, Select, Button, Input, Dropdown, Menu, Sp
 import { DownOutlined } from '@ant-design/icons';
 import JsBarcode from 'jsbarcode';
 import Barcode from "./Barcode";
-import ReactToPrint from 'react-to-print';
-import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat } from "../../../utils/config"
+
+import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, testArr } from "../../../utils/config"
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import EditOrder from "./edit";
@@ -14,7 +14,6 @@ const { Option } = Select;
 
 document.title = "订单管理";
 function Order() {
-
     const [spining, setspining] = useState(true)
     const [columns, setcolumns] = useState();
     const [headType, setheadType] = useState(); //默认展示详情
@@ -38,7 +37,8 @@ function Order() {
     const [seqArr, setseqArr] = useState([]);
     const [selectSeq, setselectSeq] = useState();
     const [companyName, setcompanyName] = useState();
-    const [outStockOrder, setOutStockOrder] = useState(false);
+
+
     const childRef = useRef();
 
     useEffect(() => {
@@ -84,7 +84,7 @@ function Order() {
         }
     }
     const onCancel = () => {
-        setvisible(true)
+        setvisible(false)
     }
     // 打印
     const openClothTicket = (value) => {
@@ -203,15 +203,13 @@ function Order() {
        </div>`
 
         LODOP.ADD_PRINT_HTML(10, 55, "100%", "100%", strHtml);
-        // LODOP.PREVIEW(); // 打印预览
-        LODOP.PRINT(); // 直接打印
+        LODOP.PREVIEW(); // 打印预览
+        // LODOP.PRINT(); // 直接打印
     }
     const openPrint = () => {
         setvisible(true)
     }
-    const openOutStockOrder = () => {
-        setOutStockOrder(true)
-    }
+
     //  获取创建订单组件的状态
     const getCreateOrderState = (value) => {
         console.log(value);
@@ -343,12 +341,12 @@ function Order() {
             .then(res => { return res.json() })
             .then(res => {
                 console.log(res)
-                if (res.code == 200) {
-                    if (billStatus == 3) {
+                if (res.code === 200) {
+                    if (billStatus === 3) {
                         setbillStatus(1);
                         setbtnTex("反完工")
                     }
-                    if (billStatus == 1) {
+                    if (billStatus === 1) {
                         setbillStatus(3);
                         setbtnTex("完工")
                     }
@@ -363,7 +361,7 @@ function Order() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res);
+                console.log("舍和额", res);
                 if (res.code === 200) {
                     setorderLoom(res.data)
                 }
@@ -374,7 +372,8 @@ function Order() {
         setselectClothLoom(value)
     }
     const changeClothYarnBatch = (value) => {
-        setselectClothYarnBatch(value)
+        console.log("=====", value.replace("+",","))
+        setselectClothYarnBatch(value.replace("+",","))
     }
     const getseq = () => {
         if (!selectClothLoom || !selectClothYarnBatch) {
@@ -398,7 +397,7 @@ function Order() {
         for (let index = 1; index <= seq; index++) {
             arr.push(index)
         }
-        setseqArr(arr)
+        setseqArr(arr.reverse())
     }
     const changeSeq = (value) => {
         console.log("起始号==", value)
@@ -431,7 +430,7 @@ function Order() {
     const tailLayout = {
         wrapperCol: { offset: 16, span: 8 },
     };
-    const componentRef = useRef();
+
     return <React.Fragment>
         <Spin spinning={spining}>
             <div className="right-container">
@@ -439,9 +438,8 @@ function Order() {
                     <Button key="3" type="primary" onClick={add}>+新建</Button>,
                     <Button key="2" onClick={edit}>编辑</Button>,
                     <Button key="1" onClick={completeOrder}>{btnTex}</Button>,
-                    <Button onClick={openOutStockOrder}>订单</Button>,
-                    // <ReactToPrint trigger={() => <Button onClick={() => { openOutStockOrder() }}>订单</Button>}
-                    //     content={() => componentRef.current} />,
+                    <Button >订单</Button>,
+
                     <Button key="5" onClick={openPrint}>布票</Button>,
                     <Dropdown overlay={menu} trigger={['click']}>
                         <div className="drop">
@@ -581,121 +579,7 @@ function Order() {
         </Modal>
 
         <div className="clothSvg"><svg ref={handleBarcode} /></div>
-        <Modal
-            width={900}
-            visible={outStockOrder}
-            onCancel={() => { setOutStockOrder(false) }}
-            footer={null}
-            title="出库单"
-        >
-            <div ref={componentRef}  className="outStockOrder">
-                <div className="delivery-order">
-                    <div className="o-title">数织通出货单</div>
-                <div className="o-subtitle">
-                    <div className="o-page">第1页 共4页</div>
-                    <div className="o-address-info">深圳市福田区创新科技广场1期B座11楼1111-8-C11  Tel：读心悦  15351934772</div>
-                    <div>出货单号：2105260002</div>
-                </div>
-                  <div className="o-base-datta">
-                    <div className="ob-row">
-                        <div>客户：数织通</div>
-                        <div>日期：2021-06-10</div>
-                        <div>客户单号：2106100001</div>
-                        <div>坯布编码：34534645dvzf</div>
-                    </div>
-                    <div className="ob-row">
-                        <div>布类：布类111</div>
-                        <div>机号：1#</div>
-                        <div>针寸：20G-34°</div>
-                        <div></div>
-                    </div>
-                    <div className="ob-row">
-                    纱别：这是纱别
-                        <p>开福<input type="checkbox" checked/></p>
-                    </div>
-                  </div>
-                  <div className="o-barcode">
-                        <div className="o-col">
-                          <div className="col-title">1</div>
-                          <div className="col-row">
-                              <div>1</div>
-                              <div>25.90</div>
-                          </div>
-                          <div className="col-row">
-                              <div>2</div>
-                              <div>25.90</div>
-                          </div>
-                          <div className="col-row">
-                              <div>3</div>
-                              <div>25.90</div>
-                          </div>
-                          <div className="col-row">
-                              <div>4</div>
-                              <div>25.90</div>
-                          </div>
-                          <div className="col-row">
-                              <div>5</div>
-                              <div>25.90</div>
-                          </div>
-                          <div className="col-row">
-                              <div>6</div>
-                              <div>25.90</div>
-                          </div>
-                          <div className="col-row">
-                              <div>7</div>
-                              <div>25.90</div>
-                          </div>
-                          <div className="col-row">
-                              <div>8</div>
-                              <div>25.90</div>
-                          </div>
-                          <div className="col-row">
-                              <div>9</div>
-                              <div>25.90</div>
-                          </div>
-                          <div className="col-row">
-                              <div>10</div>
-                              <div>25.90</div>
-                          </div>
-                          <div className="col-row">
-                              <div>11</div>
-                              <div>25.90</div>
-                          </div>
-                        </div>
-                        <div className="o-col">
-                          <div className="col-title">2</div>
-                          <div className="col-row">
-                              <div>12</div>
-                              <div>25.90</div>
-                          </div>
-                        </div>
-                  </div>
-                  <div className="o-col-total">
-                            <div className="total-item">1000</div>
-                            <div className="total-item">1000</div>
-                        </div>
-                        <div className="o-footer-total">
-                            <div>
-                            <div className="o-barTotal">
-                                                    共计12条
-                                                </div>
-                                                <div className="o-weightTotal">
-                                                    重量：1000kg
-                                                </div>
-                            </div>
-                            <div className="o-remark">备注：中深色</div>
-                            <div className="o-accept">签收及盖章</div>
-                        </div>
-                    <div className="o-note">
-                        <span>备注:收货时请核对规格、数量，如有质量问题，请于7天内书面通知复核，一经裁剪，恕不负责。</span>
-                        <span>制表：数织通</span>
-                    </div>
-                </div>
-            </div>
-            <div className="footer-btn">
-            <ReactToPrint trigger={() => <Button>打印</Button>} content={() => componentRef.current} />
-            </div>
-        </Modal>
+
 
 
     </React.Fragment >

@@ -1,6 +1,6 @@
 
-export const requestUrl = "http://39.104.13.107:8000";
-// export const requestUrl = "http://192.168.2.92:8000";
+// export const requestUrl = "http://39.104.13.107:8000";
+export const requestUrl = "http://192.168.2.92:8000";
 export const onlyFormat = (timeStamp, type) => {
   if (!timeStamp) return;
   var date = new Date(timeStamp);
@@ -39,7 +39,7 @@ export const orderSearch = [
   { key: 8, title: "类型", type: "type" },
 ]
 
-export const newOrderType = [{key:1,name:"开幅"},{key:2,name:"抽针"},{key:3,name:"圆筒"}]
+export const newOrderType = [{ key: 1, name: "开幅" }, { key: 2, name: "抽针" }, { key: 3, name: "圆筒" }]
 
 //获取今天日期，格式YYYY-MM-DD
 export function getNowFormatDate() {
@@ -89,4 +89,28 @@ export function getMonthFE(type) {
 
   if (type == 1) { return starDate }
   return endDate
+}
+/**
+ * 
+ * @param {*} array  数组
+ * @param {*} num  自定义数组长度
+ * @returns 
+ */
+export function sliceArrFn(array,num) {
+  var result = [];
+  for (var x = 0; x < Math.ceil(array.length / num); x++) {
+    var start = x * num;
+    var end = start + num;
+    result.push(array.slice(start, end));
+  }
+  return result;
+}
+
+// 数组求和
+export const sum = (array) => {
+  var sum = 0;
+  array.forEach(ele => {
+    sum += ele.weight
+  });
+  return sum;
 }
