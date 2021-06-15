@@ -1,0 +1,9 @@
+.layout-right {
+
+}
+
+.right-container {
+    background: #fff;
+    overflow: scroll;
+    height: calc(100vh - 64px - 24px);
+}

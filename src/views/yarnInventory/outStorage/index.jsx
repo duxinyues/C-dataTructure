@@ -164,29 +164,28 @@ function OutStorage(props) {
         showTotal: () => (`共${leftTotal}条`)
     }
     return <div className="right-container">
-        {detailType == "detail" && <PageHeader
-            title="退纱出库"
-            extra={[
+        {detailType === "detail" && <div className="custom">
+            <div className="title">退纱出库</div>
+            <div className="custom-right">
                 <Button type="primary" onClick={add}>
                     +新增
-                </Button>,
+                </Button>
                 <Button disabled>
                     编辑
-                </Button>,
-            ]}
-        />}
+                </Button>
+            </div>
+        </div>}
         {
-            (detailType == "add" || detailType == "edit") && <PageHeader
-                title="退纱出库"
-                extra={[
-                    <Button type="primary" onClick={onSave}>
-                        保存
-                    </Button>,
+            (detailType == "add" || detailType == "edit") && <div className="custom">
+                <div className="title">退纱出库</div>
+                <div className="custom-right"><Button type="primary" onClick={onSave}>
+                    保存
+                </Button>
                     <Button onClick={cancel}>
                         取消
-                    </Button>,
-                ]}
-            />
+                    </Button>
+                </div>
+            </div>
         }
         <div className="inventory-container">
             <div className="left">
@@ -205,9 +204,9 @@ function OutStorage(props) {
                     }}
                 />
             </div>
-            {detailType == "detail" && <Detail data={yarn_stock_detail} />}
-            {detailType == "add" && <CreateOrder save={save} />}
-            {detailType == "edit" && <CreateOrder data={yarn_stock_detail} save={save} />}
+            {detailType === "detail" && <Detail data={yarn_stock_detail} />}
+            {detailType === "add" && <CreateOrder save={save} />}
+            {detailType === "edit" && <CreateOrder data={yarn_stock_detail} save={save} />}
         </div>
     </div>
 }

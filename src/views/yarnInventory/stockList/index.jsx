@@ -135,15 +135,17 @@ function StockList() {
         showTotal: () => (`共${total}条`)
     }
     return <div className="right-container">
-        <PageHeader
-            title="库存"
-            extra={[
+        <div className="custom">
+            <div className="title">
+                库存
+            </div>
+            <div className="custom-right">
                 <Button >
                     导出
-                </Button>,
-            ]}
-        />
-        <div className="inventory-container">
+                </Button>
+            </div>
+        </div>
+        <div className="inventory-container" style={{ flexDirection: "column" }}>
             <div className="search-content">
                 <Form form={form} onFinish={onFinish}>
                     <Row gutter={24}>
@@ -193,15 +195,14 @@ function StockList() {
                     </Row>
                 </Form>
             </div>
-
+            <Table
+                pagination={pagination}
+                columns={columns}
+                loading={loading}
+                dataSource={yarnStockIo}
+                rowKey={(record, index) => record.id}
+            />
         </div>
-        <Table
-            pagination={pagination}
-            columns={columns}
-            loading={loading}
-            dataSource={yarnStockIo}
-            rowKey={(record, index) => record.id}
-        />
     </div>
 }
 

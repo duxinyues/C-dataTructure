@@ -5,12 +5,14 @@ import { connect } from "react-redux";
 import { requestUrl } from "../../utils/config";
 import { USER_INFO } from "../../actons/type";
 import './index.css';
+import logo from "../../assets/img/logo1.png";
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 function SiderNav(props) {
     console.log("Nav==", props)
     const [collapsed, setcollapsed] = useState(false);
-    const [menus, setmenus] = useState([])
+    const [menus, setmenus] = useState([]);
+    const [openKeys, setOpenKeys] = useState([]);
     useEffect(() => {
         fetch(requestUrl + "/api-user/user/findById?id=1", {
             method: "POST",
@@ -29,7 +31,7 @@ function SiderNav(props) {
     }, [])
     const renderMenus = (menu, key) => {
         if (menu.children) {
-            return <SubMenu key={key} title={
+            return <SubMenu key={menu.url} title={
                 <span>
                     <span>{menu.name}</span>
                 </span>}>
@@ -53,6 +55,9 @@ function SiderNav(props) {
     const onCollapse = collapsed => {
         setcollapsed(collapsed)
     };
+    const onOpenChange = (keys) => {
+        setOpenKeys([keys.pop()]);
+    }
     return (
         <Sider
             width="208"
@@ -63,12 +68,13 @@ function SiderNav(props) {
             onBreakpoint={broken => {
                 console.log(broken);
             }}
-
         >
-            <div className="logo" >数织通织造管理系统</div>
+            <div className="logo" ><img src={logo} alt="" style={{ width: "100%" }} /></div>
             <Menu
-                defaultSelectedKeys={['1']}
-                defaultOpenKeys={['sub1', 'sub2']}
+                // defaultSelectedKeys={['1']}
+                // defaultOpenKeys={['sub1', 'sub2']}
+                openKeys={openKeys}
+                onOpenChange={onOpenChange}
                 mode="inline"
                 theme="dark"
                 collapsed={collapsed.toString()}

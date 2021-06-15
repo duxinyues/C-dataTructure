@@ -44,8 +44,8 @@ const NormalLoginForm = (props) => {
             <img src={img.logo} className="logo-img" />
             <span>数织通织造管理系统</span>
           </div>
-          <Tabs defaultActiveKey="1" onChange={callback}>
-            <TabPane tab="账户密码登录" key="1">
+          {/* <Tabs defaultActiveKey="1" onChange={callback}>
+            <TabPane tab="账户密码登录" key="1"> */}
               <Form
                 name="normal_login"
                 initialValues={{
@@ -94,8 +94,8 @@ const NormalLoginForm = (props) => {
                   </Button>
                 </Form.Item>
               </Form>
-            </TabPane>
-            <TabPane tab="手机登录" key="2">
+            {/* </TabPane> */}
+            {/* <TabPane tab="手机登录" key="2">
               <Form
                 name="normal_login"
                 initialValues={{
@@ -145,7 +145,7 @@ const NormalLoginForm = (props) => {
                 </Form.Item>
               </Form>
             </TabPane>
-          </Tabs>
+          </Tabs> */}
         </div>
 
       </Spin>

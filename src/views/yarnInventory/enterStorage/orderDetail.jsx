@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Table, PageHeader, Button, Input, Tag, Select, Typography } from "antd";
 import { onlyFormat, requestUrl, stockType } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
@@ -27,57 +27,67 @@ function OrderDetail(props) {
             title: '纱别',
             dataIndex: 'yarnName',
             key: 'yarnName',
+            width:125
         },
         {
             title: '纱牌/纱批',
             dataIndex: 'yarnBrandBatch',
             key: 'yarnBrandBatch',
+            width:125
         },
         {
             title: '色号',
             dataIndex: "colorCode",
             key: "colorCode",
+            width:125
         },
         {
             title: '客户单号',
             dataIndex: 'customerCode',
             key: 'customerCode',
+            width:125
         }, {
             title: '件数',
             dataIndex: 'pcs',
             key: 'pcs',
+            width:125
         },
         {
             title: '规格',
             dataIndex: 'spec',
             key: 'spec',
+            width:125
         },
         {
             title: '来纱净重',
             dataIndex: 'netWeight',
             key: 'netWeight',
+            width:125
         },
         {
             title: '欠重',
             dataIndex: 'lackWeight',
             key: 'lackWeight',
+            width:125
         },
         {
             title: '总欠重',
             dataIndex: 'totalLackWeight',
             key: 'totalLackWeight',
+            width:125
         },
         {
             title: '实收净重',
             dataIndex: 'weight',
             key: 'weight',
+            width:125
         }
     ];
 
 
-    return <div className="right">
+    return <React.Fragment>
         <div className="detail-title">
-            {/* 创建：2021-05-24 */} 
+            {/* 创建：2021-05-24 */}
             <Tag>审核</Tag>
         </div>
         <div className="detail-basicData">
@@ -153,7 +163,7 @@ function OrderDetail(props) {
                 }}
             />
         </div>
-    </div>
+    </React.Fragment>
 }
 
 export default withRouter(OrderDetail)

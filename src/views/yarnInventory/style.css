@@ -7,6 +7,7 @@ textarea {
 
 
 .detail-title {
+    width: 100%;
     padding-right: 10px;
     text-align: right;
     line-height: 30px;
@@ -17,6 +18,7 @@ textarea {
     display: flex;
     padding: 10px 0;
 }
+
 .row .col {
     margin-left: 10px;
     display: flex;
@@ -26,6 +28,7 @@ textarea {
 .col .label {
     width: 100px;
 }
+
 .label11,
 .label1,
 .label13,
@@ -47,19 +50,19 @@ textarea {
     padding: 20px;
 }
 
-.search-content .ant-form-item-label > label {
+.search-content .ant-form-item-label>label {
     width: 80px;
     margin-right: 10px;
 }
 
-.col2 .ant-form-item-label > label {
+.col2 .ant-form-item-label>label {
     display: flex;
     justify-content: flex-end;
 }
+
 .search-btn {
-    border: 1px solid red;
 }
 
-.col11 .ant-form-item-label > label {
+.col11 .ant-form-item-label>label {
     margin-left: 20px;
 }

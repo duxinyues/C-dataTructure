@@ -1,4 +1,4 @@
-import { useEffect, useState, } from "react"
+import React, { useEffect, useState, } from "react"
 import { Table, Input, Select, DatePicker } from "antd";
 import { stockType, requestUrl } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
@@ -19,7 +19,7 @@ function CreateEnterStockOrder(props) {
     const [yarn_stock_detail, setyarn_stock_detail] = useState({});
     const [stockTypeIndex, setstockTypeIndex] = useState(0);
     const [customer, setcustomer] = useState([]);
-    
+
     useEffect(() => {
         getCustomer()
         if (props.data) {
@@ -76,50 +76,60 @@ function CreateEnterStockOrder(props) {
             title: '纱别',
             dataIndex: 'yarnName',
             key: 'yarnName',
+            width: 125
         },
         {
             title: '纱牌/纱批',
             dataIndex: 'yarnBrandBatch',
             key: 'yarnBrandBatch',
+            width: 125
         },
         {
             title: '色号',
             dataIndex: "colorCode",
             key: "colorCode",
+            width: 125
         },
         {
             title: '客户单号',
             dataIndex: 'customerCode',
             key: 'customerCode',
+            width: 125
         }, {
             title: '件数',
             dataIndex: 'pcs',
             key: 'pcs',
+            width: 125
         },
         {
             title: '规格',
             dataIndex: 'spec',
             key: 'spec',
+            width: 125
         },
         {
             title: '来纱净重',
             dataIndex: 'netWeight',
             key: 'netWeight',
+            width: 125
         },
         {
             title: '欠重',
             dataIndex: 'lackWeight',
             key: 'lackWeight',
+            width: 125
         },
         {
             title: '总欠重',
             dataIndex: 'totalLackWeight',
             key: 'totalLackWeight',
+            width: 125
         },
         {
             title: '实收净重',
             dataIndex: 'weight',
             key: 'weight',
+            width: 125
         }
     ];
 
@@ -138,10 +148,11 @@ function CreateEnterStockOrder(props) {
                 }
             })
     }
-    
-    return <div className="right">
+
+    return <React.Fragment>
         <div className="add-content">
             <div className="detail-title">
+                sfidfv
             </div>
             <div className="detail-basicData">
                 <div className="row">
@@ -176,7 +187,7 @@ function CreateEnterStockOrder(props) {
                 <div className="row">
                     <div className="col">
                         <div className="label1">备注</div>
-                        <TextArea autoSize={{ minRows: 2, maxRows: 6 }}  defaultValue={yarn_stock_detail.remark} onChange={saveremark} />
+                        <TextArea autoSize={{ minRows: 2, maxRows: 6 }} defaultValue={yarn_stock_detail.remark} onChange={saveremark} />
                     </div>
                 </div>
             </div>
@@ -221,7 +232,7 @@ function CreateEnterStockOrder(props) {
                 />
             </div>
         </div>
-    </div>
+    </React.Fragment>
 }
 
 export default withRouter(CreateEnterStockOrder)

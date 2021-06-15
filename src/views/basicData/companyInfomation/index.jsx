@@ -161,7 +161,9 @@ function CompanyInfo() {
                     <Button type="primary" htmlType="submit">保存</Button>
                 </Form.Item>
             </Form>
-            <div className="company-logo">LOGO</div>
+            <div className="company-logo">
+                <img src="https://xiyou-knit.oss-cn-beijing.aliyuncs.com/1623735094678.jpeg?OSSAccessKeyId=LTAI5t7rh2JnQ3vEVAkySUN1&Expires=1659748734&Signature=1rFZhF7eG%2FR0%2FTqZzi3oRYnc%2FMo%3D" alt="" srcset="" />
+            </div>
         </div>
     </div>
 }

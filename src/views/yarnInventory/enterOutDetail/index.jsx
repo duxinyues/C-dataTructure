@@ -114,7 +114,7 @@ function EnterOutDetail() {
             title: "日期",
             dataIndex: 'bizDate',
             key: 'bizDate',
-            render: (time) => (<span>{onlyFormat(time,false)}</span>)
+            render: (time) => (<span>{onlyFormat(time, false)}</span>)
         }, {
             title: "客户",
             dataIndex: 'customerName',
@@ -171,18 +171,20 @@ function EnterOutDetail() {
         },
     ]
     return <div className="right-container">
-        <PageHeader
-            title="出入明细"
-            extra={[
+        <div className="custom">
+            <div className="title">
+                出入明细
+            </div>
+            <div className="custom-right">
                 <Button>
                     打印
-                </Button>,
+                </Button>
                 <Button >
                     导出
-                </Button>,
-            ]}
-        />
-        <div className="inventory-container">
+                </Button>
+            </div>
+        </div>
+        <div className="inventory-container" style={{ flexDirection: "column" }}>
             <div className="search-content">
                 <Form form={form} onFinish={onFinish}>
                     <Row gutter={24}>
@@ -250,15 +252,14 @@ function EnterOutDetail() {
                     </Row>
                 </Form>
             </div>
-
+            <Table
+                columns={columns}
+                loading={loading}
+                dataSource={yarnStockIo}
+                pagination={pagination}
+                rowKey={(record, index) => record.id}
+            />
         </div>
-        <Table
-            columns={columns}
-            loading={loading}
-            dataSource={yarnStockIo}
-            pagination={pagination}
-            rowKey={(record, index) => record.id}
-        />
     </div>
 }
 

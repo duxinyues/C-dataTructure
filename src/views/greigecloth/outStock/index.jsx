@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import ReactToPrint from "react-to-print";
-import { PageHeader, Form, Row, DatePicker, Input, Button, Select, Table } from "antd";
+import {  Form, Row, DatePicker, Input, Button, Select, Table } from "antd";
 import { requestUrl, onlyFormat, getMonthFE } from "../../../utils/config"
 import moment from 'moment';
 import "./index.css"
@@ -169,7 +169,7 @@ function OutStock() {
     ]
     const componentRef = useRef();
     return <div className="right-container">
-        <PageHeader>
+        <div className="custom">
             <div className="left">
                 <span className="title">出库明细</span>
                 <RangePicker onChange={selectDate} defaultValue={[moment(getMonthFE(1), "YYYY-MM-DD"), moment(getMonthFE(2), "YYYY-MM-DD")]} />
@@ -182,8 +182,8 @@ function OutStock() {
 
                 <Button>导出</Button>
             </div>
-        </PageHeader>
-        <div className="inventory-container">
+        </div>
+        <div className="inventory-container outStock">
             <div className="search-content">
                 <Form form={form} onFinish={onFinish}>
                     <Row gutter={24}>
@@ -263,14 +263,13 @@ function OutStock() {
                     </Row>
                 </Form>
             </div>
-
+            <Table
+                columns={columns}
+                loading={loading}
+                dataSource={yarnStockIo}
+                pagination={pagination}
+            />
         </div>
-        <Table
-            columns={columns}
-            loading={loading}
-            dataSource={yarnStockIo}
-            pagination={pagination}
-        />
     </div>
 }
 

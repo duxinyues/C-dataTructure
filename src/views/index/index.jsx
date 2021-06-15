@@ -11,7 +11,7 @@ export default function Index() {
         <Layout>
             <ConfigProvider locale={zhCN}>
                 <SiderNav />
-                <Layout>
+                <Layout className="layout-right">
                     <Header style={{ background: '#fff', padding: 0, textAlign: "right" }} >
                         <Avatar />
                     </Header>

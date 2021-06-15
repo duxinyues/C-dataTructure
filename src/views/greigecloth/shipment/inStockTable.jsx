@@ -344,12 +344,12 @@ function InSTockTable() {
         showTotal: () => (`共${total}条`)
     }
     return <div className="right-container">
-        <PageHeader>
+        <div className="custom">
             <div className="left">
                 <span className="title">入库报表</span>
                 <RangePicker onChange={selectDate} defaultValue={[moment(getMonthFE(1), "YYYY-MM-DD"), moment(getMonthFE(2), "YYYY-MM-DD")]} />
             </div>
-            <div className="head-bth">
+            <div className="head-bth custom-right">
                 <Button>
                     打印
                 </Button>
@@ -357,8 +357,9 @@ function InSTockTable() {
                     导出
                 </Button>
             </div>
-        </PageHeader>
-        <div className="inventory-container">
+        </div>
+
+        <div className="inventory-container" style={{ flexDirection: "column" }}>
             <div className="search-content">
                 <Form
                     form={form}
@@ -466,15 +467,14 @@ function InSTockTable() {
                     </Row>
                 </Form>
             </div>
-
+            <Table
+                columns={columns}
+                loading={loading}
+                dataSource={yarnStockIo}
+                pagination={pagination}
+                rowKey={(record, index) => record.id}
+            />
         </div>
-        <Table
-            columns={columns}
-            loading={loading}
-            dataSource={yarnStockIo}
-            pagination={pagination}
-            rowKey={(record, index) => record.id}
-        />
     </div>
 }
 

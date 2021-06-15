@@ -24,36 +24,44 @@ function Detail(props) {
             title: '纱别',
             dataIndex: 'yarnName',
             key: 'yarnName',
+            width:160
         },
         {
             title: '纱牌/纱批',
             dataIndex: 'yarnBrandBatch',
             key: 'yarnBrandBatch',
+            width:160
         },
         {
-            title: "纱属性"
+            title: "纱属性",
+            width:170
         },
         {
-            title: "缸号"
+            title: "缸号",
+            width:170
         },
         {
             title: '色号',
             dataIndex: "colorCode",
             key: "colorCode",
+            width:170
         },
         {
             title: '客户单号',
             dataIndex: 'customerCode',
             key: 'customerCode',
+            width:160
         }, {
             title: '件数',
             dataIndex: 'pcs',
             key: 'pcs',
+            width:160
         },
         {
             title: '重量',
             dataIndex: 'weight',
             key: 'weight',
+            width:160
         }
     ];
 

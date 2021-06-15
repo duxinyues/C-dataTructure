@@ -10,10 +10,11 @@ const { TextArea } = Input;
 const { Option } = Select;
 document.title = "新增入库单"
 function CreateEnterStockOrder(props) {
-    console.log(props)
+    console.log("props=======", props)
     const [bizDate, setbizDate] = useState("");
-    const [remark, setremark] = useState("")
-    const [address, setaddress] = useState("")
+    const [remark, setremark] = useState("");
+    const [address, setaddress] = useState("");
+
     useEffect(() => {
         if (props.data) {
             setbizDate(props.data.bizDate);
@@ -86,21 +87,20 @@ function CreateEnterStockOrder(props) {
             <div className="enter-yarn-table">
                 <Table
                     columns={[
-                        { title: "#" },
-                        { title: "生产单号" },
-                        { title: "客户单号" },
-                        { title: "坯布编码" },
-                        { title: "布类" },
-                        { title: "纱别" },
-                        { title: "针寸" },
-                        { title: "客户颜色" },
-                        { title: "出货卷数" },
-                        { title: "出货重量" },
-                        { title: "单位" },
-                        { title: "加工单价" },
-                        { title: "金额" },
+                        { title: "生产单号", width: 130, dataIndex: "knitOrderCode" },
+                        { title: "客户单号", width: 130, dataIndex: "customerBillCode" },
+                        { title: "坯布编码", width: 130, dataIndex: "greyFabricCode" },
+                        { title: "布类", width: 130, dataIndex: "fabricType" },
+                        { title: "纱别", width: 130 ,dataIndex:"yarnInfo"},
+                        { title: "针寸", width: 70 ,dataIndex:"inches"},
+                        { title: "客户颜色", width: 70  ,dataIndex:"customerCode"},
+                        { title: "出货卷数", width: 70 ,dataIndex:"volQty"},
+                        { title: "出货重量", width: 70 ,dataIndex:"weight"},
+                        { title: "单位", width: 40,render:()=>(<span>kg</span>) },
+                        { title: "加工单价", width: 70 ,dataIndex:"weight"},
+                        { title: "金额", width: 130 ,dataIndex:"weight"},
                     ]}
-                    dataSource={[]}
+                    dataSource={props.fabricStockIoDtls}
                     pagination={false}
 
                 />

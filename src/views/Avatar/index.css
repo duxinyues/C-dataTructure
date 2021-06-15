@@ -1,5 +1,10 @@
 .userInfo {
     margin-right: 20px;
+    /* display: flex;
+    justify-content: left;
+    background: #fff; */
+    /* width: 100%;
+    line-height: 64px; */
 }
 
 .userInfo .ant-input,
@@ -10,10 +15,12 @@
 .userInfo .ant-space-item {
     display: flex;
 }
+
 .msg-box {
     margin-right: 20px;
     margin-left: 20px;
 }
+
 .userInfo .msg {
     width: 20px;
     height: 20px;

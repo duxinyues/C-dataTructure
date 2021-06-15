@@ -23,7 +23,7 @@ function InStock(props) {
     const [leftTotal, setleftTotal] = useState(0);
     const [current, setcurrent] = useState(1);
     const [size, setsize] = useState(10);
-    const [yarn_stock_detail, setyarn_stock_detail] = useState({});
+    const [yarn_stock_detail, setyarn_stock_detail] = useState({}); //
     const [selectId, setSelectId] = useState(0);
     const [detailType, setdetailType] = useState("detail");
     const [orderData, setorderData] = useState({});
@@ -162,7 +162,7 @@ function InStock(props) {
             .then(res => { return res.json() })
             .then(res => {
                 console.log(res)
-                if (res.code == 200) {
+                if (res.code === 200) {
                     getData(data);
                     setdetailType("detail");
                 }
@@ -205,6 +205,21 @@ function InStock(props) {
     }
 
     const handleOk = () => {
+        const _fabricStockIoDtls  = fabricStockIoDtls;
+        _fabricStockIoDtls.map((item) => {
+            item.customerBillCode = yarn_stock_detail.customerBillCode;
+            item.customerCode = yarn_stock_detail.customerCode;
+            item.customerId = yarn_stock_detail.customerId;
+            item.customerName = yarn_stock_detail.customerName;
+            item.fabricType = yarn_stock_detail.fabricType;
+            item.greyFabricCode = yarn_stock_detail.greyFabricCode;
+            item.inches = yarn_stock_detail.inches;
+            item.knitOrderCode = yarn_stock_detail.knitOrderCode;
+            item.knitOrderId = yarn_stock_detail.knitOrderId;
+            item.needles = yarn_stock_detail.needles;
+            item.yarnInfo = yarn_stock_detail.yarnInfo;
+        })
+        setfabricStockIoDtls(_fabricStockIoDtls)
         setvisible(false);
         setdetailType("add");
         setinventoryData();
@@ -336,6 +351,7 @@ function InStock(props) {
     const selectRow = (record) => {
         const _selected = [...selected];
         const _fabricStockIoDtls = [...fabricStockIoDtls];
+        console.log("我选的坯布==", yarn_stock_detail)
         if (_selected.indexOf(record.id) >= 0) {
             _selected.splice(_selected.indexOf(record.id), 1);
             _fabricStockIoDtls.splice(_fabricStockIoDtls.indexOf(record), 1)
@@ -350,7 +366,7 @@ function InStock(props) {
         }, 0)
         console.log("总重量为==", totalWeight);
         console.log(_selected)
-        setweightSum(totalWeight)
+        setweightSum(totalWeight.toFixed(2))
         setbarcodeIds(_selected.join(","))
         setselected(_selected);
         setfabricStockIoDtls(_fabricStockIoDtls);
@@ -359,8 +375,9 @@ function InStock(props) {
     const rowSelection = {
         selectedRowKeys: selected,
         onChange: (_selectedRowKeys, _selectedRows) => {
-
+            console.log("我选的坯布==", yarn_stock_detail)
             const ids = _selectedRows.map((item) => {
+
                 return item.id;
             })
             let totalWeight = _selectedRows.reduce((pre, cur) => {
@@ -374,43 +391,43 @@ function InStock(props) {
         },
     };
 
-    const modalState = (value)=>{
+    const modalState = (value) => {
         console.log(value);
         setOutStockOrder(value)
     }
     return <div className="right-container">
-        {detailType === "detail" && <PageHeader
-            title="坯布出货"
-            extra={[
+        {detailType === "detail" && <div className="custom">
+            <div className="title">坯布出货</div>
+            <div className="custom-right">
                 <Button type="primary" onClick={add}>
                     +新增
-                </Button>,
+                </Button>
                 <Button disabled={disabled} onClick={edit}>
                     编辑
-                </Button>,
+                </Button>
                 <Button disabled={disabled} onClick={delect}>
                     删除
-                </Button>,
+                </Button>
                 <Button disabled={disabled}>
                     导出
-                </Button>,
+                </Button>
                 <Button onClick={openOutStockOrder}>
                     细码
-                </Button>,
-            ]}
-        />}
+                </Button>
+            </div>
+        </div>}
         {
-            (detailType === "add" || detailType === "edit") && <PageHeader
-                title="坯布出货"
-                extra={[
+            (detailType === "add" || detailType === "edit") && <div className="custom">
+                <div className="title">坯布出货</div>
+                <div className="custom-right">
                     <Button type="primary" onClick={onSave}>
                         保存
-                    </Button>,
+                    </Button>
                     <Button onClick={cancel}>
                         取消
-                    </Button>,
-                ]}
-            />
+                    </Button>
+                </div>
+            </div>
         }
         <div className="inventory-container">
             <div className="left">
@@ -431,9 +448,8 @@ function InStock(props) {
                 />
             </div>
             {detailType === "detail" && <OrderDetail data={yarn_stock_detail} />}
-            {(detailType === "add" || detailType === "edit") && <CreateOrder save={save} data={yarn_stock_detail} />}
+            {(detailType === "add" || detailType === "edit") && <CreateOrder save={save} data={yarn_stock_detail} fabricStockIoDtls={fabricStockIoDtls} />}
         </div>
-
         <Modal
             className="customModal"
             destroyOnClose
@@ -569,7 +585,7 @@ function InStock(props) {
                 </div>
             </div>
         </Modal>
-        {outStockOrder && <DeliveryOrder deliveryOrder={deliveryOrder} modalState={modalState}/>}
+        {outStockOrder && <DeliveryOrder deliveryOrder={deliveryOrder} modalState={modalState} />}
     </div>
 }
 

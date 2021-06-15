@@ -1,6 +1,6 @@
 import { withRouter } from "react-router-dom";
 import { Table, PageHeader, Button, Modal, Form, Input, message, Select, Tag } from "antd";
-import { requestUrl, onlyFormat } from "../../../utils/config";
+import { requestUrl, onlyFormat, checkPhone } from "../../../utils/config";
 import { useEffect, useState } from "react";
 import "./index.css"
 const { confirm } = Modal;
@@ -28,7 +28,6 @@ function StaffInfo() {
     const positionArr = ["查布员", "值机员", "其他"]
     useEffect(() => {
         getPerson(1, 10);
-
     }, [])
     const getPerson = (page, size) => {
         fetch(requestUrl + `/api-basedata/person/findAll?companyId=1&page=${page}&size=${size}`, {
@@ -53,29 +52,28 @@ function StaffInfo() {
     }
     const handleOk = async (param) => {
         const value = await form.validateFields();
-        console.log("表单数据", value)
         let data;
+        console.log("手机==",value)
+        if (!checkPhone(value.mobilePhoneNo)) {
+            message.error("请输入正确的手机号码！");
+            return;
+        }
         // 新增
-        if (editType == 2) {
+        if (editType === 2) {
             data = {
                 "code": value.code,
-                "companyId": 1,
                 "mobilePhoneNo": value.mobilePhoneNo,
                 "name": value.name,
                 "position": value.position
             }
         } else {
             // 编辑
-            var index = positionArr.findIndex(function (item) {
-                return item == value.position;
-            });
             data = {
                 "code": value.code,
-                "companyId": 1,
                 "id": selectuser.id,
                 "mobilePhoneNo": value.mobilePhoneNo,
                 "name": value.name,
-                "position": index + 1
+                "position": value.position
             }
         }
         setloading(false);
@@ -90,12 +88,12 @@ function StaffInfo() {
         }).then((res) => { return res.json() })
             .then(res => {
                 setvisible(false)
-                if (res.code == 200) {
-                    editType == 1 ? message.success("修改成功！") : message.success("添加成功！");
+                if (res.code === 200) {
+                    editType === 1 ? message.success("修改成功！") : message.success("添加成功！");
                     getPerson(1, 10);
                     return;
                 }
-                editType == 1 ? message.success("修改失败！") : message.success(res.msg);
+                editType === 1 ? message.error("修改失败！") : message.error(res.msg);
             })
     }
     const onCancel = () => {
@@ -201,7 +199,7 @@ function StaffInfo() {
             title: '更新时间',
             dataIndex: 'updateTime',
             key: 'updateTime',
-            render: (time) => (<span>{onlyFormat(time,true)}</span>)
+            render: (time) => (<span>{onlyFormat(time, true)}</span>)
         },
         {
             title: '操作',
@@ -243,11 +241,6 @@ function StaffInfo() {
             dataSource={data}
             rowKey={record => record.id}
             pagination={pagination}
-            scroll={{
-                scrollToFirstRowOnChange: true,
-                x: 1200,
-                y: 600
-            }}
             rowClassName={(record) => {
                 return setRowClassName(record)
             }}
@@ -281,7 +274,7 @@ function StaffInfo() {
                 name="form_in_modal"
                 onFinish={handleOk}
             >
-                <Form.Item label="姓名" name="name">
+                <Form.Item label="姓名" name="name" rules={[{ required: true, message: "请输入姓名" }]}>
                     <Input placeholder="姓名" />
                 </Form.Item>
                 <Form.Item label="工号" name="code" rules={[{ required: true, message: "请输入工号" }]}>

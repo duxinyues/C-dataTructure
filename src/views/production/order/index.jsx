@@ -372,8 +372,8 @@ function Order() {
         setselectClothLoom(value)
     }
     const changeClothYarnBatch = (value) => {
-        console.log("=====", value.replace("+",","))
-        setselectClothYarnBatch(value.replace("+",","))
+        console.log("=====", value.replace("+", ","))
+        setselectClothYarnBatch(value.replace("+", ","))
     }
     const getseq = () => {
         if (!selectClothLoom || !selectClothYarnBatch) {
@@ -434,26 +434,33 @@ function Order() {
     return <React.Fragment>
         <Spin spinning={spining}>
             <div className="right-container">
-                {headType === "detail" && <PageHeader className="custom" title="订单管理" extra={[
-                    <Button key="3" type="primary" onClick={add}>+新建</Button>,
-                    <Button key="2" onClick={edit}>编辑</Button>,
-                    <Button key="1" onClick={completeOrder}>{btnTex}</Button>,
-                    <Button >订单</Button>,
-
-                    <Button key="5" onClick={openPrint}>布票</Button>,
-                    <Dropdown overlay={menu} trigger={['click']}>
-                        <div className="drop">
-                            更多 &nbsp; <DownOutlined />
-                        </div>
-                    </Dropdown>,
-
-                ]} />}
-                {(headType === "add" || headType === "edit") && <PageHeader title="订单管理" extra={[
-                    <Button key="1" type="primary" onClick={onSave}>保存</Button>,
-                    <Button key="2" onClick={cancel}>取消</Button>,
-                ]} />}
+                {headType === "detail" && <div className="custom">
+                    <div className="title">
+                        订单管理
+                    </div>
+                    <div className="custom-right">
+                        <Button key="3" type="primary" onClick={add}>+新建</Button>
+                        <Button key="2" onClick={edit}>编辑</Button>
+                        <Button key="1" onClick={completeOrder}>{btnTex}</Button>
+                        <Button >订单</Button>
+                        <Button key="5" onClick={openPrint}>布票</Button>
+                        <Dropdown overlay={menu} trigger={['click']}>
+                            <div className="drop">
+                                更多 &nbsp; <DownOutlined />
+                            </div>
+                        </Dropdown>
+                    </div>
+                </div>}
+                {(headType === "add" || headType === "edit") && <div className="custom">
+                    <div className="title">
+                        订单管理
+                    </div>
+                    <div className="custom-right">
+                        <Button key="1" type="primary" onClick={onSave}>保存</Button>,
+                        <Button key="2" onClick={cancel}>取消</Button>,
+                    </div>
+                </div>}
                 <div className="inventory-container">
-
                     <div className="left">
                         <Form
                             className='header-form'
@@ -464,7 +471,7 @@ function Order() {
                             }}
                         >
                             <Row>
-                                <Form.Item name="billStatus" style={{ marginRight: "10px" }}>
+                                <Form.Item name="billStatus" className="billStatus" style={{ marginRight: "10px" }}>
                                     <Select>
                                         <Option value="1">进行中</Option>
                                         <Option value="2">未审核</Option>
@@ -473,7 +480,7 @@ function Order() {
                                     </Select>
                                 </Form.Item>
                                 <div>
-                                    <Form.Item name="searchType">
+                                    <Form.Item name="searchType" className="searchType">
                                         <Select className="cu" onChange={selectSearchTyle} >
                                             {
                                                 orderSearch.map((item, key) => (<Option value={item.type} key={key}>{item.title}</Option>))
@@ -482,7 +489,7 @@ function Order() {
                                     </Form.Item>
 
                                 </div>
-                                <Form.Item name={searchValue}>
+                                <Form.Item name={searchValue} className="">
                                     <Input />
                                 </Form.Item>
                                 <Form.Item>

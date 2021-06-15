@@ -19,72 +19,83 @@ function OrderDetail(props) {
             title: '生产单号',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.code ? item.code : ""}</span>)
+            render: (item) => (<span>{item.code ? item.code : ""}</span>),
+            width: 130
         },
         {
             title: '客户单号',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.customerBillCode ? item.customerBillCode : ""}</span>)
+            render: (item) => (<span>{item.customerBillCode ? item.customerBillCode : ""}</span>),
+            width: 130
         },
         {
             title: '坯布编码',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.greyFabricCode ? item.greyFabricCode : ""}</span>)
+            render: (item) => (<span>{item.greyFabricCode ? item.greyFabricCode : ""}</span>),
+            width: 130
         },
         {
             title: '布类',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.fabricType ? item.fabricType : ""}</span>)
+            render: (item) => (<span>{item.fabricType ? item.fabricType : ""}</span>),
+            width: 130
         },
         {
             title: '纱别',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.yarnName ? item.yarnName : ""}</span>)
+            render: (item) => (<span>{item.yarnName ? item.yarnName : ""}</span>),
+            width: 130
         },
         {
             title: '针寸',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.inches ? item.inches : ""}</span>)
+            render: (item) => (<span>{item.inches ? item.inches : ""}</span>),
+            width: 70
         },
         {
             title: '客户颜色',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.customerColor ? item.customerColor : ""}</span>)
+            render: (item) => (<span>{item.customerColor ? item.customerColor : ""}</span>),
+            width: 70
         },
         {
             title: '出货卷数',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.volQty ? item.volQty : ""}</span>)
+            render: (item) => (<span>{item.volQty ? item.volQty : ""}</span>),
+            width: 70
         },
         {
             title: '出货重量',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.weight ? item.weight : ""}</span>)
+            render: (item) => (<span>{item.weight ? item.weight : ""}</span>),
+            width: 70
         },
         {
             title: '单位',
-            dataIndex: 'id',
-            key: 'id',
+            width: 40,
+            render:()=>(<span>kg</span>)
         },
         {
             title: '加工单价',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.productPrice}</span>)
+            render: (item) => (<span>{item.productPrice}</span>),
+            width: 70
         },
         {
             title: '金额',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.totalMoney}</span>)
+            render: (item) => (<span>{item.totalMoney}</span>),
+            width: 130
         }
     ];
     return <div className="right">

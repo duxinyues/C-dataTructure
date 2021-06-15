@@ -4,8 +4,8 @@ body {
     "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-min-width: 100vw;
-
+  overflow: hidden;
+  /* font-size: 12px !important; */
 }
 
 code {

@@ -1,13 +1,6 @@
 @import "~antd/dist/antd.css";
 
-.right-container {
-    background: #fff;
-    min-height: 80vh;
-}
 
-/* .customModal .ant-form-item-label {
-    text-align: left !important;
-} */
 
 .clickRowStyl,
 .clickRowStyl:hover>td {
@@ -26,18 +19,81 @@
 .inventory-container {
     display: flex;
     border-top: 1px solid #f0f2f5;
-    height: 100%;
+    min-width: 1150px;
+    height: calc(100vh - 150px);
 }
 
 .inventory-container .left {
-    width: 30vw;
-    border: 1px solid #f0f2f5;
+    max-width: 900px;
+    min-width: 414px;
+
 }
 
 .inventory-container .right {
-    width: 70vw;
+    min-width: 730px;
+    border-left: 1px solid #f0f2f5;
+    padding-left: 10px;
 }
 
 .detail-title {
     border-bottom: 1px solid #f0f2f5;
+}
+
+.ant-table-thead>tr>th,
+.ant-table-tbody>tr>td,
+.ant-table tfoot>tr>th,
+.ant-table tfoot>tr>td {
+    padding: 6px;
+}
+
+.ant-table {
+    line-height: 30px;
+}
+
+
+
+.custom {
+    padding: 15px;
+    min-width: 1150px;
+}
+
+.custom .title {
+    font-size: 20px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.custom,
+.custom-right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.custom-right button,
+.custom-right .ant-dropdown-trigger {
+    margin-left: 10px;
+}
+
+input {
+    height: 26px;
+}
+
+
+.ant-input {
+    height: 26px !important;
+}
+
+.ant-select-selector {
+    height: 26px !important;
+}
+
+.ant-select-single .ant-select-selector .ant-select-selection-item,
+.ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+    line-height: 26px;
+}
+
+.ant-select {
+    height: 26px !important;
 }

@@ -128,18 +128,21 @@ function Stock() {
         }
     ]
     return <div className="right-container">
-        <PageHeader
-            title="坯布库存"
-            extra={[
+        <div className="custom">
+            <div className="title">
+                坯布库存
+            </div>
+            <div className="custom-right">
                 <Button>
                     打印
-                </Button>,
+                </Button>
                 <Button >
                     导出
-                </Button>,
-            ]}
-        />
-        <div className="inventory-container">
+                </Button>
+            </div>
+        </div>
+
+        <div className="inventory-container" style={{ flexDirection: "column" }}>
             <div className="search-content">
                 <Form form={form} onFinish={onFinish}>
                     <Row gutter={24}>
@@ -221,15 +224,14 @@ function Stock() {
                     </Row>
                 </Form>
             </div>
-
+            <Table
+                columns={columns}
+                loading={loading}
+                dataSource={yarnStockIo}
+                pagination={pagination}
+                rowKey={(record, index) => record.id}
+            />
         </div>
-        <Table
-            columns={columns}
-            loading={loading}
-            dataSource={yarnStockIo}
-            pagination={pagination}
-            rowKey={(record, index) => record.id}
-        />
     </div>
 }
 

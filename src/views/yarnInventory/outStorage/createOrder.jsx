@@ -66,50 +66,60 @@ function CreateOutStockOrder(props) {
             title: '纱别',
             dataIndex: 'yarnName',
             key: 'yarnName',
+            width:130
         },
         {
             title: '纱牌/纱批',
             dataIndex: 'yarnBrandBatch',
             key: 'yarnBrandBatch',
+            width:130
         },
         {
             title: '色号',
             dataIndex: "colorCode",
             key: "colorCode",
+            width:130
         },
         {
             title: '客户单号',
             dataIndex: 'customerCode',
             key: 'customerCode',
+            width:130
         }, {
             title: '件数',
             dataIndex: 'pcs',
             key: 'pcs',
+            width:130
         },
         {
             title: '规格',
             dataIndex: 'spec',
             key: 'spec',
+            width:130
         },
         {
             title: '来纱净重',
             dataIndex: 'netWeight',
             key: 'netWeight',
+            width:130
         },
         {
             title: '欠重',
             dataIndex: 'lackWeight',
             key: 'lackWeight',
+            width:130
         },
         {
             title: '总欠重',
             dataIndex: 'totalLackWeight',
             key: 'totalLackWeight',
+            width:70
         },
         {
             title: '实收净重',
             dataIndex: 'weight',
             key: 'weight',
+            width:70
         }
     ];
 
@@ -153,22 +163,6 @@ function CreateOutStockOrder(props) {
                             showToday />
                     </div>
                 </div>
-                {/* <div className="row">
-                    <div className="col">
-                        <div className="label11">单据类型</div>
-                        <Select onChange={selectStockType} value={stockType[stockTypeIndex]}>
-                            {
-                                stockType.map((item, key) => (<Option value={key} key={key}>{item}</Option>))
-                            }
-                        </Select>
-                    </div>
-                </div> */}
-                {/* <div className="row">
-                    <div className="col">
-                        <div className="label1">备注</div>
-                        <TextArea autoSize={{ minRows: 2, maxRows: 6 }} value={yarn_stock_detail.remark} onChange={saveremark} />
-                    </div>
-                </div> */}
             </div>
             <div className="enter-yarn-table">
                 <Table

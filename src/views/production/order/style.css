@@ -1,11 +1,13 @@
 .header-form {
     padding-top: 10px !important;
+    padding-left: 20px !important;
 }
 
 
-.custom .ant-page-header-heading-extra {
+/* .custom .ant-page-header-heading-extra {
     display: flex;
-}
+} */
+
 
 .drop {
     display: flex;
@@ -22,7 +24,6 @@
 
 .detail-content {
     max-height: 79vh;
-    overflow-y: scroll;
 }
 
 .detail-content em {
@@ -147,4 +148,35 @@
     border: 1px solid green;
     width: 100px;
     margin: 0 10px 5px;
+}
+
+.header-form .ant-input {
+    border-left: none;
+}
+
+.header-form .ant-input {
+    height: 26px !important;
+}
+
+.header-form .searchType .ant-select-selector,
+.header-form .billStatus .ant-select-selector {
+    /* border-right: none !important; */
+    height: 26px !important;
+}
+
+.header-form .searchType .ant-select-selector,
+.header-form .billStatus .ant-select-selector {
+    /* border-right: none !important; */
+    height: 26px !important;
+}
+
+.header-form .searchType .ant-select-selector {
+    border-right: none !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.header-form .ant-select-single .ant-select-selector .ant-select-selection-item,
+.ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+    line-height: 26px;
 }

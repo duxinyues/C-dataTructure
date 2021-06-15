@@ -22,3 +22,16 @@
 .head-bth button {
     margin-left: 10px;
 }
+
+.outStock {
+    flex-direction: column;
+}
+
+.custom .left {
+    display: flex;
+    align-items: center;
+}
+
+.custom .left .title {
+    margin-right: 10px;
+}
