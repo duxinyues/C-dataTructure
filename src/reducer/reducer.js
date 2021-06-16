@@ -1,5 +1,5 @@
 //引入dispatch的type类型
-import { LOGIN, LOGOUT, USER_INFO } from "../actons/type"
+import { LOGIN, LOGOUT, USER_INFO, SAVE_ORDER, SAVE_SELECTDATA } from "../actons/type"
 
 //reducer的作用就是返回一个新的状态
 const initialState = {
@@ -45,6 +45,33 @@ export function userInfoReducer(state = userDataState, action) {
             return {
                 ...state,
                 userData: action.userData
+            }
+        default:
+            return state
+    }
+}
+
+const selectOrderData = { selectOrderData: [] };
+export function selectOrderDataReducer(state = selectOrderData, action) {
+    console.log("action==", action)
+    switch (action.type) {
+        case SAVE_ORDER:
+            return {
+                ...state,
+                selectOrderData: action.payload
+            }
+        default:
+            return state
+    }
+}
+const selectData = { selectData: {} };
+export function selectDataReducer(state = selectData, action) {
+    console.log(action)
+    switch (action.type) {
+        case SAVE_SELECTDATA:
+            return {
+                ...state,
+                selectData: action.payload
             }
         default:
             return state

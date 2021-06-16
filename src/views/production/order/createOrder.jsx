@@ -326,7 +326,14 @@ let CreateOrder = (props, ref) => {
                             </Select>
                         </div>
                     </Col>
-
+                    <Col span={8} className="c-col">
+                        <div className="c-label c-right">工艺要求</div>
+                        <div className="c-input"><Input  onChange={changeCustomerColor} /></div>
+                    </Col>
+                    <Col span={8} className="c-col">
+                        <div className="c-label c-right">要求匹重</div>
+                        <div className="c-input"><Input  /></div>
+                    </Col>
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
@@ -347,15 +354,18 @@ let CreateOrder = (props, ref) => {
                         <div className="c-label">纱长</div>
                         <div className="c-input"><Input onChange={changeYarnLength} /></div>
                     </Col>
-
+                    <Col span={8} className="c-col">
+                        <div className="c-label c-right">纸管重量</div>
+                        <div className="c-input"><Input onChange={changeweight} /></div>
+                    </Col>
                 </Row>
                 <Row className="c-row">
-                    <Col span={16} className="c-col">
+                    {/* <Col span={16} className="c-col">
                         <div className="c-label">客户颜色</div>
                         <div className="c-input"><Input onChange={changeCustomerColor} /></div>
-                    </Col>
-                    <Col span={8} className="c-col">
-                        <div className="c-label c-right">备注</div>
+                    </Col> */}
+                    <Col span={24} className="c-col">
+                        <div className="c-label">备注</div>
                         <div className="c-input"><Input onChange={changeRemark} /></div>
                     </Col>
                 </Row>

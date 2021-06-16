@@ -1,6 +1,6 @@
 
-export const requestUrl = "http://39.104.13.107:8000";
-// export const requestUrl = "http://192.168.2.81:8000";
+// export const requestUrl = "http://39.104.13.107:8000";
+export const requestUrl = "http://192.168.2.81:8000";
 export const onlyFormat = (timeStamp, type) => {
   if (!timeStamp) return;
   var date = new Date(timeStamp);
@@ -13,7 +13,6 @@ export const onlyFormat = (timeStamp, type) => {
   if (type) return Y + M + D + " " + h + m + s;
   return Y + M + D
 };
-
 
 // 入库单类型
 export const stockType = ["采购入库", "调拨入库", "退料入库", "加工入库", "其他入库"]

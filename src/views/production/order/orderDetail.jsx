@@ -100,22 +100,28 @@ function OrderDetail(props) {
                         <div className="c-label">订单数量</div>
                         <div className="c-input"><Input disabled value={props.orderData.weight} /></div>
                     </Col>
-
+                    <Col span={8} className="c-col">
+                        <div className="c-label c-right">要求匹重</div>
+                        <div className="c-input"><Input disabled value={props.orderData.unitWeight} /></div>
+                    </Col>
+                    <Col span={8} className="c-col">
+                        <div className="c-label c-right">颜色</div>
+                        <div className="c-input"><Input disabled  value={props.orderData.customerColor}/></div>
+                    </Col>
                 </Row>
                 <Row className="c-row">
                     <Col span={16} className="c-col">
                         <div className="c-label">纱长</div>
                         <div className="c-input"><Input disabled value={props.orderData.yarnLength} /></div>
                     </Col>
-
+                    <Col span={8} className="c-col">
+                        <div className="c-label c-right">纸管重量</div>
+                        <div className="c-input"><Input disabled value={props.orderData.tareWeight} /></div>
+                    </Col>
                 </Row>
                 <Row className="c-row">
-                    <Col span={16} className="c-col">
-                        <div className="c-label">客户颜色</div>
-                        <div className="c-input"><Input disabled value={props.orderData.customerColor} /></div>
-                    </Col>
-                    <Col span={8} className="c-col">
-                        <div className="c-label c-right">备注</div>
+                    <Col span={24} className="c-col">
+                        <div className="c-label">备注</div>
                         <div className="c-input"><Input disabled value={props.orderData.remark} /></div>
                     </Col>
                 </Row>

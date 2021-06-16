@@ -1,19 +1,20 @@
 import { useState } from "react"
 import { Table, Input, Tag, } from "antd";
-import { onlyFormat } from "../../../utils/config";
+import { onlyFormat, requestUrl } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
 import "../../yarnInventory/style.css"
 
 const { TextArea } = Input;
-document.title = "坯布出货"
+
 function OrderDetail(props) {
-    console.log(props)
+    document.title = "坯布出货"
     const [disable, setdisable] = useState(true);
     const enter_yarn_colums = [
         {
             title: '#',
             dataIndex: 'id',
             key: 'id',
+            width: 70
         },
         {
             title: '生产单号',
@@ -81,7 +82,7 @@ function OrderDetail(props) {
         {
             title: '单位',
             width: 40,
-            render:()=>(<span>kg</span>)
+            render: () => (<span>kg</span>)
         },
         {
             title: '加工单价',
@@ -98,9 +99,27 @@ function OrderDetail(props) {
             width: 130
         }
     ];
+    const audit = () => {
+        console.log(props);
+        const status = props.data.billStatus === 0 ? 1 : 0
+        fetch(requestUrl + "/api-stock/fabricStockIo/updateStatus?id=" + props.data.id + "&status=" + status, {
+            method: "POST",
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token"),
+            }
+        })
+            .then(res => { return res.json() })
+            .then(res => {
+                if (res.code === 200) {
+                    props.update()
+                }
+            })
+    }
     return <div className="right">
         <div className="detail-title">
-            <Tag>审核</Tag>
+            {props.data.billStatus === 0 && <span style={{ marginRight: "10px" }}>未审核</span>}
+            {props.data.billStatus === 1 && <span style={{ marginRight: "10px" }}>已审核</span>}
+            <Tag onClick={audit}>{props.data.billStatus === 1 ? "反审核" : "审核"}</Tag>
         </div>
         <div className="detail-basicData">
             <div className="row">
@@ -120,7 +139,7 @@ function OrderDetail(props) {
             <div className="row">
                 <div className="col">
                     <div className="label">出库时间</div>
-                    <Input disabled={disable} value={onlyFormat(props.data.bizDate, true)} />
+                    <Input disabled={disable} value={onlyFormat(props.data.bizDate, false)} />
                 </div>
             </div>
             <div className="row">

@@ -1,7 +1,9 @@
 import {
     LOGIN,
     LOGOUT,
-    GET_MENUS
+    GET_MENUS,
+    SAVE_ORDER,
+    SAVE_SELECTDATA
 } from "./type";
 import { message } from "antd"
 import { requestUrl } from "../utils/config";
@@ -37,8 +39,8 @@ const getMenus = () => dispatch => {
         console.log("menus", res)
         if (res.code == 200) {
             dispatch({
-                type:GET_MENUS,
-                payload:res.data.menus
+                type: GET_MENUS,
+                payload: res.data.menus
             })
         }
     }).catch((err) => {
@@ -50,5 +52,20 @@ export const logout = () => (dispatch) => {
     dispatch({
         type: LOGOUT,
         payload: {}
+    })
+}
+
+export const saveOrderData = (value) => (dispatch) => {
+    dispatch({
+        type: SAVE_ORDER,
+        payload: value
+    })
+}
+
+export const saveSelectData = (value) => (dispatch) => {
+    
+    dispatch({
+        type: SAVE_SELECTDATA,
+        payload: value
     })
 }

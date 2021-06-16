@@ -96,7 +96,7 @@ function DataContent(props) {
                     <Statistic title="开机效率" value="未接入MES" />
                     <div className="scale">
                         <Chart height={100} autoFit data={[
-                            { year: '1951 年', sales: 0 },
+                            { year: '1951 年', sales: 100 },
                             { year: '1952 年', sales: 52 },
                             { year: '1956 年', sales: 61 },
                             { year: '1957 年', sales: 45 },
@@ -117,7 +117,7 @@ function DataContent(props) {
                     <Statistic title="坯布库存" value="124,105.82" />
                     <div className="scale">
                         <Chart height={100} autoFit data={[
-                            { year: '1951 年', sales: 0 },
+                            { year: '1951 年', sales: 100 },
                             { year: '1952 年', sales: 52 },
                             { year: '1956 年', sales: 61 },
                             { year: '1957 年', sales: 45 },

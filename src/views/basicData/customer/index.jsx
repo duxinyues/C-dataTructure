@@ -26,10 +26,10 @@ function CustomerData() {
     const selectId = []
     useEffect(() => {
         getClothData(1, 10);
-        getData()
     }, [])
 
     const modalClick = async (param, type) => {
+        getData()
         await form.setFieldsValue({
             name: param.name,
             abbr: param.abbr,
@@ -148,7 +148,7 @@ function CustomerData() {
     }
     // 获取列表数据
     const getClothData = (page, size) => {
-        fetch(requestUrl + `/api-basedata/customer/findAll?companyId=1&page=${page}&size=${size}`, {
+        fetch(requestUrl + `/api-basedata/customer/findAll?page=${page}&size=${size}`, {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token")
@@ -156,6 +156,7 @@ function CustomerData() {
         })
             .then(res => { return res.json() })
             .then(res => {
+                console.log("客户列表==",res)
                 if (res.code == 200) {
                     setloading(false)
                     setSize(res.data.size);

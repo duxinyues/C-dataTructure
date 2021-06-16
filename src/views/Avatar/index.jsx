@@ -49,7 +49,7 @@ function Avatars(props) {
               backgroundColor: '#fde3cf',
             }}
             size="large"
-            // src={props.user.headImgUrl}
+            src={props.user.headImgUrl}
           >
           </Avatar>
         </Dropdown>
@@ -63,4 +63,5 @@ const mapStateToProps = (state) => {
     user: state.userData.userData
   }
 }
+
 export default connect(mapStateToProps)(withRouter(Avatars));
