@@ -20,7 +20,7 @@ const day = (timeStamp) => {
     return M + D;
 };
 function CreateEnterStockOrder(props, ref) {
-
+console.log(props)
     const [refresh, setRefresh] = useState(false);
     const [bizDate, setbizDate] = useState("");
     const [remark, setremark] = useState("");
@@ -42,11 +42,6 @@ function CreateEnterStockOrder(props, ref) {
     const [volQtySum, setvolQtySum] = useState(0);
     const [customerId, setcustomerId] = useState();
     const [customerName, setcustomerName] = useState("");
-    const store = useSelector(state => {
-        return Object.assign({}, state)
-    })
-    console.log("这是是什么==", store)
-    const dispatch = useDispatch()
     useEffect(() => {
         if (props.data) {
             setbizDate(props.data.bizDate);
@@ -245,11 +240,10 @@ function CreateEnterStockOrder(props, ref) {
                 }
             })
     }
-    const handleOk = async () => {
-        setRefresh(true)
+    const handleOk =  () => {
         const _fabricStockIoDtls = [];
-        const selectOrderData = store.selectOrder.selectOrderData;
-        selectOrderData.push(store.selectData.selectData)
+        const selectOrderData = props.orderData.selectOrderData;
+        selectOrderData.push(props.selectDate.selectData)
         selectOrderData.map((item) => {
             item._volQty = volQtySum;
             item._weight = weightSum;
@@ -275,8 +269,7 @@ function CreateEnterStockOrder(props, ref) {
             "flag": 0,
             "remark": remark
         })
-        await dispatch({ type: SAVE_ORDER, selectOrderData: selectOrderData })
-        // props.saveOrderData(selectOrderData)
+        props.saveOrderData(selectOrderData)
         setselectOrderData(selectOrderData);
         setvisible(false);
         setinventoryData();
@@ -303,9 +296,8 @@ function CreateEnterStockOrder(props, ref) {
         setinventoryData();
         setbarCodeData();
     }
-    const selectOrder = async (value) => {
-        // props.saveSelectData(value);
-        await dispatch({ type: SAVE_SELECTDATA, selectData: value })
+    const selectOrder =  (value) => {
+        props.saveSelectData(value);
     }
     // 创建出货单
     useImperativeHandle(ref, () => ({
@@ -379,7 +371,7 @@ function CreateEnterStockOrder(props, ref) {
                         { title: "加工单价", width: 70, dataIndex: "price" },
                         { title: "金额", width: 130, dataIndex: "totalMoney" },
                     ]}
-                    dataSource={[]}
+                    dataSource={props.orderData.selectOrderData}
                     pagination={false}
                 />
             </div>
@@ -520,13 +512,12 @@ function CreateEnterStockOrder(props, ref) {
         </Modal>
     </div>
 }
-// const mapStateToProps = (state) => {
-//     return {
-//         orderData: state.selectOrder,
-//         selectDate: state.selectData
-//     }
-// }
+const mapStateToProps = (state) => {
+    return {
+        orderData: state.selectOrder,
+        selectDate: state.selectData
+    }
+}
 
 CreateEnterStockOrder = forwardRef(CreateEnterStockOrder)
-// export default connect(mapStateToProps, { saveOrderData, saveSelectData })(CreateEnterStockOrder)
-export default CreateEnterStockOrder
+export default connect(mapStateToProps, { saveOrderData, saveSelectData })(CreateEnterStockOrder)

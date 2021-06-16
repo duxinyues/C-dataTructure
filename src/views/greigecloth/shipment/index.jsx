@@ -15,7 +15,6 @@ const { Option } = Select;
 document.title = "坯布出货";
 
 function InStock(props) {
-    console.log(props)
     const childRef = useRef();
     const [spinning, setspinning] = useState(true);
     const [disabled, setdisabled] = useState(false);

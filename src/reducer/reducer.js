@@ -53,7 +53,6 @@ export function userInfoReducer(state = userDataState, action) {
 
 const selectOrderData = { selectOrderData: [] };
 export function selectOrderDataReducer(state = selectOrderData, action) {
-    console.log("action==", action)
     switch (action.type) {
         case SAVE_ORDER:
             return {
