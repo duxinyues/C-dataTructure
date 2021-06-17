@@ -1,10 +1,10 @@
-import { useEffect, useState, useImperativeHandle, forwardRef } from "react"
+import { useEffect, useState } from "react"
 import { Table, Input, Select, DatePicker, Form, Row, Modal, Button, Tag, message } from "antd";
 import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { requestUrl, getNowFormatDate } from "../../../utils/config";
-import { saveOrderData, saveSelectData } from "../../../actons/action";
-import { SAVE_ORDER, SAVE_SELECTDATA } from "../../../actons/type"
-import { connect, useSelector, useDispatch } from "react-redux";
+import { SAVE_ORDER, SAVE_SELECTDATA } from "../../../actons/type";
+import {saveOrderData,saveSelectData}  from "../../../actons/action"
+import { connect } from "react-redux";
 import 'moment/locale/zh-cn';
 import moment from "moment"
 import locale from 'antd/es/date-picker/locale/zh_CN';
@@ -19,9 +19,7 @@ const day = (timeStamp) => {
     var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
     return M + D;
 };
-function CreateEnterStockOrder(props, ref) {
-console.log(props)
-    const [refresh, setRefresh] = useState(false);
+function CreateEnterStockOrder(props) {
     const [bizDate, setbizDate] = useState("");
     const [remark, setremark] = useState("");
     const [address, setaddress] = useState("");
@@ -32,7 +30,7 @@ console.log(props)
     const [modalsize, setmodalsize] = useState(10);
     const [barCodeData, setbarCodeData] = useState([]);
     const [selected, setselected] = useState([]);
-    const [visible, setvisible] = useState(false);
+    const [visible, setvisible] = useState(true);
     const [customer, setcustomer] = useState([{}]);
     const [selectOrderData, setselectOrderData] = useState([])
     const [fabricStockIoDtls, setfabricStockIoDtls] = useState([]);
@@ -53,8 +51,7 @@ console.log(props)
             size: 10,
             customerId: customerId
         });
-        refresh && setTimeout(() => setRefresh(false))
-    }, [refresh]);
+    }, []);
 
     // 选择入库日期
     const selectDate = (date, dateString) => {
@@ -189,7 +186,6 @@ console.log(props)
             _fabricStockIoDtls.push(record)
         }
 
-        console.log(_fabricStockIoDtls)
         let totalWeight = _fabricStockIoDtls.reduce((pre, cur) => {
             return pre + cur.weight
         }, 0)
@@ -240,14 +236,14 @@ console.log(props)
                 }
             })
     }
-    const handleOk =  () => {
+    const handleOk = () => {
         const _fabricStockIoDtls = [];
-        const selectOrderData = props.orderData.selectOrderData;
-        selectOrderData.push(props.selectDate.selectData)
+        const selectOrderData = props.totalOrder;
+        props.selectData._volQty = volQtySum;
+        props.selectData._weight = weightSum;
+        props.selectData.totalMoney = (props.selectData.price * weightSum).toFixed(2);
+        selectOrderData.push(props.selectData)
         selectOrderData.map((item) => {
-            item._volQty = volQtySum;
-            item._weight = weightSum;
-            item.totalMoney = (item.price * weightSum).toFixed(2);
             _fabricStockIoDtls.push({
                 "barcodeIds": barcodeIds,
                 "cancelIds": "",
@@ -256,8 +252,6 @@ console.log(props)
                 "weight": weightSum
             })
         })
-        console.log("订单字段==", _fabricStockIoDtls)
-        console.log("订单列表==", selectOrderData)
         props.save({
             "address": address,
             "billStatus": "0",
@@ -269,8 +263,8 @@ console.log(props)
             "flag": 0,
             "remark": remark
         })
-        props.saveOrderData(selectOrderData)
-        setselectOrderData(selectOrderData);
+        setselectOrderData([...props.totalOrder]);
+        props.saveOrder(selectOrderData)
         setvisible(false);
         setinventoryData();
         setbarCodeData();
@@ -283,34 +277,22 @@ console.log(props)
     // 弹窗表单
     const onFinish = (value) => {
         console.log(value)
-        if (value.customerId == undefined) { value.customerId = customer[0].id }
+        if (value.customerId === undefined) { value.customerId = customer[0].id }
         getInventory({ ...value, page: 1, size: 10 })
     }
     // 关闭弹窗
     const closeModal = () => {
         setvisible(false);
-        // setdetailType("detail");
         setweightSum(0);
         setbarSum(0);
         setbarcodeIds();
         setinventoryData();
         setbarCodeData();
     }
-    const selectOrder =  (value) => {
-        props.saveSelectData(value);
+    const selectOrder = (value) => {
+        props.selectOrder(value)
     }
-    // 创建出货单
-    useImperativeHandle(ref, () => ({
-        createOrder: () => {
-            console.log("这是创建出货单")
-            if (!customerId) {
-                message.warning("请选择客户！");
-                return;
-            }
-        }
-    }));
     const selectCustomer = (value) => {
-        console.log(customer)
         setcustomerId(value);
         customer.map((item) => {
             if (item.id === value) {
@@ -330,7 +312,7 @@ console.log(props)
                     </div>
                     <div className="col">
                         <div className="label13">客户</div>
-                        <Input disabled defaultValue={customerName} />
+                        <Input disabled value={customerName} />
                     </div>
                     <div className="col">
                         <div className="label">收货方</div>
@@ -371,8 +353,10 @@ console.log(props)
                         { title: "加工单价", width: 70, dataIndex: "price" },
                         { title: "金额", width: 130, dataIndex: "totalMoney" },
                     ]}
-                    dataSource={props.orderData.selectOrderData}
+                    dataSource={selectOrderData}
+                    rowSelection={rowSelection}
                     pagination={false}
+                    rowKey={(record) => record.id}
                 />
             </div>
         </div>
@@ -506,6 +490,7 @@ console.log(props)
                             },
                         })}
                         rowKey={(record, index) => record.id}
+                        pagination={ false }
                     />
                 </div>
             </div>
@@ -513,11 +498,20 @@ console.log(props)
     </div>
 }
 const mapStateToProps = (state) => {
+    console.log(state)
     return {
-        orderData: state.selectOrder,
-        selectDate: state.selectData
+        totalOrder: state.selectOrderDataReducer.selectOrderData || [],
+        selectData: state.selectDataReducer.selectData
     }
 }
-
-CreateEnterStockOrder = forwardRef(CreateEnterStockOrder)
-export default connect(mapStateToProps, { saveOrderData, saveSelectData })(CreateEnterStockOrder)
+const mapDispatchToProps = dispatch => {
+    return {
+        saveOrder: (value) => {
+            dispatch({ type: SAVE_ORDER, payload: value })
+        },
+        selectOrder: (value) => {
+            dispatch({ type: SAVE_SELECTDATA, payload: value })
+        }
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(CreateEnterStockOrder)

@@ -54,16 +54,13 @@ export const logout = () => (dispatch) => {
         payload: {}
     })
 }
-
 export const saveOrderData = (value) => (dispatch) => {
     dispatch({
         type: SAVE_ORDER,
         payload: value
     })
 }
-
 export const saveSelectData = (value) => (dispatch) => {
-    
     dispatch({
         type: SAVE_SELECTDATA,
         payload: value

@@ -65,7 +65,6 @@ export function selectOrderDataReducer(state = selectOrderData, action) {
 }
 const selectData = { selectData: {} };
 export function selectDataReducer(state = selectData, action) {
-    console.log(action)
     switch (action.type) {
         case SAVE_SELECTDATA:
             return {

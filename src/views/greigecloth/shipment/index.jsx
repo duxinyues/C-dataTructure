@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Table, Button, Modal, Select, Spin, message } from "antd";
 import { onlyFormat, requestUrl } from "../../../utils/config";
-import { saveOrderData, saveSelectData } from "../../../actons/action";
+import {SAVE_ORDER,SAVE_SELECTDATA}  from "../../../actons/type";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import OrderDetail from "./orderDetail";
@@ -135,8 +135,8 @@ function InStock(props) {
                     setdetailType("detail");
                 }
             })
-        props.saveOrderData();
-        props.saveSelectData()
+        props.saveOrder();
+        props.selectOrder()
     }
     //  获取子组件参数
     const save = (value) => {
@@ -282,7 +282,16 @@ function InStock(props) {
         {outStockOrder && <DeliveryOrder deliveryOrder={deliveryOrder} modalState={modalState} />}
     </div>
 }
-const mapStateToProps = (state) => {
-    return state
+const mapDispatchToProps = dispatch => {
+    return {
+        saveOrder: (value) => {
+            console.log("保存订单", value);
+            dispatch({ type: SAVE_ORDER, payload: value })
+        },
+        selectOrder: (value) => {
+            console.log("选择订单", value)
+            dispatch({ type: SAVE_SELECTDATA, payload: value })
+        }
+    }
 }
-export default connect(mapStateToProps, { saveOrderData, saveSelectData })(withRouter(InStock))
+export default connect(null,mapDispatchToProps )(withRouter(InStock))

@@ -1,14 +1,12 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Table, Input, Tag, } from "antd";
 import { onlyFormat, requestUrl } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
 import "../../yarnInventory/style.css"
-
 const { TextArea } = Input;
-
 function OrderDetail(props) {
-    document.title = "坯布出货"
-    const [disable, setdisable] = useState(true);
+    console.log(props)
+    document.title = "坯布出货";
     const enter_yarn_colums = [
         {
             title: '#',
@@ -67,16 +65,13 @@ function OrderDetail(props) {
         },
         {
             title: '出货卷数',
-            dataIndex: 'orderDto',
-            key: 'orderDto',
-            render: (item) => (<span>{item.volQty ? item.volQty : ""}</span>),
+            dataIndex: 'volQty',
+            key: 'volQty',
             width: 70
         },
         {
             title: '出货重量',
-            dataIndex: 'orderDto',
-            key: 'orderDto',
-            render: (item) => (<span>{item.weight ? item.weight : ""}</span>),
+            dataIndex: 'weight',
             width: 70
         },
         {
@@ -93,12 +88,14 @@ function OrderDetail(props) {
         },
         {
             title: '金额',
-            dataIndex: 'orderDto',
-            key: 'orderDto',
-            render: (item) => (<span>{item.totalMoney}</span>),
-            width: 130
+            dataIndex: 'totalMoney',
+            width: 130,
+            // render: (item) => (<span>{item.toFixed(2)}</span>)
         }
     ];
+    useEffect(() => {
+       
+    }, [])
     const audit = () => {
         console.log(props);
         const status = props.data.billStatus === 0 ? 1 : 0
@@ -125,27 +122,27 @@ function OrderDetail(props) {
             <div className="row">
                 <div className="col">
                     <div className="label">出库单号</div>
-                    <Input disabled={disable} value={props.data.code} />
+                    <Input disabled value={props.data.code} />
                 </div>
                 <div className="col">
                     <div className="label">客户</div>
-                    <Input disabled={disable} value={props.data.customerName} />
+                    <Input disabled value={props.data.customerName} />
                 </div>
                 <div className="col">
                     <div className="label">收货方</div>
-                    <Input disabled={disable} value={props.data.address} />
+                    <Input disabled value={props.data.address} />
                 </div>
             </div>
             <div className="row">
                 <div className="col">
                     <div className="label">出库时间</div>
-                    <Input disabled={disable} value={onlyFormat(props.data.bizDate, false)} />
+                    <Input disabled value={onlyFormat(props.data.bizDate, false)} />
                 </div>
             </div>
             <div className="row">
                 <div className="col">
                     <div className="label1">备注</div>
-                    <TextArea disabled={disable} autoSize={{ minRows: 2, maxRows: 6 }} value={props.data.remark} />
+                    <TextArea disabled autoSize={{ minRows: 2, maxRows: 6 }} value={props.data.remark} />
                 </div>
             </div>
         </div>

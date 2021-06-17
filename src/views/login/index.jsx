@@ -11,7 +11,6 @@ import Footer from "../../components/Footer/index"
 import img from "../../utils/imgManger"
 const { TabPane } = Tabs;
 const NormalLoginForm = (props) => {
-  console.log(props)
   const [spinning, setspinning] = useState(false)
   const onFinish = (params) => {
     console.log("登录==", params);
@@ -46,56 +45,56 @@ const NormalLoginForm = (props) => {
           </div>
           {/* <Tabs defaultActiveKey="1" onChange={callback}>
             <TabPane tab="账户密码登录" key="1"> */}
-              <Form
-                name="normal_login"
-                initialValues={{
-                  remember: true,
-                }}
-                onFinish={onFinish}
-              >
-                <Form.Item
-                  name="username"
-                  rules={[
-                    {
-                      required: true,
-                      message: '请输入用户名!',
-                    },
-                  ]}
-                >
-                  <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />
-                </Form.Item>
-                <Form.Item
-                  name="password"
-                  rules={[
-                    {
-                      required: true,
-                      message: '请输入密码!',
-                    },
-                  ]}
-                >
-                  <Input
-                    prefix={<LockOutlined className="site-form-item-icon" />}
-                    type="password"
-                    placeholder="密码"
-                  />
-                </Form.Item>
-                <Form.Item className="row">
-                  <Form.Item name="remember" valuePropName="checked" noStyle>
-                    <Checkbox>自动登录</Checkbox>
-                  </Form.Item>
+          <Form
+            name="normal_login"
+            initialValues={{
+              remember: true,
+            }}
+            onFinish={onFinish}
+          >
+            <Form.Item
+              name="username"
+              rules={[
+                {
+                  required: true,
+                  message: '请输入用户名!',
+                },
+              ]}
+            >
+              <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: '请输入密码!',
+                },
+              ]}
+            >
+              <Input
+                prefix={<LockOutlined className="site-form-item-icon" />}
+                type="password"
+                placeholder="密码"
+              />
+            </Form.Item>
+            <Form.Item className="row">
+              <Form.Item name="remember" valuePropName="checked" noStyle>
+                <Checkbox>自动登录</Checkbox>
+              </Form.Item>
 
-                  <a className="login-form-forgot" href="">
-                    忘记密码
-                  </a>
-                </Form.Item>
-                <Form.Item className="btn">
-                  <Button type="primary" htmlType="submit" className="login-form-button">
-                    登录
-                  </Button>
-                </Form.Item>
-              </Form>
-            {/* </TabPane> */}
-            {/* <TabPane tab="手机登录" key="2">
+              <a className="login-form-forgot" href="">
+                忘记密码
+              </a>
+            </Form.Item>
+            <Form.Item className="btn">
+              <Button type="primary" htmlType="submit" className="login-form-button">
+                登录
+              </Button>
+            </Form.Item>
+          </Form>
+          {/* </TabPane> */}
+          {/* <TabPane tab="手机登录" key="2">
               <Form
                 name="normal_login"
                 initialValues={{
@@ -153,14 +152,10 @@ const NormalLoginForm = (props) => {
     </div>
   );
 };
-/**
- * 把返回的状态转化为我们的属性props
- *
- * state中的posts，是在reducers中index.js定义的posts
- * item中posts的属性在postReducer.js定义的初始值
- */
+
 const mapStateToProps = state => {
-  return { tokenData: state.loginState.tokenInfor }
+  console.log(state.loginReducer.tokenInfor)
+  return { tokenData: state.loginReducer.tokenInfor }
 };
 
 export default connect(mapStateToProps, { login })(withRouter(NormalLoginForm));

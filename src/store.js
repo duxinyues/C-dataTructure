@@ -8,10 +8,10 @@ import {
 } from "./reducer/reducer";
 
 const reducers = combineReducers({
-    loginState: loginReducer,
-    userData: userInfoReducer,
-    selectOrder: selectOrderDataReducer,
-    selectData:selectDataReducer
+    loginReducer,
+    userInfoReducer,
+    selectOrderDataReducer,
+    selectDataReducer
 })
 
 
