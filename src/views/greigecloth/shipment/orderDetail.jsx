@@ -90,7 +90,7 @@ function OrderDetail(props) {
             title: '金额',
             dataIndex: 'totalMoney',
             width: 130,
-            // render: (item) => (<span>{item.toFixed(2)}</span>)
+            render: (item) => (<span>{Number(item).toFixed(2)}</span>)
         }
     ];
     useEffect(() => {

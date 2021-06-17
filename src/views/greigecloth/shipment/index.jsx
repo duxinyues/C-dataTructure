@@ -1,7 +1,15 @@
+/*
+ * @Author: 1638877065@qq.com
+ * @Date: 2021-05-31 23:31:18
+ * @LastEditTime: 2021-06-17 16:36:18
+ * @LastEditors: 1638877065@qq.com
+ * @Description: 坯布列表和详情
+ * @FilePath: \cloud-admin\src\views\greigecloth\shipment\index.jsx
+ */
 import { useState, useEffect, useRef } from "react"
-import { Table, Button, Modal, Select, Spin, message } from "antd";
+import { Table, Button, Modal, Spin, message } from "antd";
 import { onlyFormat, requestUrl } from "../../../utils/config";
-import {SAVE_ORDER,SAVE_SELECTDATA}  from "../../../actons/type";
+import { SAVE_ORDER, SAVE_SELECTDATA } from "../../../actons/type";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import OrderDetail from "./orderDetail";
@@ -11,7 +19,6 @@ import EditEnterStockOrder from "./edit"
 import "../../yarnInventory/style.css"
 import "./style.css"
 const { confirm } = Modal;
-const { Option } = Select;
 document.title = "坯布出货";
 
 function InStock(props) {
@@ -133,7 +140,11 @@ function InStock(props) {
                 if (res.code === 200) {
                     getData(data);
                     setdetailType("detail");
+                    message.success("添加成功！")
+                    return;
                 }
+
+                message.error(res.msg)
             })
         props.saveOrder();
         props.selectOrder()
@@ -285,13 +296,11 @@ function InStock(props) {
 const mapDispatchToProps = dispatch => {
     return {
         saveOrder: (value) => {
-            console.log("保存订单", value);
             dispatch({ type: SAVE_ORDER, payload: value })
         },
         selectOrder: (value) => {
-            console.log("选择订单", value)
             dispatch({ type: SAVE_SELECTDATA, payload: value })
         }
     }
 }
-export default connect(null,mapDispatchToProps )(withRouter(InStock))
+export default connect(null, mapDispatchToProps)(withRouter(InStock))

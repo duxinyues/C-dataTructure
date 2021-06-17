@@ -1,9 +1,17 @@
+/*
+ * @Author: 1638877065@qq.com
+ * @Date: 2021-05-31 23:45:05
+ * @LastEditTime: 2021-06-17 17:58:43
+ * @LastEditors: 1638877065@qq.com
+ * @Description: 坯布出货单【新增组件】
+ * @FilePath: \cloud-admin\src\views\greigecloth\shipment\createOrder.jsx
+ * 
+ */
 import { useEffect, useState } from "react"
 import { Table, Input, Select, DatePicker, Form, Row, Modal, Button, Tag, message } from "antd";
 import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { requestUrl, getNowFormatDate } from "../../../utils/config";
-import { SAVE_ORDER, SAVE_SELECTDATA } from "../../../actons/type";
-import {saveOrderData,saveSelectData}  from "../../../actons/action"
+import { saveOrderData, saveSelectData } from "../../../actons/action"
 import { connect } from "react-redux";
 import 'moment/locale/zh-cn';
 import moment from "moment"
@@ -20,26 +28,28 @@ const day = (timeStamp) => {
     return M + D;
 };
 function CreateEnterStockOrder(props) {
-    const [bizDate, setbizDate] = useState("");
-    const [remark, setremark] = useState("");
-    const [address, setaddress] = useState("");
+    const [bizDate, setbizDate] = useState("");   // 日期
+    const [remark, setremark] = useState(""); // 备注
+    const [address, setaddress] = useState(""); // 收货方地址
     const [form] = Form.useForm();
     const [inventoryData, setinventoryData] = useState([]); // 弹窗库存
     const [modalCurrent, setmodalCurrent] = useState(1);
     const [modalTotal, setmodalTotal] = useState(10);
     const [modalsize, setmodalsize] = useState(10);
     const [barCodeData, setbarCodeData] = useState([]);
-    const [selected, setselected] = useState([]);
-    const [visible, setvisible] = useState(true);
-    const [customer, setcustomer] = useState([{}]);
-    const [selectOrderData, setselectOrderData] = useState([])
-    const [fabricStockIoDtls, setfabricStockIoDtls] = useState([]);
-    const [barSum, setbarSum] = useState(0);
-    const [weightSum, setweightSum] = useState(0);
-    const [barcodeIds, setbarcodeIds] = useState();
-    const [volQtySum, setvolQtySum] = useState(0);
-    const [customerId, setcustomerId] = useState();
-    const [customerName, setcustomerName] = useState("");
+    const [selected, setselected] = useState([]); // 选择条码
+    const [selectOrderList, setSelectOrderList] = useState([]); // 选中订单列表的ID
+    const [visible, setvisible] = useState(true); // 开关弹窗
+    const [customer, setcustomer] = useState([{}]); // 获取客户列表
+    const [selectOrderData, setselectOrderData] = useState([]); // 选中订单
+    const [fabricStockIoDtls, setfabricStockIoDtls] = useState([]);//  每个订单选中的条码信息
+    const [barSum, setbarSum] = useState(0); // 选中条码总条数
+    const [weightSum, setweightSum] = useState(0);// 选中条码总重量
+    const [barcodeIds, setbarcodeIds] = useState();// 选中条码的ID
+    const [volQtySum, setvolQtySum] = useState(0);// 选中的条码的卷数总和
+    const [customerId, setcustomerId] = useState();// 选中客户的ID
+    const [customerName, setcustomerName] = useState("");// 选中客户的名称
+    const [stockIoDtls, setStockIoDtls] = useState([]); // 出货单的订单信息
     useEffect(() => {
         if (props.data) {
             setbizDate(props.data.bizDate);
@@ -51,6 +61,15 @@ function CreateEnterStockOrder(props) {
             size: 10,
             customerId: customerId
         });
+
+        return () => {
+            //组件卸载
+            setbarSum(0);
+            setselectOrderData([]);
+            setfabricStockIoDtls([]);
+            props.saveOrderData([]);
+            props.saveSelectData({});
+        }
     }, []);
 
     // 选择入库日期
@@ -199,7 +218,7 @@ function CreateEnterStockOrder(props) {
         setfabricStockIoDtls(_fabricStockIoDtls);
         setbarSum(_fabricStockIoDtls.length);
     }
-    const rowSelection = {
+    const rowSelection_modal = {
         selectedRowKeys: selected,
         onChange: (_selectedRowKeys, _selectedRows) => {
             const ids = _selectedRows.map((item) => {
@@ -217,6 +236,13 @@ function CreateEnterStockOrder(props) {
             setselected(_selectedRowKeys);
             setfabricStockIoDtls(_selectedRows);
             setbarSum(_selectedRows.length);
+        },
+    };
+    const rowSelection_table = {
+        selectedRowKeys: selectOrderList,
+        onChange: (_selectedRowKeys, _selectedRows) => {
+            console.log("_selectedRows=", _selectedRows);
+            setSelectOrderList(_selectedRowKeys)
         },
     };
     // 条码
@@ -237,12 +263,57 @@ function CreateEnterStockOrder(props) {
             })
     }
     const handleOk = () => {
-        const _fabricStockIoDtls = [];
+        const _stockIoDtls = [...stockIoDtls];
         const selectOrderData = props.totalOrder;
-        props.selectData._volQty = volQtySum;
-        props.selectData._weight = weightSum;
-        props.selectData.totalMoney = (props.selectData.price * weightSum).toFixed(2);
+        props.selectData._volQty = volQtySum; // 选中条码的总卷数
+        props.selectData._weight = weightSum; // 选中条码的总重量
+        props.selectData.totalMoney = (props.selectData.price * weightSum).toFixed(2); // 选中条码的总金额
         selectOrderData.push(props.selectData)
+        _stockIoDtls.push({
+            "barcodeIds": barcodeIds,
+            "cancelIds": "",
+            "knitOrderId": props.selectData.knitOrderId,
+            "volQty": props.selectData._volQty,
+            "weight": props.selectData._weight
+        })
+        setStockIoDtls(_stockIoDtls)
+        props.save({
+            "address": address,
+            "billStatus": "0",
+            "billType": "0",
+            "bizDate": bizDate ? bizDate : getNowFormatDate(),
+            "code": "",
+            "customerId": customerId,
+            "fabricStockIoDtls": _stockIoDtls,
+            "flag": 0,
+            "remark": remark
+        })
+        setselectOrderData([...props.totalOrder]);
+        props.saveOrderData(selectOrderData)
+        // props.saveOrder(selectOrderData)
+        setvisible(false);
+        setinventoryData();
+        setbarCodeData();
+        setbarcodeIds();
+        setweightSum(0);
+        setvolQtySum(0)
+        setbarSum(0)
+    }
+    // 添加订单
+    const add = () => {
+        setvisible(true)
+    }
+
+    const delected = () => {
+        const _fabricStockIoDtls = [];
+        const orderList = selectOrderData;
+        const _selectOrderList = selectOrderList;
+        orderList.map((item) => {
+            if (_selectOrderList.indexOf(item.id) >= 0) {
+                orderList.splice(_selectOrderList.indexOf(item.id), 1);
+            }
+        })
+        console.log(orderList);
         selectOrderData.map((item) => {
             _fabricStockIoDtls.push({
                 "barcodeIds": barcodeIds,
@@ -250,8 +321,8 @@ function CreateEnterStockOrder(props) {
                 "knitOrderId": item.knitOrderId,
                 "volQty": volQtySum,
                 "weight": weightSum
-            })
-        })
+            });
+        });
         props.save({
             "address": address,
             "billStatus": "0",
@@ -263,16 +334,8 @@ function CreateEnterStockOrder(props) {
             "flag": 0,
             "remark": remark
         })
-        setselectOrderData([...props.totalOrder]);
-        props.saveOrder(selectOrderData)
-        setvisible(false);
-        setinventoryData();
-        setbarCodeData();
-        setbarSum(0);
-        setweightSum(0)
-    }
-    const add = () => {
-        setvisible(true)
+        setselectOrderData([...orderList]);
+        props.saveOrderData(orderList)
     }
     // 弹窗表单
     const onFinish = (value) => {
@@ -290,7 +353,8 @@ function CreateEnterStockOrder(props) {
         setbarCodeData();
     }
     const selectOrder = (value) => {
-        props.selectOrder(value)
+        // props.selectOrder(value);
+        props.saveSelectData(value)
     }
     const selectCustomer = (value) => {
         setcustomerId(value);
@@ -336,7 +400,7 @@ function CreateEnterStockOrder(props) {
             <div className="enter-yarn-table">
                 <div className="">
                     <PlusCircleOutlined style={{ fontSize: '20px', marginRight: "10px" }} onClick={add} />
-                    <CloseCircleOutlined style={{ fontSize: '20px' }} />
+                    <CloseCircleOutlined style={{ fontSize: '20px' }} onClick={delected} />
                 </div>
                 <Table
                     columns={[
@@ -354,7 +418,7 @@ function CreateEnterStockOrder(props) {
                         { title: "金额", width: 130, dataIndex: "totalMoney" },
                     ]}
                     dataSource={selectOrderData}
-                    rowSelection={rowSelection}
+                    rowSelection={rowSelection_table}
                     pagination={false}
                     rowKey={(record) => record.id}
                 />
@@ -482,15 +546,15 @@ function CreateEnterStockOrder(props) {
                             { title: "查布记录", dataIndex: "" }
                         ]}
                         dataSource={barCodeData}
-                        rowSelection={rowSelection}
+                        rowSelection={rowSelection_modal}
                         scroll={{ y: 240 }}
-                        onRow={(record) => ({
-                            onClick: () => {
-                                selectRow(record);
-                            },
-                        })}
+                        // onRow={(record) => ({
+                        //     onClick: () => {
+                        //         selectRow(record);
+                        //     },
+                        // })}
                         rowKey={(record, index) => record.id}
-                        pagination={ false }
+                        pagination={false}
                     />
                 </div>
             </div>
@@ -504,14 +568,5 @@ const mapStateToProps = (state) => {
         selectData: state.selectDataReducer.selectData
     }
 }
-const mapDispatchToProps = dispatch => {
-    return {
-        saveOrder: (value) => {
-            dispatch({ type: SAVE_ORDER, payload: value })
-        },
-        selectOrder: (value) => {
-            dispatch({ type: SAVE_SELECTDATA, payload: value })
-        }
-    }
-}
-export default connect(mapStateToProps, mapDispatchToProps)(CreateEnterStockOrder)
+
+export default connect(mapStateToProps, { saveOrderData, saveSelectData })(CreateEnterStockOrder)

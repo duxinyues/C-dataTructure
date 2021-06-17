@@ -1,4 +1,3 @@
-
 export const requestUrl = "http://39.104.13.107:8000";
 // export const requestUrl = "http://192.168.2.82:8000";
 export const onlyFormat = (timeStamp, type) => {
@@ -95,7 +94,7 @@ export function getMonthFE(type) {
  * @param {*} num  自定义数组长度
  * @returns 
  */
-export function sliceArrFn(array,num) {
+export function sliceArrFn(array, num) {
   var result = [];
   for (var x = 0; x < Math.ceil(array.length / num); x++) {
     var start = x * num;
@@ -115,10 +114,10 @@ export const sum = (array) => {
 }
 
 
-export const  checkPhone=(phone)=>{ 
-  if((/^1(3|4|5|6|7|8|9)\d{9}$/.test(phone))){ 
-      return true; 
-  } 
+export const checkPhone = (phone) => {
+  if ((/^1(3|4|5|6|7|8|9)\d{9}$/.test(phone))) {
+    return true;
+  }
 
-  return  false;
+  return false;
 }

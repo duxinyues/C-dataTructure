@@ -361,7 +361,6 @@ function Order() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log("舍和额", res);
                 if (res.code === 200) {
                     setorderLoom(res.data)
                 }

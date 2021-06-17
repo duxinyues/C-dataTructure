@@ -15,7 +15,6 @@ function EditEnterStockOrder(props) {
     const [bizDate, setbizDate] = useState("");
     const [remark, setremark] = useState("");
     const [address, setaddress] = useState("");
-    // const [fabricStockIoDtls, setfabricStockIoDtls] = useState([])
     useEffect(() => {
         if (props.data) {
             setbizDate(props.data.bizDate);
@@ -24,8 +23,6 @@ function EditEnterStockOrder(props) {
         _fabricStockIoDtls.map((item)=>{
             item.summoney = (item.orderDto.productPrice * item.orderDto.weight).toFixed(2)
         })
-        // setfabricStockIoDtls(_fabricStockIoDtls)
-
     }, []);
 
     // 选择入库日期
