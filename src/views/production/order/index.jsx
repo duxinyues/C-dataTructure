@@ -135,6 +135,12 @@ function Order() {
             marginBottom: 0,
         })
         const str = barcode.innerHTML;
+        const loomCode = orderLoom.map((item) => {
+            if (item.loomId === selectClothLoom) {
+                return item.loomCode
+            }
+        })
+
         let LODOP = getLodop();
         LODOP.PRINT_INIT("react使用打印插件CLodop");  //打印初始化
         const strHtml = `<div style="width:65mm;background: #fff;border: 1px solid #999;">
@@ -174,7 +180,7 @@ function Order() {
          </div> 
          <div style="display:flex;border-bottom:1px solid #999;width:100%;height:28px;align-items:center;">
           <p style="border-right:1px solid #999;width:38px;height:28px;line-height: 28px;text-align: center;font-size: 14px;">机号</p> 
-          <p  style="display:flex;align-items:center;width:200px;line-height: 28px;font-size: 14px;" ><span style="width:50%;text-align:center;">${orderLoom[selectClothLoom].loomCode}</span> <span style="width:38px;border-left:1px solid #999;text-align:center;">疋号</span> <span style="width:calc(50% - 39px);text-align:center;border-left:1px solid #999">${seq}</span></p>
+          <p  style="display:flex;align-items:center;width:200px;line-height: 28px;font-size: 14px;" ><span style="width:50%;text-align:center;">${loomCode}</span> <span style="width:38px;border-left:1px solid #999;text-align:center;">疋号</span> <span style="width:calc(50% - 39px);text-align:center;border-left:1px solid #999">${seq}</span></p>
          </div> 
          <div style="display:flex;width:100%;height:56px;align-items:center;">
           <div style="border-right:1px solid #999;width:133px;">
@@ -187,7 +193,7 @@ function Order() {
                 <div style="padding-left:5px;"></div>
             </div> 
           </div>
-          <div style="display:flex;align-items:center;"><div style="border-right:1px solid #999;width:38px;height:56px;display: flex;justify-content: center;align-items: center;">净重</div> <div style="padding-left:5px;">${orderDetail.weight}kg</div></div>
+          <div style="display:flex;align-items:center;"><div style="border-right:1px solid #999;width:38px;height:56px;display: flex;justify-content: center;align-items: center;">净重</div> <div style="padding-left:5px;">  </div></div>
          </div> 
          <div class="content-item content-center" style="display:none" >
           <p class="left-side" >备注</p> 
@@ -203,8 +209,9 @@ function Order() {
        </div>`
 
         LODOP.ADD_PRINT_HTML(10, 55, "100%", "100%", strHtml);
-        LODOP.PREVIEW(); // 打印预览
-        // LODOP.PRINT(); // 直接打印
+        // LODOP.PREVIEW(); // 打印预览
+        LODOP.PRINT(); // 直接打印
+        setvisible(false)
     }
     const openPrint = () => {
         setvisible(true)
@@ -583,11 +590,7 @@ function Order() {
             </Form>
 
         </Modal>
-
         <div className="clothSvg"><svg ref={handleBarcode} /></div>
-
-
-
     </React.Fragment >
 }
 

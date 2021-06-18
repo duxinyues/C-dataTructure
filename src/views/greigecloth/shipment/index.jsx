@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:31:18
- * @LastEditTime: 2021-06-17 16:36:18
+ * @LastEditTime: 2021-06-18 17:59:49
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布列表和详情
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\index.jsx
@@ -20,7 +20,6 @@ import "../../yarnInventory/style.css"
 import "./style.css"
 const { confirm } = Modal;
 document.title = "坯布出货";
-
 function InStock(props) {
     const childRef = useRef();
     const [spinning, setspinning] = useState(true);
@@ -95,6 +94,7 @@ function InStock(props) {
 
     }
     const edit = () => {
+        console.log(yarn_stock_detail.billStatus)
         setdetailType("edit")
     }
     const cancel = () => {
@@ -125,7 +125,7 @@ function InStock(props) {
             message.warning("请先选择客户！");
             return;
         }
-        console.log("新增或者编辑的表单字段==", orderData)
+        console.log("新增或者编辑的表单字段==", orderData);
         fetch(requestUrl + "/api-stock/fabricStockIo/saveOrModify", {
             method: "POST",
             headers: {
@@ -238,7 +238,7 @@ function InStock(props) {
                 <Button type="primary" onClick={add}>
                     +新增
                 </Button>
-                <Button disabled={disabled} onClick={edit}>
+                <Button disabled={yarn_stock_detail.billStatus === 1} onClick={edit}>
                     编辑
                 </Button>
                 <Button disabled={disabled} onClick={delect}>

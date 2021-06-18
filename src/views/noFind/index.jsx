@@ -1,7 +1,7 @@
 import { Result, Button } from 'antd';
 import { withRouter } from 'react-router-dom';
 function NoFind(props) {
-    document.title = "数织通织造管理系统"
+    document.title = "数织通"
     const goHome = ()=>{
         props.history.push("/home")
     }

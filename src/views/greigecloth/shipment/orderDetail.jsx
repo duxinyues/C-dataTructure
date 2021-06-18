@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Table, Input, Tag, } from "antd";
+import { Table, Input, Tag, Modal } from "antd";
 import { onlyFormat, requestUrl } from "../../../utils/config";
 import { withRouter } from "react-router-dom";
 import "../../yarnInventory/style.css"
@@ -7,6 +7,8 @@ const { TextArea } = Input;
 function OrderDetail(props) {
     console.log(props)
     document.title = "坯布出货";
+    const [visible, setvisible] = useState(false);
+    const [barCodeData, setbarCodeData] = useState([])
     const enter_yarn_colums = [
         {
             title: '#',
@@ -53,7 +55,7 @@ function OrderDetail(props) {
             title: '针寸',
             dataIndex: 'orderDto',
             key: 'orderDto',
-            render: (item) => (<span>{item.inches ? item.inches : ""}</span>),
+            render: (item) => (<span>{item.inches ? item.inches : ""}-{item.needles ? item.needles : ""}</span>),
             width: 70
         },
         {
@@ -67,7 +69,8 @@ function OrderDetail(props) {
             title: '出货卷数',
             dataIndex: 'volQty',
             key: 'volQty',
-            width: 70
+            width: 70,
+            render: (item, index) => (<span onClick={() => { openBarCode(index) }} style={{ color: "blue", cursor: "pointer" }}>{item}</span>)
         },
         {
             title: '出货重量',
@@ -94,7 +97,7 @@ function OrderDetail(props) {
         }
     ];
     useEffect(() => {
-       
+
     }, [])
     const audit = () => {
         console.log(props);
@@ -110,6 +113,20 @@ function OrderDetail(props) {
                 if (res.code === 200) {
                     props.update()
                 }
+            })
+    }
+    const openBarCode = (param) => {
+        setvisible(true);
+        fetch(requestUrl + "/api-stock/fabricStockIo/findOutBarcodeByOrderId?id=" + props.data.id + "&orderId=" + param.knitOrderId, {
+            method: "POST",
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token"),
+            }
+        })
+            .then(res => { return res.json() })
+            .then((res) => {
+                console.log(res)
+                setbarCodeData(res.data)
             })
     }
     return <div className="right">
@@ -154,6 +171,42 @@ function OrderDetail(props) {
                 rowKey={(record, index) => record.id}
             />
         </div>
+        <Modal
+            title="条码明细"
+            visible={visible}
+            footer={false}
+        >
+            {/* #	条码	机号	疋号	重量	出库时间	纱牌	查布记录 */}
+            <Table
+                columns={[{
+                    title: "#",
+                    dataIndex: "id"
+                }, {
+                    title: "条码",
+                    dataIndex: "barcode"
+                }, {
+                    title: "机号",
+                    dataIndex: "loomCode"
+                }, {
+                    title: "疋号",
+                    dataIndex: "seq"
+                }, {
+                    title: "重量",
+                    dataIndex: "weight"
+                }, {
+                    title: "出库时间",
+                    dataIndex: "outStockTime"
+                }, {
+                    title: "纱牌",
+                    dataIndex: "yarnInfo"
+                }, {
+                    title: "查布记录",
+                    dataIndex: "flawInfo"
+                }]}
+                dataSource={barCodeData}
+                pagination={false}
+            />
+        </Modal>
     </div>
 }
 

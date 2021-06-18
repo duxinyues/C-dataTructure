@@ -41,7 +41,7 @@ const NormalLoginForm = (props) => {
         <div className="login-form">
           <div className="title">
             <img src={img.logo} className="logo-img" />
-            <span>数织通织造管理系统</span>
+            <span>数织通</span>
           </div>
           {/* <Tabs defaultActiveKey="1" onChange={callback}>
             <TabPane tab="账户密码登录" key="1"> */}

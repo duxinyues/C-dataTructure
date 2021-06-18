@@ -1,6 +1,7 @@
+
 {
-  "short_name": "数织通织造管理系统",
-  "name": "数织通织造管理系统",
+  "short_name": "数织通",
+  "name": "数织通",
   "icons": [
     {
       "src": "favicon.ico",

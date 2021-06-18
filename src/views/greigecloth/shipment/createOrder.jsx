@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:45:05
- * @LastEditTime: 2021-06-17 17:58:43
+ * @LastEditTime: 2021-06-18 17:47:47
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布出货单【新增组件】
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\createOrder.jsx
@@ -82,17 +82,8 @@ function CreateEnterStockOrder(props) {
             "bizDate": dateString,
             "code": "",
             "customerId": customerId,
-            "fabricStockIoDtls": [
-                {
-                    "barcodeIds": "",
-                    "cancelIds": "",
-                    "knitOrderId": 0,
-                    "volQty": 0,
-                    "weight": 0
-                }
-            ],
+            "fabricStockIoDtls": stockIoDtls,
             "flag": 0,
-            "id": 0,
             "remark": remark
         })
     }
@@ -106,17 +97,8 @@ function CreateEnterStockOrder(props) {
             "bizDate": bizDate ? bizDate : getNowFormatDate(),
             "code": "",
             "customerId": customerId,
-            "fabricStockIoDtls": [
-                {
-                    "barcodeIds": "",
-                    "cancelIds": "",
-                    "knitOrderId": 0,
-                    "volQty": 0,
-                    "weight": 0
-                }
-            ],
+            "fabricStockIoDtls": stockIoDtls,
             "flag": 0,
-            "id": 0,
             "remark": value
         })
     }
@@ -130,15 +112,7 @@ function CreateEnterStockOrder(props) {
             "bizDate": bizDate ? bizDate : getNowFormatDate(),
             "code": "",
             "customerId": customerId,
-            "fabricStockIoDtls": [
-                {
-                    "barcodeIds": "",
-                    "cancelIds": "",
-                    "knitOrderId": 0,
-                    "volQty": 0,
-                    "weight": 0
-                }
-            ],
+            "fabricStockIoDtls": stockIoDtls,
             "flag": 0,
             "remark": remark
         })
@@ -194,33 +168,10 @@ function CreateEnterStockOrder(props) {
         showSizeChanger: false,
         showTotal: () => (`共${modalTotal}条`)
     }
-    const selectRow = (record) => {
-        const _selected = [...selected];
-        const _fabricStockIoDtls = [...fabricStockIoDtls];
-        if (_selected.indexOf(record.id) >= 0) {
-            _selected.splice(_selected.indexOf(record.id), 1);
-            _fabricStockIoDtls.splice(_fabricStockIoDtls.indexOf(record), 1)
-        } else {
-            _selected.push(record.id);
-            _fabricStockIoDtls.push(record)
-        }
-
-        let totalWeight = _fabricStockIoDtls.reduce((pre, cur) => {
-            return pre + cur.weight
-        }, 0)
-        const totalVolQty = _fabricStockIoDtls.reduce((pre, cur) => {
-            return pre + cur.volQty
-        }, 0)
-        setweightSum(totalWeight.toFixed(2));
-        setvolQtySum(totalVolQty);
-        setbarcodeIds(_selected.join(","))
-        setselected(_selected);
-        setfabricStockIoDtls(_fabricStockIoDtls);
-        setbarSum(_fabricStockIoDtls.length);
-    }
     const rowSelection_modal = {
         selectedRowKeys: selected,
         onChange: (_selectedRowKeys, _selectedRows) => {
+            console.log(_selectedRows)
             const ids = _selectedRows.map((item) => {
                 return item.id;
             })
@@ -231,7 +182,7 @@ function CreateEnterStockOrder(props) {
                 return pre + cur.volQty
             }, 0)
             setweightSum(totalWeight.toFixed(2));
-            setvolQtySum(totalVolQty);
+            setvolQtySum(_selectedRows.length);
             setbarcodeIds(ids.join(","));
             setselected(_selectedRowKeys);
             setfabricStockIoDtls(_selectedRows);
@@ -247,7 +198,8 @@ function CreateEnterStockOrder(props) {
     };
     // 条码
     const getBarCode = (param) => {
-        setselected([])
+        setselected([]);
+        const _stockIoDtls = stockIoDtls.map((item) => { return item.barcodeIds }).join(",");
         fetch(requestUrl + "/api-stock/fabricStockIo/findBarcodeByLoomId?orderId=" + param.orderId + "&loomId=" + param.loomId, {
             method: "POST",
             headers: {
@@ -258,7 +210,16 @@ function CreateEnterStockOrder(props) {
             .then(res => {
                 console.log(res)
                 if (res.code == 200) {
-                    setbarCodeData(res.data)
+                    const noSelect = [];
+                    if (stockIoDtls.length === 0) {
+                        setbarCodeData(res.data);
+                        return;
+                    }
+                    res.data.map((item) => {
+                        console.log(_stockIoDtls.indexOf(item.id))
+                        if (_stockIoDtls.indexOf(item.id) < 0) noSelect.push(item);
+                    })
+                    setbarCodeData(noSelect)
                 }
             })
     }
@@ -268,7 +229,20 @@ function CreateEnterStockOrder(props) {
         props.selectData._volQty = volQtySum; // 选中条码的总卷数
         props.selectData._weight = weightSum; // 选中条码的总重量
         props.selectData.totalMoney = (props.selectData.price * weightSum).toFixed(2); // 选中条码的总金额
-        selectOrderData.push(props.selectData)
+        // 去重
+        if (selectOrderData.length === 0) {
+            selectOrderData.push(props.selectData);
+        } else {
+            selectOrderData.map((item) => {
+                if (item.knitOrderCode === props.selectData.knitOrderCode) {
+                    item._volQty = Number(item._volQty) + Number(props.selectData._volQty);
+                    item._weight = Number(item._weight) + Number(props.selectData._weight);
+                    item.totalMoney = (Number(item.totalMoney) + props.selectData.price * weightSum);
+                } else {
+                    selectOrderData.push(props.selectData);
+                }
+            })
+        }
         _stockIoDtls.push({
             "barcodeIds": barcodeIds,
             "cancelIds": "",
@@ -276,7 +250,9 @@ function CreateEnterStockOrder(props) {
             "volQty": props.selectData._volQty,
             "weight": props.selectData._weight
         })
-        setStockIoDtls(_stockIoDtls)
+        setStockIoDtls(_stockIoDtls);
+        setselectOrderData([...selectOrderData]);
+        props.saveOrderData([...selectOrderData])
         props.save({
             "address": address,
             "billStatus": "0",
@@ -288,9 +264,7 @@ function CreateEnterStockOrder(props) {
             "flag": 0,
             "remark": remark
         })
-        setselectOrderData([...props.totalOrder]);
-        props.saveOrderData(selectOrderData)
-        // props.saveOrder(selectOrderData)
+
         setvisible(false);
         setinventoryData();
         setbarCodeData();
@@ -305,24 +279,15 @@ function CreateEnterStockOrder(props) {
     }
 
     const delected = () => {
-        const _fabricStockIoDtls = [];
         const orderList = selectOrderData;
+        const _stockIoDtls = stockIoDtls;
         const _selectOrderList = selectOrderList;
         orderList.map((item) => {
             if (_selectOrderList.indexOf(item.id) >= 0) {
                 orderList.splice(_selectOrderList.indexOf(item.id), 1);
             }
         })
-        console.log(orderList);
-        selectOrderData.map((item) => {
-            _fabricStockIoDtls.push({
-                "barcodeIds": barcodeIds,
-                "cancelIds": "",
-                "knitOrderId": item.knitOrderId,
-                "volQty": volQtySum,
-                "weight": weightSum
-            });
-        });
+        setStockIoDtls(_stockIoDtls);
         props.save({
             "address": address,
             "billStatus": "0",
@@ -330,7 +295,7 @@ function CreateEnterStockOrder(props) {
             "bizDate": bizDate ? bizDate : getNowFormatDate(),
             "code": "",
             "customerId": customerId,
-            "fabricStockIoDtls": _fabricStockIoDtls,
+            "fabricStockIoDtls": stockIoDtls,
             "flag": 0,
             "remark": remark
         })
@@ -432,7 +397,7 @@ function CreateEnterStockOrder(props) {
             footer={[
                 <div className="sum-title">
                     {
-                        barSum > 0 && <p><span>已选{barSum}条</span> <span>共{weightSum}kg</span> <Tag color="green">清空</Tag></p>
+                        barSum > 0 && <p><span>已选{barSum}条</span> <span>共{weightSum}kg</span></p>
                     }
                 </div>,
                 <div className="right">
@@ -469,7 +434,7 @@ function CreateEnterStockOrder(props) {
                         label="客户"
                         style={{ marginLeft: "10px" }}
                     >
-                        <Select style={{ width: "100px" }} disabled={customerId} onChange={selectCustomer}>
+                        <Select style={{ width: "100px" }} disabled={selectOrderData.length > 0} onChange={selectCustomer}>
                             {
                                 customer.map((item, key) => (<Option value={item.id} key={key}>{item.name}</Option>))
                             }
@@ -528,8 +493,8 @@ function CreateEnterStockOrder(props) {
                         onRow={record => {
                             return {
                                 onClick: () => {
-                                    selectOrder(record)
-                                    getBarCode({ orderId: record.knitOrderId, loomId: record.loomId })
+                                    selectOrder(record);
+                                    getBarCode({ orderId: record.knitOrderId, loomId: record.loomId });
                                 },
                             };
                         }}
@@ -548,11 +513,6 @@ function CreateEnterStockOrder(props) {
                         dataSource={barCodeData}
                         rowSelection={rowSelection_modal}
                         scroll={{ y: 240 }}
-                        // onRow={(record) => ({
-                        //     onClick: () => {
-                        //         selectRow(record);
-                        //     },
-                        // })}
                         rowKey={(record, index) => record.id}
                         pagination={false}
                     />
