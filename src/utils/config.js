@@ -130,3 +130,11 @@ export const checkPhone = (phone) => {
 
   return false;
 }
+
+export const day = (timeStamp) => {
+  if (!timeStamp) return;
+  var date = new Date(timeStamp);
+  var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+  var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+  return M + D;
+};

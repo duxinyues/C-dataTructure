@@ -129,6 +129,9 @@ function OrderDetail(props) {
                 setbarCodeData(res.data)
             })
     }
+    const onCancel = () => {
+        setvisible(false)
+    }
     return <div className="right">
         <div className="detail-title">
             {props.data.billStatus === 0 && <span style={{ marginRight: "10px" }}>未审核</span>}
@@ -175,8 +178,8 @@ function OrderDetail(props) {
             title="条码明细"
             visible={visible}
             footer={false}
+            onCancel={onCancel}
         >
-            {/* #	条码	机号	疋号	重量	出库时间	纱牌	查布记录 */}
             <Table
                 columns={[{
                     title: "#",

@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:45:05
- * @LastEditTime: 2021-06-18 17:47:47
+ * @LastEditTime: 2021-06-19 16:34:14
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布出货单【新增组件】
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\createOrder.jsx
@@ -10,23 +10,18 @@
 import { useEffect, useState } from "react"
 import { Table, Input, Select, DatePicker, Form, Row, Modal, Button, Tag, message } from "antd";
 import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { requestUrl, getNowFormatDate } from "../../../utils/config";
+import { requestUrl, getNowFormatDate, day } from "../../../utils/config";
 import { saveOrderData, saveSelectData } from "../../../actons/action"
 import { connect } from "react-redux";
 import 'moment/locale/zh-cn';
 import moment from "moment"
 import locale from 'antd/es/date-picker/locale/zh_CN';
-import "../../yarnInventory/style.css"
+import "../../yarnInventory/style.css";
+import OpenBarcode from "./openBarcode";
 const { TextArea } = Input;
 const { Option } = Select;
 document.title = "新增入库单";
-const day = (timeStamp) => {
-    if (!timeStamp) return;
-    var date = new Date(timeStamp);
-    var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-    var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-    return M + D;
-};
+
 function CreateEnterStockOrder(props) {
     const [bizDate, setbizDate] = useState("");   // 日期
     const [remark, setremark] = useState(""); // 备注
@@ -50,6 +45,7 @@ function CreateEnterStockOrder(props) {
     const [customerId, setcustomerId] = useState();// 选中客户的ID
     const [customerName, setcustomerName] = useState("");// 选中客户的名称
     const [stockIoDtls, setStockIoDtls] = useState([]); // 出货单的订单信息
+    const [isOpenBarcode, setIsOpenBarcode] = useState(false);
     useEffect(() => {
         if (props.data) {
             setbizDate(props.data.bizDate);
@@ -177,9 +173,6 @@ function CreateEnterStockOrder(props) {
             })
             let totalWeight = _selectedRows.reduce((pre, cur) => {
                 return pre + cur.weight
-            }, 0)
-            const totalVolQty = _selectedRows.reduce((pre, cur) => {
-                return pre + cur.volQty
             }, 0)
             setweightSum(totalWeight.toFixed(2));
             setvolQtySum(_selectedRows.length);
@@ -318,7 +311,6 @@ function CreateEnterStockOrder(props) {
         setbarCodeData();
     }
     const selectOrder = (value) => {
-        // props.selectOrder(value);
         props.saveSelectData(value)
     }
     const selectCustomer = (value) => {
@@ -328,6 +320,21 @@ function CreateEnterStockOrder(props) {
                 setcustomerName(item.name)
             }
         })
+    }
+
+    // 展开所选的条码
+    const openBarcode = () => {
+        setIsOpenBarcode(true)
+        console.log(2345678)
+    }
+
+    /**
+     * 子组件编辑所选条码后，返回的数据
+     * @param {*} value 
+     */
+    const editSelectBarcode = (value) => {
+        console.log("子组件!!!!!==", value)
+        setIsOpenBarcode(value.open)
     }
     return <div className="right">
         <div className="add-content">
@@ -376,7 +383,7 @@ function CreateEnterStockOrder(props) {
                         { title: "纱别", width: 130, dataIndex: "yarnInfo" },
                         { title: "针寸", width: 70, dataIndex: "inches" },
                         { title: "客户颜色", width: 70, dataIndex: "customerCode" },
-                        { title: "出货卷数", width: 70, dataIndex: "_volQty" },
+                        { title: "出货卷数", width: 70, dataIndex: "_volQty", render: (param) => (<span onClick={openBarcode}  style={{ color: "blue", cursor: "pointer" }}>{param}</span>) },
                         { title: "出货重量", width: 70, dataIndex: "_weight" },
                         { title: "单位", width: 40, render: () => (<span>kg</span>) },
                         { title: "加工单价", width: 70, dataIndex: "price" },
@@ -519,6 +526,7 @@ function CreateEnterStockOrder(props) {
                 </div>
             </div>
         </Modal>
+        {isOpenBarcode && <OpenBarcode editSelectBarcode={editSelectBarcode} isOpen={isOpenBarcode} data={fabricStockIoDtls} />}
     </div>
 }
 const mapStateToProps = (state) => {
