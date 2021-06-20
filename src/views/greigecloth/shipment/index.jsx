@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:31:18
- * @LastEditTime: 2021-06-18 17:59:49
+ * @LastEditTime: 2021-06-20 16:30:58
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布列表和详情
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\index.jsx
@@ -126,6 +126,7 @@ function InStock(props) {
             return;
         }
         console.log("新增或者编辑的表单字段==", orderData);
+        return;
         fetch(requestUrl + "/api-stock/fabricStockIo/saveOrModify", {
             method: "POST",
             headers: {

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"
 import { Table, Input, Tag, Modal } from "antd";
 import { onlyFormat, requestUrl } from "../../../utils/config";
+import { outStockOrderBarCode } from "../../../actons/action"
 import { withRouter } from "react-router-dom";
+import { connect } from "react-redux"
 import "../../yarnInventory/style.css"
 const { TextArea } = Input;
 function OrderDetail(props) {
@@ -96,9 +98,6 @@ function OrderDetail(props) {
             render: (item) => (<span>{Number(item).toFixed(2)}</span>)
         }
     ];
-    useEffect(() => {
-
-    }, [])
     const audit = () => {
         console.log(props);
         const status = props.data.billStatus === 0 ? 1 : 0
@@ -213,4 +212,4 @@ function OrderDetail(props) {
     </div>
 }
 
-export default withRouter(OrderDetail)
+export default connect(null, { outStockOrderBarCode })(withRouter(OrderDetail))

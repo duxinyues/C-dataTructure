@@ -13,14 +13,16 @@ import {
     loginReducer,
     userInfoReducer,
     selectOrderDataReducer,
-    selectDataReducer
+    selectDataReducer,
+    outStockOrderBarCode_listReducer
 } from "./reducer/reducer";
 
 const reducers = combineReducers({
     loginReducer,
     userInfoReducer,
     selectOrderDataReducer,
-    selectDataReducer
+    selectDataReducer,
+    outStockOrderBarCode_listReducer
 })
 
 

@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-19 14:31:01
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-19 16:05:48
+ * @LastEditTime: 2021-06-20 16:55:10
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\openBarcode.jsx
  * @Description: 展示所选的条码、编辑
  */
@@ -21,7 +21,11 @@ function OpenBarcode(props) {
     }, []);
 
     const onCancel = () => {
-        setvisible(false)
+        setvisible(false);
+        props.editSelectBarcode({
+            data: barcode,
+            open: false
+        });
     }
     const rowSelection_modal = {
         selectedRowKeys: selected,
@@ -33,8 +37,8 @@ function OpenBarcode(props) {
     };
     const selectBarcode = () => {
         props.editSelectBarcode({
-            data:barcode,
-            open:false
+            data: barcode,
+            open: false
         });
         setvisible(false);
     }

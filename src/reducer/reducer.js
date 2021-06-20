@@ -1,10 +1,27 @@
+/*
+ * @FileName: 
+ * @Author: 1638877065@qq.com
+ * @Date: 2021-06-17 22:53:41
+ * @LastEditors: 1638877065@qq.com
+ * @LastEditTime: 2021-06-20 17:37:40
+ * @FilePath: \cloud-admin\src\reducer\reducer.js
+ * @Description: 
+ * 
+ */
 //引入dispatch的type类型
-import { LOGIN, LOGOUT, USER_INFO, SAVE_ORDER, SAVE_SELECTDATA } from "../actons/type"
+import {
+    LOGIN,
+    LOGOUT,
+    USER_INFO,
+    SAVE_ORDER,
+    SAVE_SELECTDATA,
+    OUT_STOCK_ORDER_BARCODE
+} from "../actons/type"
 
 //reducer的作用就是返回一个新的状态
 const initialState = {
     //存储自己想要的状态
-    tokenInfor: {}       //访问当前文件中的时候定义一个初始状态(数据)
+    tokenInfor: {} //访问当前文件中的时候定义一个初始状态(数据)
 }
 
 /**
@@ -20,8 +37,8 @@ export function loginReducer(state = initialState, action) {
                 ...state,
                 tokenInfor: action.payload
             }
-        default:
-            return state
+            default:
+                return state
     }
 }
 
@@ -33,12 +50,14 @@ export function logoutReducer(state = initialState, action) {
                 ...state,
                 tokenInfor: {}
             }
-        default:
-            return state
+            default:
+                return state
     }
 }
 
-const userDataState = { userData: {} }
+const userDataState = {
+    userData: {}
+}
 export function userInfoReducer(state = userDataState, action) {
     switch (action.type) {
         case USER_INFO:
@@ -46,12 +65,16 @@ export function userInfoReducer(state = userDataState, action) {
                 ...state,
                 userData: action.userData
             }
-        default:
-            return state
+            default:
+                return state
     }
 }
-
-const selectOrderData = { selectOrderData: [] };
+/**
+ * 创建出库单所选的订单
+ */
+const selectOrderData = {
+    selectOrderData: []
+};
 export function selectOrderDataReducer(state = selectOrderData, action) {
     switch (action.type) {
         case SAVE_ORDER:
@@ -59,11 +82,16 @@ export function selectOrderDataReducer(state = selectOrderData, action) {
                 ...state,
                 selectOrderData: action.payload
             }
-        default:
-            return state
+            default:
+                return state
     }
 }
-const selectData = { selectData: {} };
+/**
+ * 创建出库单所选的条码
+ */
+const selectData = {
+    selectData: {}
+};
 export function selectDataReducer(state = selectData, action) {
     switch (action.type) {
         case SAVE_SELECTDATA:
@@ -71,7 +99,22 @@ export function selectDataReducer(state = selectData, action) {
                 ...state,
                 selectData: action.payload
             }
-        default:
-            return state
+            default:
+                return state
+    }
+}
+
+/**
+ * 出货单的条码列表
+ */
+export function outStockOrderBarCode_listReducer(state = [], action) {
+    switch (action.type) {
+        case OUT_STOCK_ORDER_BARCODE:
+            return {
+                ...state,
+                outStockOrderBarCode: action.payload
+            }
+            default:
+                return state
     }
 }
