@@ -371,8 +371,8 @@ let CreateOrder = (props, ref) => {
                 </Row>
             </div>
             <div className="edit-table">
-                {/* <AddYarnInfo saveValue={saveValue} /> */}
-                <EditableProTable
+                <AddYarnInfo saveValue={saveValue} />
+                {/* <EditableProTable
                     headerTitle="用料要求"
                     columns={columns}
                     rowKey="id"
@@ -395,7 +395,7 @@ let CreateOrder = (props, ref) => {
                         },
                         onChange: setEditableRowKeys,
                     }}
-                />
+                /> */}
             </div>
             <div>
                 <div className="clothing">

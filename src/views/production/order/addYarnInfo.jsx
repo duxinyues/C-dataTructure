@@ -1,3 +1,12 @@
+/*
+ * @FileName: 
+ * @Author: 1638877065@qq.com
+ * @Date: 2021-06-10 21:55:30
+ * @LastEditors: 1638877065@qq.com
+ * @LastEditTime: 2021-06-21 23:47:53
+ * @FilePath: \cloud-admin\src\views\production\order\addYarnInfo.jsx
+ * @Description: 
+ */
 import React, { useState, useEffect } from "react";
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { message, Input } from "antd";
@@ -36,12 +45,12 @@ function AddYarnInfo(props) {
         const _tableHead = tableHead;
         const _addRow = addRow;
         if (addIndex > 5) { message.success("最多只能添加5组纱批"); return; }
-        
+
         _tableHead.splice(addIndex, 0, {
             title: '纱牌/纱批' + addIndex,
             dataIndex: 'yarnBrandBatch' + addIndex,
         });
-        _addRow.splice(addIndex,0,1)
+        _addRow.splice(addIndex, 0, 1)
         settableHead(_tableHead);
         setaddRow(_addRow);
         setaddIndex(addIndex + 1);
@@ -51,7 +60,7 @@ function AddYarnInfo(props) {
         const _addRow = addRow;
         const subIndex = tableHead.indexOf(item);
         _tableHead.splice(subIndex, 1);
-        _addRow.splice(subIndex,1)
+        _addRow.splice(subIndex, 1)
         settableHead(_tableHead);
         setaddRow(_addRow);
         setaddIndex(subIndex);
@@ -84,10 +93,14 @@ function AddYarnInfo(props) {
         <div className="tableBody">
             {
                 tableBody.map((item, key) => {
+                    console.log(item)
+                    // 根据key的大小判断添加多少条数据
                     return <div className="table-tr" key={key}>
                         {
                             addRow.map((ites, inds) => <div className="table-cel" key={inds}>
-                                <Input />
+                                {/* 根据inds判断添加多少列 */}
+                                {/* 根据key和inds判断编辑第几个数据 */}
+                                <Input placeholder={key + "??=" + inds} />
                             </div>)
                         }
                     </div>

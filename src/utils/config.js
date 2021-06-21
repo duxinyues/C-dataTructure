@@ -1,14 +1,14 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-21 18:51:46
+ * @LastEditTime: 2021-06-21 23:09:42
  * @LastEditors: 1638877065@qq.com
  * @Description: 工具函数
  * @FilePath: \cloud-admin\src\utils\config.js
  * 
  */
-// export const requestUrl = "http://39.104.13.107:8000";
-export const requestUrl = "http://192.168.2.82:8000";
+export const requestUrl = "http://39.104.13.107:8000";
+// export const requestUrl = "http://192.168.2.82:8000";
 export const onlyFormat = (timeStamp, type) => {
   if (!timeStamp) return;
   var date = new Date(timeStamp);
