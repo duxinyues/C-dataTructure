@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:45:05
- * @LastEditTime: 2021-06-19 16:34:14
+ * @LastEditTime: 2021-06-21 19:28:48
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布出货单【新增组件】
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\createOrder.jsx
@@ -20,7 +20,7 @@ import "../../yarnInventory/style.css";
 import OpenBarcode from "./openBarcode";
 const { TextArea } = Input;
 const { Option } = Select;
-document.title = "新增入库单";
+document.title = "新增出库单";
 
 function CreateEnterStockOrder(props) {
     const [bizDate, setbizDate] = useState("");   // 日期
@@ -46,6 +46,7 @@ function CreateEnterStockOrder(props) {
     const [customerName, setcustomerName] = useState("");// 选中客户的名称
     const [stockIoDtls, setStockIoDtls] = useState([]); // 出货单的订单信息
     const [isOpenBarcode, setIsOpenBarcode] = useState(false);
+    const [editOrder, setEditOrder] = useState([])
     useEffect(() => {
         if (props.data) {
             setbizDate(props.data.bizDate);
@@ -222,12 +223,14 @@ function CreateEnterStockOrder(props) {
         props.selectData._volQty = volQtySum; // 选中条码的总卷数
         props.selectData._weight = weightSum; // 选中条码的总重量
         props.selectData.totalMoney = (props.selectData.price * weightSum).toFixed(2); // 选中条码的总金额
+        props.selectData.barcodeList = fabricStockIoDtls;
         // 去重
         if (selectOrderData.length === 0) {
             selectOrderData.push(props.selectData);
         } else {
             selectOrderData.map((item) => {
                 if (item.knitOrderCode === props.selectData.knitOrderCode) {
+                    item.barcodeList = [...item.barcodeList, ...props.selectData.barcodeList]
                     item._volQty = Number(item._volQty) + Number(props.selectData._volQty);
                     item._weight = Number(item._weight) + Number(props.selectData._weight);
                     item.totalMoney = (Number(item.totalMoney) + props.selectData.price * weightSum);
@@ -323,9 +326,10 @@ function CreateEnterStockOrder(props) {
     }
 
     // 展开所选的条码
-    const openBarcode = () => {
-        setIsOpenBarcode(true)
-        console.log(2345678)
+    const openBarcode = (param) => {
+        setIsOpenBarcode(true);
+        setEditOrder(param);
+        setfabricStockIoDtls(param.barcodeList)
     }
 
     /**
@@ -333,8 +337,46 @@ function CreateEnterStockOrder(props) {
      * @param {*} value 
      */
     const editSelectBarcode = (value) => {
-        console.log("子组件!!!!!==", value)
-        setIsOpenBarcode(value.open)
+        console.log("=====", selectOrderData);
+        console.log("????", editOrder);
+        const _stockIoDtls = [...stockIoDtls];
+        // 取消的条码
+        const cancelIds = value.data.map((item) => {
+            return item.id
+        })
+        const barcodeList = editOrder.barcodeList.filter((item) => cancelIds.indexOf(item.id) < 0)
+        const barcodeIds = barcodeList.map((item) => {
+            return item.id
+        })
+        console.log("重新选择的条码==", barcodeIds)
+        // 取消条码数量
+        const cancelW = value.data.reduce((pre, cur) => {
+            return pre + cur.weight
+        }, 0)
+
+        selectOrderData.map((item, index) => {
+            console.log(item);
+            if (item.id === editOrder.id) {
+                item._volQty = barcodeIds.length;
+                item._weight = Number(item._weight) - cancelW;
+                item.barcodeList = barcodeList;
+                item.totalMoney = (item.price * item._weight).toFixed(2)
+                _stockIoDtls[index].barcodeIds = barcodeIds.join(",");
+                _stockIoDtls[index]._volQty = barcodeIds.length;
+                _stockIoDtls[index]._weight = Number(item._weight);
+            }
+        })
+        setIsOpenBarcode(value.open);
+        props.save({
+            "address": address,
+            "billStatus": "0",
+            "billType": "0",
+            "bizDate": bizDate ? bizDate : getNowFormatDate(),
+            "customerId": customerId,
+            "fabricStockIoDtls": _stockIoDtls,
+            "flag": 0,
+            "remark": remark
+        })
     }
     return <div className="right">
         <div className="add-content">
@@ -383,7 +425,11 @@ function CreateEnterStockOrder(props) {
                         { title: "纱别", width: 130, dataIndex: "yarnInfo" },
                         { title: "针寸", width: 70, dataIndex: "inches" },
                         { title: "客户颜色", width: 70, dataIndex: "customerCode" },
-                        { title: "出货卷数", width: 70, dataIndex: "_volQty", render: (param) => (<span onClick={openBarcode}  style={{ color: "blue", cursor: "pointer" }}>{param}</span>) },
+                        {
+                            title: "出货卷数", width: 70, dataIndex: "_volQty", render: (item, index) => (<span onClick={() => {
+                                openBarcode(index)
+                            }} style={{ color: "blue", cursor: "pointer" }}>{item}</span>)
+                        },
                         { title: "出货重量", width: 70, dataIndex: "_weight" },
                         { title: "单位", width: 40, render: () => (<span>kg</span>) },
                         { title: "加工单价", width: 70, dataIndex: "price" },

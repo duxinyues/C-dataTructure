@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-17 22:53:41
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-20 17:36:32
+ * @LastEditTime: 2021-06-21 08:51:57
  * @FilePath: \cloud-admin\src\actons\action.js
  * @Description: 
  */
@@ -82,24 +82,20 @@ export const saveSelectData = (value) => (dispatch) => {
         payload: value
     })
 }
-
-export const outStockOrderBarCode = (value) => (dispatch) => {
-    fetch(requestUrl + "/api-user/user/findById?id=1", {
+// 
+export const getOutStockOrderBarCode = (outId, orderId) => (dispatch) => {
+    fetch(requestUrl + "/api-stock/fabricStockIo/findOutBarcodeByOrderId?id=" +outId + "&orderId=" + orderId, {
         method: "POST",
         headers: {
-            "Authorization": "bearer " + localStorage.getItem("access_token")
-        },
-    }).then(res => {
-        return res.json()
-    }).then((res) => {
-        console.log("menus", res)
-        if (res.code == 200) {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+        }
+    })
+        .then(res => { return res.json() })
+        .then((res) => {
+            console.log(res)
             dispatch({
                 type: OUT_STOCK_ORDER_BARCODE,
-                payload: res.data.menus
+                payload: res.data
             })
-        }
-    }).catch((err) => {
-        console.log(err)
-    })
+        })
 }

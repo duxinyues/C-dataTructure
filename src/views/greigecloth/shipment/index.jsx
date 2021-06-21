@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:31:18
- * @LastEditTime: 2021-06-20 16:30:58
+ * @LastEditTime: 2021-06-21 19:10:38
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布列表和详情
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\index.jsx
@@ -60,19 +60,25 @@ function InStock(props) {
                     setloading(false)
                     if (res.data.total == 0) {
                         setdisabled(true);
+                        setspinning(false);
                         return;
                     }
                     setsize(res.data.size);
                     setcurrent(res.data.current);
                     setleftData(res.data.records);
                     setleftTotal(res.data.total);
-                    setSelectId(res.data.records[0].id)
+                    setSelectId(res.data.records[0].id);
                     getYarnStockDetail(res.data.records[0].id)
                 }
             })
     }
     // 坯布出货详情
     const getYarnStockDetail = (id) => {
+        console.log(id)
+        if (!id) {
+            setspinning(false);
+            return;
+        };
         fetch(requestUrl + "/api-stock/fabricStockIo/findById?id=" + id, {
             method: "POST",
             headers: {
@@ -126,7 +132,6 @@ function InStock(props) {
             return;
         }
         console.log("新增或者编辑的表单字段==", orderData);
-        return;
         fetch(requestUrl + "/api-stock/fabricStockIo/saveOrModify", {
             method: "POST",
             headers: {
@@ -162,6 +167,7 @@ function InStock(props) {
         getData({ page: current, size: size });
     }
     const delect = () => {
+
         confirm({
             title: '确定删除出货单并将对应的条码取消出库？',
             okText: '确定',
@@ -248,7 +254,7 @@ function InStock(props) {
                 <Button disabled={disabled}>
                     导出
                 </Button>
-                <Button onClick={openOutStockOrder}>
+                <Button onClick={openOutStockOrder} >
                     细码
                 </Button>
             </div>

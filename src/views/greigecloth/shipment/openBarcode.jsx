@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-19 14:31:01
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-20 16:55:10
+ * @LastEditTime: 2021-06-21 19:28:26
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\openBarcode.jsx
  * @Description: 展示所选的条码、编辑
  */
@@ -46,17 +46,18 @@ function OpenBarcode(props) {
         title="条码明细"
         visible={visible}
         onCancel={onCancel}
-        okText="取消入库"
+        okText="取消出库"
         cancelText="关闭"
         onOk={selectBarcode}
     >
         <Table
             columns={[
+                { title: "#", dataIndex: "id" },
                 { title: "条码", dataIndex: "barcode" },
                 { title: "疋号", dataIndex: "seq" },
                 { title: "入库重量", dataIndex: "weight" },
                 { title: "入库日期", dataIndex: "inStockTime", render: (time) => (<span>{day(time)}</span>) },
-                { title: "查布记录", dataIndex: "" }
+                { title: "查布记录", dataIndex: "flawInfo" }
             ]}
             dataSource={props.data}
             rowSelection={rowSelection_modal}

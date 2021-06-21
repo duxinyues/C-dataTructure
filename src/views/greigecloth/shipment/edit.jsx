@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:45:05
- * @LastEditTime: 2021-06-20 16:53:53
+ * @LastEditTime: 2021-06-21 19:29:07
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布出货单【新增组件】
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\edit.jsx
@@ -11,7 +11,7 @@ import { useEffect, useState } from "react"
 import { Table, Input, Select, DatePicker, Form, Row, Modal, Button, Tag, message } from "antd";
 import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { requestUrl, getNowFormatDate, day } from "../../../utils/config";
-import { saveOrderData, saveSelectData } from "../../../actons/action"
+import { saveOrderData, saveSelectData, getOutStockOrderBarCode } from "../../../actons/action"
 import { connect } from "react-redux";
 import 'moment/locale/zh-cn';
 import moment from "moment"
@@ -20,10 +20,10 @@ import "../../yarnInventory/style.css";
 import OpenBarcode from "./openBarcode";
 const { TextArea } = Input;
 const { Option } = Select;
-document.title = "编辑入库单";
+document.title = "编辑出库单";
 
 function EditEnterStockOrder(props) {
-    console.log("编辑入库单", props)
+    console.log(props)
     const [bizDate, setbizDate] = useState("");   // 日期
     const [remark, setremark] = useState(""); // 备注
     const [address, setaddress] = useState(""); // 收货方地址
@@ -35,7 +35,7 @@ function EditEnterStockOrder(props) {
     const [barCodeData, setbarCodeData] = useState([]);
     const [selected, setselected] = useState([]); // 选择条码
     const [selectOrderList, setSelectOrderList] = useState([]); // 选中订单列表的ID
-    const [visible, setvisible] = useState(true); // 开关弹窗
+    const [visible, setvisible] = useState(false); // 开关弹窗
     const [customer, setcustomer] = useState([{}]); // 获取客户列表
     const [selectOrderData, setselectOrderData] = useState([]); // 选中订单
     const [fabricStockIoDtls, setfabricStockIoDtls] = useState([]);//  每个订单选中的条码信息
@@ -47,28 +47,36 @@ function EditEnterStockOrder(props) {
     const [customerName, setcustomerName] = useState("");// 选中客户的名称
     const [stockIoDtls, setStockIoDtls] = useState([]); // 出货单的订单信息
     const [isOpenBarcode, setIsOpenBarcode] = useState(false);
+    const [editOrder, setEditOrder] = useState([])
     useEffect(() => {
+        setfabricStockIoDtls(props.outStockBarCode)
         if (props.data) {
+            const _stockIoDtls = [...stockIoDtls];
             setbizDate(props.data.bizDate);
             setremark(props.data.remark);
             setcustomerId(props.data.customerId);
-            setselectOrderData(props.data.fabricStockIoDtls)
+            setselectOrderData(props.data.fabricStockIoDtls);
+            setaddress(props.data.address);
+            setbizDate(props.data.bizDate);
+            setremark(props.data.remark);
+            props.data.fabricStockIoDtls.map((item) => {
+                const barcodeIds = item.barcodeList.map((item) => { return item.id })
+                _stockIoDtls.push({
+                    "barcodeIds": barcodeIds.join(","),
+                    "cancelIds": "",
+                    "knitOrderId": item.knitOrderId,
+                    "volQty": item.volQty,
+                    "weight": item.weight
+                })
+            });
+            setStockIoDtls(_stockIoDtls)
         }
         getCustomer()
         getInventory({
             page: 1,
             size: 10,
-            customerId: customerId
+            customerId: props.data.customerId
         });
-
-        return () => {
-            //组件卸载
-            // setbarSum(0);
-            // setselectOrderData([]);
-            // setfabricStockIoDtls([]);
-            // props.saveOrderData([]);
-            // props.saveSelectData({});
-        }
     }, []);
 
     // 选择入库日期
@@ -79,10 +87,10 @@ function EditEnterStockOrder(props) {
             "billStatus": "0",
             "billType": "0",
             "bizDate": dateString,
-            "code": "",
             "customerId": customerId,
             "fabricStockIoDtls": stockIoDtls,
             "flag": 0,
+            "id": props.data.id,
             "remark": remark
         })
     }
@@ -94,10 +102,10 @@ function EditEnterStockOrder(props) {
             "billStatus": "0",
             "billType": "0",
             "bizDate": bizDate ? bizDate : getNowFormatDate(),
-            "code": "",
             "customerId": customerId,
             "fabricStockIoDtls": stockIoDtls,
             "flag": 0,
+            "id": props.data.id,
             "remark": value
         })
     }
@@ -109,14 +117,13 @@ function EditEnterStockOrder(props) {
             "billStatus": "",
             "billType": "0",
             "bizDate": bizDate ? bizDate : getNowFormatDate(),
-            "code": "",
             "customerId": customerId,
             "fabricStockIoDtls": stockIoDtls,
             "flag": 0,
+            "id": props.data.id,
             "remark": remark
         })
     }
-    const today = moment();
     // 获取客户列表
     const getCustomer = () => {
         fetch(requestUrl + "/api-stock/stockCommon/findCustomerDown", {
@@ -127,7 +134,6 @@ function EditEnterStockOrder(props) {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
                 if (res.code === 200) {
                     setcustomer(res.data)
                 }
@@ -170,7 +176,6 @@ function EditEnterStockOrder(props) {
     const rowSelection_modal = {
         selectedRowKeys: selected,
         onChange: (_selectedRowKeys, _selectedRows) => {
-            console.log(_selectedRows)
             setselected(_selectedRowKeys);
             const ids = _selectedRows.map((item) => {
                 return item.id;
@@ -178,11 +183,10 @@ function EditEnterStockOrder(props) {
             let totalWeight = _selectedRows.reduce((pre, cur) => {
                 return pre + cur.weight
             }, 0)
-            setweightSum(totalWeight.toFixed(2));
+            setweightSum(totalWeight);
             setvolQtySum(_selectedRows.length);
             setbarcodeIds(ids.join(","));
-            // setselectOrderData
-            // setfabricStockIoDtls(_selectedRows);
+            setfabricStockIoDtls(_selectedRows);
             setbarSum(_selectedRows.length);
         },
     };
@@ -213,7 +217,6 @@ function EditEnterStockOrder(props) {
                         return;
                     }
                     res.data.map((item) => {
-                        console.log(_stockIoDtls.indexOf(item.id))
                         if (_stockIoDtls.indexOf(item.id) < 0) noSelect.push(item);
                     })
                     setbarCodeData(noSelect)
@@ -239,40 +242,64 @@ function EditEnterStockOrder(props) {
             needles: props.selectData.needles,
             productPrice: props.selectData.price,
         }
+        props.selectData.barcodeList = fabricStockIoDtls
         props.selectData.volQty = volQtySum;
         props.selectData.weight = weightSum;
         props.selectData.totalMoney = (props.selectData.price * weightSum).toFixed(2);
-        _selectOrderData.map((item) => {
-            if (item.knitOrderCode === props.selectData.knitOrderCode) {
-                console.log("重复了")
-                item.volQty = Number(item.volQty) + Number(props.selectData._volQty);
-                item.weight = Number(item.weight) + Number(props.selectData._weight);
-                item.totalMoney = (Number(item.totalMoney) + props.selectData.price * weightSum);
+        const isInclude = _selectOrderData.some((item) => (item.orderDto.code === props.selectData.knitOrderCode))
+        console.log("订单===", props.selectData)
+        if (isInclude) {
+            console.log(89)
+            _selectOrderData.map((item, index) => {
+                console.log("10", item)
+                if (item.knitOrderId === props.selectData.knitOrderId) {
+                    item.barcodeList = [...item.barcodeList, ...props.selectData.barcodeList]
+                    item.volQty = Number(item.volQty) + Number(props.selectData.volQty);
+                    item.weight = Number(item.weight) + Number(props.selectData.weight);
+                    item.totalMoney = (Number(item.totalMoney) + props.selectData.price * weightSum);
+                    return
+                }
+            })
+        } else {
+            console.log(900000)
+            _selectOrderData.push(props.selectData);
+            _stockIoDtls.push({
+                "barcodeIds": barcodeIds,
+                "cancelIds": "",
+                "knitOrderId": props.selectData.knitOrderId,
+                "volQty": props.selectData.volQty,
+                "weight": props.selectData.weight
+            })
+        }
+        _stockIoDtls.map((item) => {
+            if (item.knitOrderId === props.selectData.knitOrderId) {
+                item.barcodeIds = item.barcodeIds + "," + barcodeIds;
+                item.cancelIds = item.cancelIds;
+                item.volQty = item.volQty + props.selectData.volQty;
+                item.weight = item.weight + props.selectData.weight
             } else {
-                _selectOrderData.push(props.selectData);
+                _stockIoDtls.push({
+                    "barcodeIds": barcodeIds,
+                    "cancelIds": "",
+                    "knitOrderId": props.selectData.knitOrderId,
+                    "volQty": props.selectData.volQty,
+                    "weight": props.selectData.weight
+                })
             }
         })
-        _stockIoDtls.push({
-            "barcodeIds": barcodeIds,
-            "cancelIds": "",
-            "knitOrderId": props.selectData.knitOrderId,
-            "volQty": props.selectData.volQty,
-            "weight": props.selectData.weight
-        })
         setStockIoDtls(_stockIoDtls);
-        console.log("订单===", _selectOrderData)
-        console.log("这又是个什么数据==", props.selectData)
+        console.log(_selectOrderData)
         setselectOrderData([..._selectOrderData]);
-        props.saveOrderData([...selectOrderData])
+        props.saveOrderData([..._selectOrderData])
         props.save({
             "address": address,
             "billStatus": "0",
             "billType": "0",
             "bizDate": bizDate ? bizDate : getNowFormatDate(),
-            "code": "",
             "customerId": customerId,
             "fabricStockIoDtls": _stockIoDtls,
             "flag": 0,
+            "id": props.data.id,
             "remark": remark
         })
 
@@ -293,21 +320,29 @@ function EditEnterStockOrder(props) {
         const orderList = selectOrderData;
         const _stockIoDtls = stockIoDtls;
         const _selectOrderList = selectOrderList;
-        orderList.map((item) => {
-            if (_selectOrderList.indexOf(item.id) >= 0) {
+        console.log(_stockIoDtls)
+
+        orderList.map((item, index) => {
+            if (_selectOrderList.indexOf(item.id) >= 0 && item.volQty === 0) {
+                console.log(item)
+                _stockIoDtls[index].id = item.id;
+                _stockIoDtls[index].knitOrderId = ""
                 orderList.splice(_selectOrderList.indexOf(item.id), 1);
+            } else {
+                message.warning("扫码数据不能删除！")
             }
         })
         setStockIoDtls(_stockIoDtls);
+
         props.save({
             "address": address,
             "billStatus": "0",
             "billType": "0",
             "bizDate": bizDate ? bizDate : getNowFormatDate(),
-            "code": "",
             "customerId": customerId,
             "fabricStockIoDtls": stockIoDtls,
             "flag": 0,
+            "id": props.data.id,
             "remark": remark
         })
         setselectOrderData([...orderList]);
@@ -341,8 +376,11 @@ function EditEnterStockOrder(props) {
     }
 
     // 展开所选的条码
-    const openBarcode = () => {
-        setIsOpenBarcode(true)
+    const openBarcode = (param) => {
+        console.log("select====", param)
+        setIsOpenBarcode(true);
+        setEditOrder(param);
+        setfabricStockIoDtls(param.barcodeList)
     }
 
     /**
@@ -350,8 +388,49 @@ function EditEnterStockOrder(props) {
      * @param {*} value 
      */
     const editSelectBarcode = (value) => {
-        console.log("子组件!!!!!==", value)
-        setIsOpenBarcode(value.open)
+        console.log("=====", selectOrderData);
+        console.log("????", editOrder);
+        const _stockIoDtls = [...stockIoDtls];
+        // 取消的条码
+        const cancelIds = value.data.map((item) => {
+            return item.id
+        })
+        const barcodeList = editOrder.barcodeList.filter((item) => cancelIds.indexOf(item.id) < 0)
+        const barcodeIds = barcodeList.map((item) => {
+            return item.id
+        })
+        console.log("重新选择的条码==", barcodeIds)
+        // 取消条码数量
+        const cancelW = value.data.reduce((pre, cur) => {
+            return pre + cur.weight
+        }, 0)
+
+        selectOrderData.map((item, index) => {
+            console.log(item);
+            if (item.id === editOrder.id) {
+                item.volQty = barcodeIds.length;
+                item.weight = Number(item.weight) - cancelW;
+                item.barcodeList = barcodeList;
+                item.totalMoney = (item.orderDto.productPrice * item.weight).toFixed(2)
+                _stockIoDtls[index].barcodeIds = barcodeIds.join(",");
+                _stockIoDtls[index].cancelIds = cancelIds.join(",");
+                _stockIoDtls[index].volQty = barcodeIds.length;
+                _stockIoDtls[index].weight = Number(item.weight);
+                _stockIoDtls[index].id = editOrder.id
+            }
+        })
+        setIsOpenBarcode(value.open);
+        props.save({
+            "address": address,
+            "billStatus": "0",
+            "billType": "0",
+            "bizDate": bizDate ? bizDate : getNowFormatDate(),
+            "customerId": customerId,
+            "fabricStockIoDtls": _stockIoDtls,
+            "flag": 0,
+            "id": props.data.id,
+            "remark": remark
+        })
     }
     return <div className="right">
         <div className="add-content">
@@ -400,7 +479,7 @@ function EditEnterStockOrder(props) {
                         { title: "纱别", width: 130, dataIndex: "orderDto", render: (param) => (<span>{param.yarnName}</span>) },
                         { title: "针寸", width: 70, dataIndex: "orderDto", render: (param) => (<span>{param.needles}-{param.inches}</span>) },
                         { title: "客户颜色", width: 70, dataIndex: "orderDto", render: (param) => (<span>{param.customerColor}</span>) },
-                        { title: "出货卷数", width: 70, dataIndex: "volQty", render: (param) => (<span onClick={openBarcode} style={{ color: "blue", cursor: "pointer" }}>{param}</span>) },
+                        { title: "出货卷数", width: 70, dataIndex: "volQty", render: (item, index) => (<span onClick={() => { openBarcode(index) }} style={{ color: "blue", cursor: "pointer" }}>{item}</span>) },
                         { title: "出货重量", width: 70, dataIndex: "weight" },
 
                         { title: "单位", width: 40, render: () => (<span>kg</span>) },
@@ -442,9 +521,6 @@ function EditEnterStockOrder(props) {
                 layout="horizontal"
                 onFinish={onFinish}
                 preserve={false}
-            // initialValues={{
-            //     customerId: customerId
-            // }}
             >
                 <Row gutter={24}>
                     <Form.Item
@@ -519,6 +595,7 @@ function EditEnterStockOrder(props) {
                         onRow={record => {
                             return {
                                 onClick: () => {
+                                    console.log("000=", record)
                                     selectOrder(record);
                                     getBarCode({ orderId: record.knitOrderId, loomId: record.loomId });
                                 },
@@ -549,11 +626,11 @@ function EditEnterStockOrder(props) {
     </div>
 }
 const mapStateToProps = (state) => {
-    console.log(state)
     return {
         totalOrder: state.selectOrderDataReducer.selectOrderData || [],
-        selectData: state.selectDataReducer.selectData
+        selectData: state.selectDataReducer.selectData,
+        outStockBarCode: state.outStockOrderBarCode_listReducer.outStockOrderBarCode || []
     }
 }
 
-export default connect(mapStateToProps, { saveOrderData, saveSelectData })(EditEnterStockOrder)
+export default connect(mapStateToProps, { saveOrderData, saveSelectData, getOutStockOrderBarCode })(EditEnterStockOrder)

@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Table, Input, Tag, Modal } from "antd";
-import { onlyFormat, requestUrl } from "../../../utils/config";
-import { outStockOrderBarCode } from "../../../actons/action"
+import { onlyFormat, requestUrl, day } from "../../../utils/config";
+import { getOutStockOrderBarCode } from "../../../actons/action"
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux"
 import "../../yarnInventory/style.css"
 const { TextArea } = Input;
 function OrderDetail(props) {
-    console.log(props)
     document.title = "坯布出货";
     const [visible, setvisible] = useState(false);
-    const [barCodeData, setbarCodeData] = useState([])
     const enter_yarn_colums = [
         {
             title: '#',
@@ -72,7 +70,7 @@ function OrderDetail(props) {
             dataIndex: 'volQty',
             key: 'volQty',
             width: 70,
-            render: (item, index) => (<span onClick={() => { openBarCode(index) }} style={{ color: "blue", cursor: "pointer" }}>{item}</span>)
+            render: (item, index) => (<span onClick={() => { props.getOutStockOrderBarCode(props.data.id, index.knitOrderId); setvisible(true); }} style={{ color: "blue", cursor: "pointer" }}>{item}</span>)
         },
         {
             title: '出货重量',
@@ -112,20 +110,6 @@ function OrderDetail(props) {
                 if (res.code === 200) {
                     props.update()
                 }
-            })
-    }
-    const openBarCode = (param) => {
-        setvisible(true);
-        fetch(requestUrl + "/api-stock/fabricStockIo/findOutBarcodeByOrderId?id=" + props.data.id + "&orderId=" + param.knitOrderId, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-            }
-        })
-            .then(res => { return res.json() })
-            .then((res) => {
-                console.log(res)
-                setbarCodeData(res.data)
             })
     }
     const onCancel = () => {
@@ -197,7 +181,8 @@ function OrderDetail(props) {
                     dataIndex: "weight"
                 }, {
                     title: "出库时间",
-                    dataIndex: "outStockTime"
+                    dataIndex: "outStockTime",
+                    render: (time) => (<span>{day(time)}</span>)
                 }, {
                     title: "纱牌",
                     dataIndex: "yarnInfo"
@@ -205,11 +190,15 @@ function OrderDetail(props) {
                     title: "查布记录",
                     dataIndex: "flawInfo"
                 }]}
-                dataSource={barCodeData}
+                dataSource={props.barCodeData}
                 pagination={false}
             />
         </Modal>
     </div>
 }
-
-export default connect(null, { outStockOrderBarCode })(withRouter(OrderDetail))
+const mapStateToProps = (state) => {
+    return {
+        barCodeData: state.outStockOrderBarCode_listReducer.outStockOrderBarCode || []
+    }
+}
+export default connect(mapStateToProps, { getOutStockOrderBarCode })(withRouter(OrderDetail))
