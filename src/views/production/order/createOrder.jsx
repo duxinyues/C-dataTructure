@@ -39,7 +39,7 @@ let CreateOrder = (props, ref) => {
     const [type, settype] = useState();
     const [deliveryDate, setdeliveryDate] = useState();
     const [productPrice, setproductPrice] = useState();
-    const [weight, setweight] = useState();
+    const [weight, setweight] = useState(0); // 订单数量
     const [yarnLength, setyarnLength] = useState();
     const [customerColor, setcustomerColor] = useState();
     const [remark, setremark] = useState();
@@ -367,7 +367,7 @@ let CreateOrder = (props, ref) => {
                 </Row>
             </div>
             <div className="edit-table">
-                <AddYarnInfo saveValue={saveValue} />
+                <AddYarnInfo saveValue={saveValue} weight={weight} />
                 {/* <EditableProTable
                     headerTitle="用料要求"
                     columns={columns}

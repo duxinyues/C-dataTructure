@@ -147,7 +147,23 @@
 .table-cel {
     border: 1px solid green;
     width: 100px;
-    margin: 0 10px 5px;
+    margin: 0 5px 5px;
+}
+
+
+
+.table-cel input {
+    width: 100%;
+    border: none;
+}
+
+.delect-icon {
+    width: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px 5px;
+    height: 28px;
 }
 
 /*  */

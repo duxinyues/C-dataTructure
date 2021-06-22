@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-21 23:09:42
+ * @LastEditTime: 2021-06-22 18:00:37
  * @LastEditors: 1638877065@qq.com
  * @Description: 工具函数
  * @FilePath: \cloud-admin\src\utils\config.js
