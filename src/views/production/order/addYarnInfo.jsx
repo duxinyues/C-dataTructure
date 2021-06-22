@@ -3,12 +3,12 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-10 21:55:30
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-21 23:47:53
+ * @LastEditTime: 2021-06-22 09:18:20
  * @FilePath: \cloud-admin\src\views\production\order\addYarnInfo.jsx
  * @Description: 
  */
 import React, { useState, useEffect } from "react";
-import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, MinusCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { message, Input } from "antd";
 function AddYarnInfo(props) {
     const [refresh, setRefresh] = useState(false);
@@ -36,6 +36,7 @@ function AddYarnInfo(props) {
     const [addIndex, setaddIndex] = useState(2); // 数组新增元素的位置
     const [tableBody, settableBody] = useState([]);
     const [addRow, setaddRow] = useState([1, 2, 3, 4, 5]);
+    const [mouseEnterRow, setmouseEnterRow] = useState();
     props.saveValue(90); // 向父组件传递参数
 
     useEffect(() => {
@@ -72,6 +73,10 @@ function AddYarnInfo(props) {
         settableBody(tableRow);
         setRefresh(true);
     }
+    const mouseEnter = (index) => {
+        console.log(index);
+        setmouseEnterRow(index)
+    }
     return <React.Fragment>
         <span>用料信息<PlusCircleOutlined onClick={addRowBtn} style={{ color: "#2db7f5" }} /></span>
         <div className="tableHead">
@@ -95,7 +100,8 @@ function AddYarnInfo(props) {
                 tableBody.map((item, key) => {
                     console.log(item)
                     // 根据key的大小判断添加多少条数据
-                    return <div className="table-tr" key={key}>
+                    return <div className="table-tr" key={key} onMouseEnter={() => { mouseEnter(key) }}>
+                        {mouseEnterRow == key && <CloseOutlined />}
                         {
                             addRow.map((ites, inds) => <div className="table-cel" key={inds}>
                                 {/* 根据inds判断添加多少列 */}

@@ -287,7 +287,7 @@ let CreateOrder = (props, ref) => {
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
-                        <div className="c-label">客户单号</div>
+                        <div className="c-label">合同编号</div>
                         <div className="c-input"><Input onChange={onchangeCode} /></div>
                     </Col>
                     <Col span={8} className="c-col">
@@ -327,17 +327,17 @@ let CreateOrder = (props, ref) => {
                         </div>
                     </Col>
                     <Col span={8} className="c-col">
-                        <div className="c-label c-right">工艺要求</div>
+                        <div className="c-label c-right">颜色</div>
                         <div className="c-input"><Input  onChange={changeCustomerColor} /></div>
                     </Col>
                     <Col span={8} className="c-col">
-                        <div className="c-label c-right">要求匹重</div>
+                        <div className="c-label c-right">每匹重量</div>
                         <div className="c-input"><Input  /></div>
                     </Col>
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
-                        <div className="c-label">坯布交期</div>
+                        <div className="c-label">订单交期</div>
                         <div className="c-input"><DatePicker onChange={selectDeliveryDate} /></div>
                     </Col>
                     <Col span={8} className="c-col">
@@ -360,10 +360,6 @@ let CreateOrder = (props, ref) => {
                     </Col>
                 </Row>
                 <Row className="c-row">
-                    {/* <Col span={16} className="c-col">
-                        <div className="c-label">客户颜色</div>
-                        <div className="c-input"><Input onChange={changeCustomerColor} /></div>
-                    </Col> */}
                     <Col span={24} className="c-col">
                         <div className="c-label">备注</div>
                         <div className="c-input"><Input onChange={changeRemark} /></div>

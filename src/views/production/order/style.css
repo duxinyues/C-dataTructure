@@ -135,7 +135,7 @@
 
 .table-td {
     width: 100px;
-    border: 1px solid blue;
+    /* border: 1px solid blue; */
     text-align: left;
     margin: 0 10px 5px;
 }
@@ -149,6 +149,8 @@
     width: 100px;
     margin: 0 10px 5px;
 }
+
+/*  */
 
 .header-form .ant-input {
     border-left: none;

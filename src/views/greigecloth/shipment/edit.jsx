@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:45:05
- * @LastEditTime: 2021-06-21 19:29:07
+ * @LastEditTime: 2021-06-21 19:46:35
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布出货单【新增组件】
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\edit.jsx
@@ -439,7 +439,7 @@ function EditEnterStockOrder(props) {
             <div className="detail-basicData">
                 <div className="row">
                     <div className="col">
-                        <div className="label">入库单号</div>
+                        <div className="label">出库单号</div>
                         <Input disabled placeholder="保存自动生成" />
                     </div>
                     <div className="col">
