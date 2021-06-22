@@ -3,14 +3,14 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-10 21:55:30
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-22 20:03:33
+ * @LastEditTime: 2021-06-23 00:48:50
  * @FilePath: \cloud-admin\src\views\production\order\addYarnInfo.jsx
  * @Description: 
  */
 import React, { useState, useEffect } from "react";
 import { PlusCircleOutlined, MinusCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { message } from "antd";
-import { verify_value } from "../../../utils/utils"
+import { verify_value, arrToObj } from "../../../utils/utils"
 function DefaultItem(yarnName, yarnBrandBatch, rate, knitWastage, planWeight) {
 
 }
@@ -62,12 +62,15 @@ function AddYarnInfo(props) {
     const addHead = () => {
         const _tableHead = tableHead;
         const _addRow = addRow;
-        const _tableBody = tableBody;
+        const _tableBody = [...tableBody];
+        const _defaultArr = Object.keys(defaultItem);
         if (addIndex > 5) { message.success("最多只能添加5组纱批"); return; }
         _tableHead.splice(addIndex, 0, {
             title: '批次' + addIndex,
             dataIndex: 'yarnBrandBatch' + addIndex,
         });
+        _defaultArr.splice(addIndex, 0, 'yarnBrandBatch' + addIndex)
+        console.log(arrToObj(_defaultArr))
         _tableBody.map((item) => {
             for (const key in item) {
                 if (key == 'yarnBrandBatch' + addIndex) {
@@ -76,6 +79,7 @@ function AddYarnInfo(props) {
             }
         })
         _addRow.splice(addIndex, 0, 1)
+        setDefaultItem(arrToObj(_defaultArr))
         settableHead(_tableHead);
         setaddRow(_addRow);
         setaddIndex(addIndex + 1);
@@ -84,21 +88,25 @@ function AddYarnInfo(props) {
     const subHead = (item, index) => {
         const _tableHead = tableHead;
         const _addRow = addRow;
-        const _tableBody = tableBody;
-        const _defaultItem = [...defaultItem]
+        const _tableBody = [...tableBody];
+        const _defaultArr = Object.keys(defaultItem);
+        console.log(_defaultArr)
         _tableHead.splice(addIndex - 1, 1);
         _addRow.splice(addIndex - 1, 1);
-        _defaultItem.splice(addIndex - 1, 1)
+        _defaultArr.splice(addIndex - 2, 1);
         settableHead(_tableHead);
         setaddRow(_addRow);
-        _tableBody.map((item) => {
-            delete item[Object.keys(item)[addIndex - 1]]
+        const newTableBody = _tableBody.map((item) => {
+            item.yarnName = 
+            // const _arr = Object.keys(item);
+            // _arr.splice(addIndex, 1);
+            // return arrToObj(_arr)
+            // return arrToObj(_defaultArr)
         })
+        settableBody([..._tableBody]);
         console.log(_tableBody)
-        settableBody(_tableBody)
-        setDefaultItem(_defaultItem)
+        setDefaultItem(arrToObj(_defaultArr))
         setRefresh(true);
-        console.log(addIndex - 1)
         if ((addIndex - 1) < 2) {
             setaddIndex(2);
         } else { setaddIndex(addIndex - 1); }
