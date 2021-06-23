@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-17 22:53:41
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-20 17:37:40
+ * @LastEditTime: 2021-06-23 19:24:05
  * @FilePath: \cloud-admin\src\reducer\reducer.js
  * @Description: 
  * 
@@ -15,8 +15,11 @@ import {
     USER_INFO,
     SAVE_ORDER,
     SAVE_SELECTDATA,
-    OUT_STOCK_ORDER_BARCODE
+    OUT_STOCK_ORDER_BARCODE,
+    CREATE_ORDER_PARAMS,
+    CLEAR_ORDER_PARAMS
 } from "../actons/type"
+import { createOrderDefaultState } from "../utils/config";
 
 //reducer的作用就是返回一个新的状态
 const initialState = {
@@ -37,8 +40,8 @@ export function loginReducer(state = initialState, action) {
                 ...state,
                 tokenInfor: action.payload
             }
-            default:
-                return state
+        default:
+            return state
     }
 }
 
@@ -50,8 +53,8 @@ export function logoutReducer(state = initialState, action) {
                 ...state,
                 tokenInfor: {}
             }
-            default:
-                return state
+        default:
+            return state
     }
 }
 
@@ -65,8 +68,8 @@ export function userInfoReducer(state = userDataState, action) {
                 ...state,
                 userData: action.userData
             }
-            default:
-                return state
+        default:
+            return state
     }
 }
 /**
@@ -82,8 +85,8 @@ export function selectOrderDataReducer(state = selectOrderData, action) {
                 ...state,
                 selectOrderData: action.payload
             }
-            default:
-                return state
+        default:
+            return state
     }
 }
 /**
@@ -99,8 +102,8 @@ export function selectDataReducer(state = selectData, action) {
                 ...state,
                 selectData: action.payload
             }
-            default:
-                return state
+        default:
+            return state
     }
 }
 
@@ -114,7 +117,24 @@ export function outStockOrderBarCode_listReducer(state = [], action) {
                 ...state,
                 outStockOrderBarCode: action.payload
             }
-            default:
-                return state
+        default:
+            return state
+    }
+}
+
+// 订单参数
+
+export const createOrderParam = (state = createOrderDefaultState, action) => {
+    console.log(action)
+    switch (action.type) {
+        case CREATE_ORDER_PARAMS:
+            return {
+                ...state,
+                orderParams: action.payload
+            }
+        case CLEAR_ORDER_PARAMS:
+            return createOrderDefaultState
+        default:
+            return state
     }
 }

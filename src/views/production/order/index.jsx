@@ -3,8 +3,9 @@ import { PageHeader, Table, Form, Row, Select, Button, Input, Dropdown, Menu, Sp
 import { DownOutlined } from '@ant-design/icons';
 import JsBarcode from 'jsbarcode';
 import Barcode from "./Barcode";
-
-import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, testArr } from "../../../utils/config"
+import { connect } from "react-redux";
+import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, createOrderDefaultState } from "../../../utils/config";
+import { createOrder, createOrderParams, clearOrderParams } from "../../../actons/action";
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import EditOrder from "./edit";
@@ -13,7 +14,7 @@ import "./style.css"
 const { Option } = Select;
 
 document.title = "订单管理";
-function Order() {
+function Order(props) {
     const [spining, setspining] = useState(true)
     const [columns, setcolumns] = useState();
     const [headType, setheadType] = useState(); //默认展示详情
@@ -37,9 +38,7 @@ function Order() {
     const [seqArr, setseqArr] = useState([]);
     const [selectSeq, setselectSeq] = useState();
     const [companyName, setcompanyName] = useState();
-
-
-    const childRef = useRef();
+    const [refresh, setrefresh] = useState(false);
 
     useEffect(() => {
         setcolumns([
@@ -66,8 +65,10 @@ function Order() {
             "size": 10,
             "billStatus": 1
         })
-
-    }, []);
+        setTimeout(() => {
+            setrefresh(false)
+        }, 0)
+    }, [refresh]);
 
 
     const add = () => { setheadType("add") }
@@ -76,19 +77,17 @@ function Order() {
     }
     //保存
     const onSave = () => {
-        if (headType === "add") {
-            childRef.current.create();
-        }
-        if (headType === "edit") {
-            childRef.current.edit();
-        }
+        props.createOrder(props.createOrderParam);
+        props.createOrderParams(createOrderDefaultState);
+        setrefresh(true)
     }
     const onCancel = () => {
-        setvisible(false)
+        setvisible(false);
+        props.createOrderParams(createOrderDefaultState);
+        setrefresh(true)
     }
     // 打印
     const openClothTicket = (value) => {
-        console.log(value)
         const param = {
             "count": value.count,
             "loomId": value.loomId,
@@ -96,7 +95,6 @@ function Order() {
             "seq": selectSeq,
             "yarnBrandBatch": selectClothYarnBatch
         }
-        console.log(param)
         fetch(requestUrl + "/api-production/orderBarcode/printBarcode", {
             method: "POST",
             headers: {
@@ -107,7 +105,6 @@ function Order() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res);
                 if (res.code === 200) {
                     res.data.map((item) => {
                         createBarCode(item.barcode, item.seq)
@@ -143,44 +140,44 @@ function Order() {
 
         let LODOP = getLodop();
         LODOP.PRINT_INIT("react使用打印插件CLodop");  //打印初始化
-        const strHtml = `<div style="width:65mm;background: #fff;border: 1px solid #999;">
+        const strHtml = `<div style="width:50mm;background: #fff;border: 1px solid #999;">
         <div class="cloth-circle" style="width: 90px;height: 90px;border: 1px dashed #999;border-radius: 50%; margin: 20px auto;"></div>
-        <div style="width: 230px; margin: 0 auto;border:1px solid #999">
+        <div style="margin: 0 auto;border:1px solid #999">
          <div style="display:flex;border-bottom: 1px solid #999;width: 100%;height:28px;align-items:center;">
           <p style="width:38px;height:28px;line-height: 28px;text-align: center;font-size: 14px;">客户</p> 
-          <p style="width:200px;height:28px;line-height: 28px;font-size: 14px;padding-left:5px;border-left:1px solid #999;">${orderDetail.customerName}</p>
+          <p style="height:28px;line-height: 28px;font-size: 14px;padding-left:5px;border-left:1px solid #999;">${orderDetail.customerName}</p>
          </div> 
 
          <div style="display:flex;border-bottom: 1px solid #999;width: 100%;height:28px;align-items:center;">
           <p style="width:38px;height:28px;line-height: 28px;text-align: center;font-size: 14px;">织厂</p> 
-          <p style="width:200px;height:28px;line-height: 28px;font-size: 14px;padding-left:5px;border-left:1px solid #999;">${companyName}</p>
+          <p style="height:28px;line-height: 28px;font-size: 14px;padding-left:5px;border-left:1px solid #999;">${companyName}</p>
          </div>
 
          <div style="display:flex;border-bottom: 1px solid #999;width: 100%;height:28px;align-items:center;">
           <p style="width:38px;height:28px;line-height: 28px;text-align: center;font-size: 14px;">编码</p> 
-          <p style="width:200px;height:28px;line-height: 28px;font-size: 14px;padding-left:5px;border-left:1px solid #999;">${orderDetail.greyFabricCode}</p>
+          <p style="height:28px;line-height: 28px;font-size: 14px;padding-left:5px;border-left:1px solid #999;">${orderDetail.greyFabricCode}</p>
          </div>
 
         <div style="display:flex;border-bottom: 1px solid #999;width: 100%;height:28px;align-items:center;">
             <p style="width:38px;min-height:28px;line-height: 28px;text-align: center;font-size: 14px;">布类</p> 
-            <p style="width:200px;min-height:28px;line-height: 28px;font-size: 14px;padding-left:5px;border-left:1px solid #999;">${orderDetail.fabricType}</p>
+            <p style="min-height:28px;line-height: 28px;font-size: 14px;padding-left:5px;border-left:1px solid #999;">${orderDetail.fabricType}</p>
         </div>
         <div style="display:flex;border-bottom: 1px solid #999;width: 100%;height:28px;align-items:center;">
             <p style="width:38px;min-height:28px;line-height: 28px;text-align: center;font-size: 14px;">用料</p> 
-            <p style="width:200px;min-height:28px;line-height: 28px;font-size: 14px;padding-left:5px;border-left:1px solid #999;">${selectClothYarnBatch}</p>
+            <p style="min-height:28px;line-height: 28px;font-size: 14px;padding-left:5px;border-left:1px solid #999;">${selectClothYarnBatch}</p>
         </div>
         <div style="display:flex;border-bottom: 1px solid #999;width: 100%;height:28px;align-items:center;">
             <p style="border-right:1px solid #999;width:38px;height:28px;line-height: 28px;text-align: center;font-size: 14px;">颜色</p> 
-            <p style="width:200px;height:28px;line-height: 28px;font-size: 14px;padding-left:5px;">${orderDetail.customerColor}</p>
+            <p style="height:28px;line-height: 28px;font-size: 14px;padding-left:5px;">${orderDetail.customerColor}</p>
         </div>
 
          <div style="display:flex;border-bottom: 1px solid #999;width: 100%;height:28px;align-items:center;">
           <p style="border-right:1px solid #999;width:38px;height:28px;line-height: 28px;text-align: center;font-size: 14px;">针寸</p> 
-          <p style="display:flex;align-items:center;width:200px;line-height: 28px;font-size: 14px;"><span style="width:50%;text-align: center;">${orderDetail.needles}+${orderDetail.inches}</span><span style="width:50%;border-left:1px solid #999;text-align: center;">${newOrderType[orderDetail.type].name}</span></p>
+          <p style="display:flex;align-items:center;line-height: 28px;font-size: 14px;"><span style="width:50%;text-align: center;">${orderDetail.needles}+${orderDetail.inches}</span><span style="width:50%;border-left:1px solid #999;text-align: center;">${newOrderType[orderDetail.type].name}</span></p>
          </div> 
          <div style="display:flex;border-bottom:1px solid #999;width:100%;height:28px;align-items:center;">
           <p style="border-right:1px solid #999;width:38px;height:28px;line-height: 28px;text-align: center;font-size: 14px;">机号</p> 
-          <p  style="display:flex;align-items:center;width:200px;line-height: 28px;font-size: 14px;" ><span style="width:50%;text-align:center;">${loomCode}</span> <span style="width:38px;border-left:1px solid #999;text-align:center;">疋号</span> <span style="width:calc(50% - 39px);text-align:center;border-left:1px solid #999">${seq}</span></p>
+          <p  style="display:flex;align-items:center;line-height: 28px;font-size: 14px;" ><span style="width:50%;text-align:center;">${loomCode}</span> <span style="width:38px;border-left:1px solid #999;text-align:center;">疋号</span> <span style="width:calc(50% - 39px);text-align:center;border-left:1px solid #999">${seq}</span></p>
          </div> 
          <div style="display:flex;width:100%;height:56px;align-items:center;">
           <div style="border-right:1px solid #999;width:133px;">
@@ -209,8 +206,8 @@ function Order() {
        </div>`
 
         LODOP.ADD_PRINT_HTML(10, 55, "100%", "100%", strHtml);
-        // LODOP.PREVIEW(); // 打印预览
-        LODOP.PRINT(); // 直接打印
+        LODOP.PREVIEW(); // 打印预览
+        // LODOP.PRINT(); // 直接打印
         setvisible(false)
     }
     const openPrint = () => {
@@ -219,7 +216,6 @@ function Order() {
 
     //  获取创建订单组件的状态
     const getCreateOrderState = (value) => {
-        console.log(value);
         if (value.state === "detail") {
             getOrderList({
                 "page": current,
@@ -245,9 +241,12 @@ function Order() {
         if (value.code === "undefined") param.code = "";
         param.page = 1;
         param.size = 10;
-        console.log(param);
         getOrderList(param)
     }
+    /**
+     * 订单列表
+     * @param {*} param 
+     */
     const getOrderList = (param) => {
         fetch(requestUrl + "/api-production/order/findAll", {
             method: "POST",
@@ -259,7 +258,6 @@ function Order() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
                 if (res.code === 200) {
                     if (res.data.records.length === 0) return;
                     settotal(res.data.total);
@@ -271,6 +269,7 @@ function Order() {
                 }
             })
     }
+    // 订单详情
     const getOrderDetail = (id) => {
         getLoom(id);
         getClothBatch(id)
@@ -281,7 +280,6 @@ function Order() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log("订单详情=", res)
                 if (res.code === 200) {
                     setorderDetail(res.data);
                     setspining(false);
@@ -289,7 +287,6 @@ function Order() {
                     const yarnBrandBatch = res.data.orderYarnInfos.map((item) => {
                         return item.yarnBrandBatch
                     });
-                    console.log("yarnBrandBatch", yarnBrandBatch)
                 }
             })
     }
@@ -302,7 +299,6 @@ function Order() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
                 if (res.code === 200) {
                     setClothBatch(res.data)
                 }
@@ -317,19 +313,15 @@ function Order() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
                 if (res.code === 200) {
-
                     setcustomer(res.data)
                 }
             })
     }
     const selectSearchTyle = (value) => {
-        console.log(value);
         setsearchValue(value);
         if (value === "customerName") {
             setsearchType("customerName")
-
         }
 
         if (value === "type") {
@@ -337,6 +329,7 @@ function Order() {
         }
 
     }
+    // 完工
     const completeOrder = () => {
         const _billStatus = billStatus
         fetch(requestUrl + "/api-production/order/updateBillStatus?id=" + orderDetail.id + "&billStatus=" + _billStatus, {
@@ -347,7 +340,6 @@ function Order() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
                 if (res.code === 200) {
                     if (billStatus === 3) {
                         setbillStatus(1);
@@ -405,8 +397,8 @@ function Order() {
         }
         setseqArr(arr.reverse())
     }
+    // 起始号
     const changeSeq = (value) => {
-        console.log("起始号==", value)
         setselectSeq(value)
     }
     const menu = (
@@ -529,8 +521,8 @@ function Order() {
                     </div>
                     <div className="right">
                         {headType === "detail" && <OrderDetail orderData={orderDetail} />}
-                        {headType === "edit" && <EditOrder ref={childRef} editOrder={getCreateOrderState} orderData={orderDetail} />}
-                        {headType === "add" && <CreateOrder createOrder={getCreateOrderState} ref={childRef} />}
+                        {headType === "edit" && <EditOrder editOrder={getCreateOrderState} orderData={orderDetail} />}
+                        {headType === "add" && <CreateOrder createOrder={getCreateOrderState} />}
                     </div>
                 </div>
             </div>
@@ -574,7 +566,6 @@ function Order() {
                     <Select onFocus={getseq} onChange={changeSeq}>
                         {
                             seqArr.map((item, key) => {
-                                console.log(item)
                                 return <Option value={key + 1} key={key}>{key + 1}</Option>
                             })
                         }
@@ -593,5 +584,10 @@ function Order() {
         <div className="clothSvg"><svg ref={handleBarcode} /></div>
     </React.Fragment >
 }
-
-export default Order;
+const mapStateToProps = (state) => {
+    console.log(state)
+    return {
+        createOrderParam: state.createOrderParam
+    }
+}
+export default connect(mapStateToProps, { createOrder, createOrderParams, clearOrderParams })(Order);

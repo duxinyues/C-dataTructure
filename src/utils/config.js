@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-22 18:00:37
+ * @LastEditTime: 2021-06-23 17:42:45
  * @LastEditors: 1638877065@qq.com
  * @Description: 工具函数
  * @FilePath: \cloud-admin\src\utils\config.js
@@ -138,3 +138,29 @@ export const day = (timeStamp) => {
   var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
   return M + D;
 };
+
+// 订单参数
+export const createOrderDefaultState = {
+  "billStatus": 0,
+  "bizDate": "",
+  "code": "",
+  "customerBillCode": "",
+  "customerColor": "",
+  "customerId": 0,
+  "deliveryDate": "",
+  "fabricType": "",
+  "greyFabricCode": "",
+  "inches": 0,
+  "needles": 0,
+  "orderLooms": [],
+  "orderYarnInfos": [],
+  "productPrice": 0,
+  "remark": "",
+  "tareWeight": 0,
+  "techType": "",
+  "totalInches": 0,
+  "type": 0,
+  "unitWeight": 0,
+  "weight": 0,
+  "yarnLength": ""
+}

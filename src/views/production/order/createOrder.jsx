@@ -2,7 +2,9 @@ import React, { useImperativeHandle, forwardRef, useState, useEffect, } from "re
 import { Col, Row, Input, Table, DatePicker, Select, message } from "antd";
 import { newOrderType, requestUrl, getNowFormatDate } from "../../../utils/config"
 import { EditableProTable } from '@ant-design/pro-table';
-import AddYarnInfo from "./addYarnInfo";
+import { createOrderParams } from "../../../actons/action"
+import { connect } from "react-redux"
+import EditCloth from './clothTable'
 import 'moment/locale/zh-cn';
 import moment from "moment"
 const { Option } = Select;
@@ -18,7 +20,9 @@ const defaultData = new Array(1).fill(1).map((_, index) => {
 });
 
 let CreateOrder = (props, ref) => {
+    // console.log("订单字段==", props)
     document.title = "新建订单";
+    const _createOrderParam = props.createOrderParam;
     const today = moment();
     const [customer, setcustomer] = useState([{ id: 1, name: "111" }]);
     const [clothType, setclothType] = useState([]);
@@ -50,122 +54,99 @@ let CreateOrder = (props, ref) => {
         getClothType();
         getLoom();
     }, [])
-    useImperativeHandle(ref, () => ({
-        create: () => {
-            if (!customerId) { message.error("请选择客户！"); return; }
-            if (!fabricType) { message.error("请选择布类！"); return; }
-            if (!inches || !needles) { message.error("请先设置针寸！"); return; }
-            if (!type) { message.error("请设置类型！"); return; }
-            if (!code) { message.error("请输入客户单号！"); return; }
-            if (!materials) { message.error("必须添加用料信息"); return; }
-            if (!orderLooms) { message.error("必须添加机台信息"); return; }
-            if (!weight) { message.error("请输入订单"); return; }
-            materials.map((item) => {
-                delete item.id
-            })
-            orderLooms.map((item) => {
-                delete item.id
-            })
-            const param = {
-                "bizDate": bizDate,
-                "customerBillCode": code,
-                "customerColor": customerColor,
-                "customerId": customerId,
-                "deliveryDate": deliveryDate,
-                "fabricType": fabricType,
-                "greyFabricCode": greyFabricCode,
-
-                "inches": inches,
-                "needles": needles,
-                "orderLooms": orderLooms,
-                "orderYarnInfos": materials,
-                "productPrice": productPrice,
-                "remark": remark,
-                "techType": techType1 ? techType1 : "" + "-" + techType2 ? techType2 : "",
-                "totalInches": totalInches,
-                "type": type,
-                "weight": weight,
-                "yarnLength": yarnLength
-            }
-            console.log("订单参数==", param);
-
-            fetch(requestUrl + "/api-production/order/saveOrModify", {
-                method: "POST",
-                headers: {
-                    "Authorization": "bearer " + localStorage.getItem("access_token"),
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(param)
-            })
-                .then(res => { return res.json() })
-                .then(res => {
-                    console.log(res)
-                    if (res.code === 200) {
-                        props.createOrder({
-                            msg: "订单添加成功！",
-                            state: "detail"
-                        })
-                    }
-                })
-        }
-    }));
     // 选择日期
     const selectDate = (date, dateString) => {
-        console.log(dateString);
-        setbizDate(dateString)
+        _createOrderParam.bizDate = dateString;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 交布日期
     const selectDeliveryDate = (date, dateString) => {
-        console.log("交货日期==", dateString)
-        setdeliveryDate(dateString)
+        _createOrderParam.deliveryDate = dateString;
+        props.createOrderParams({ ..._createOrderParam });
     }
     // 选择客户
     const selectCustomer = (value) => {
-        console.log(value);
-        setcustomerId(value);
+        _createOrderParam.customerId = value;
+        props.createOrderParams({ ..._createOrderParam })
     }
     const selectClothType = (value) => {
-        console.log(value);
-        setfabricType(value)
+        _createOrderParam.fabricType = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 合同编号
     const onchangeCode = ({ target: { value } }) => {
-        console.log(value);
-        setcode(value)
+        _createOrderParam.customerBillCode = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 坯布编码
     const changeGreyFabricCode = ({ target: { value } }) => {
-        setgreyFabricCode(value)
+        _createOrderParam.greyFabricCode = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 规格
     const changeTechType1 = ({ target: { value } }) => {
-        settechType1(value)
+        _createOrderParam.techType = _createOrderParam.techType ? value + _createOrderParam.techType : value;
+        props.createOrderParams({ ..._createOrderParam });
     }
     const changeTechType2 = ({ target: { value } }) => {
-        settechType2(value)
+        _createOrderParam.techType = _createOrderParam.techType ? _createOrderParam.techType + value : "-" + value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    //针
     const changeInches = ({ target: { value } }) => {
-        setinches(value)
+        _createOrderParam.inches = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 寸
     const changeneedles = ({ target: { value } }) => {
-        setneedles(value)
+        _createOrderParam.needles = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 总针数
     const changeTotalInches = ({ target: { value } }) => {
-        settotalInches(value)
+        _createOrderParam.totalInches = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 类型
     const changeType = (value) => {
-        settype(value)
+        _createOrderParam.type = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 加工单价
     const changeProductPrice = ({ target: { value } }) => {
-        setproductPrice(value)
+        _createOrderParam.productPrice = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 订单数量
     const changeweight = ({ target: { value } }) => {
-        setweight(value)
+        setweight(value);
+        _createOrderParam.weight = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 纱长
     const changeYarnLength = ({ target: { value } }) => {
-        setyarnLength(value)
+        _createOrderParam.yarnLength = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 工艺要求
     const changeCustomerColor = ({ target: { value } }) => {
-        setcustomerColor(value)
+        _createOrderParam.customerColor = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
+    // 备注
     const changeRemark = ({ target: { value } }) => {
-        setremark(value)
+        _createOrderParam.remark = value;
+        props.createOrderParams({ ..._createOrderParam });
+    }
+    // 每匹重量
+    const changetareWeight = ({ target: { value } }) => {
+        _createOrderParam.tareWeight = value;
+        props.createOrderParams({ ..._createOrderParam });
+    }
+    // 纸管重量
+    const changeunitWeight = ({ target: { value } }) => {
+        _createOrderParam.tareWeight = value;
+        props.createOrderParams({ ..._createOrderParam });
     }
     // 布类型
     const getClothType = () => {
@@ -189,7 +170,6 @@ let CreateOrder = (props, ref) => {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
                 if (res.code === 200) {
                     setcustomer(res.data)
                 }
@@ -209,34 +189,6 @@ let CreateOrder = (props, ref) => {
                 setloom(res.data)
             })
     }
-    const columns = [
-        {
-            title: '纱别',
-            dataIndex: 'yarnName',
-        },
-        {
-            title: '纱牌/纱批',
-            dataIndex: 'yarnBrandBatch',
-        },
-        {
-            title: '纱比%',
-            dataIndex: 'rate',
-        },
-        {
-            title: '织损%',
-            dataIndex: 'knitWastage',
-        },
-        {
-            title: '计划用量',
-            dataIndex: 'planWeight',
-        },
-        {
-            title: '操作',
-            valueType: 'option',
-            render: () => {
-                return null;
-            },
-        },]
 
     const loomColumns = [
         {
@@ -257,10 +209,6 @@ let CreateOrder = (props, ref) => {
             },
         },
     ]
-
-    const saveValue = (value) => {
-        console.log(value)
-    }
     return <React.Fragment>
         <div className="detail-title">
             新建订单
@@ -328,11 +276,11 @@ let CreateOrder = (props, ref) => {
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">颜色</div>
-                        <div className="c-input"><Input  onChange={changeCustomerColor} /></div>
+                        <div className="c-input"><Input onChange={changeCustomerColor} /></div>
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">每匹重量</div>
-                        <div className="c-input"><Input  /></div>
+                        <div className="c-input"><Input onChange={changetareWeight} /></div>
                     </Col>
                 </Row>
                 <Row className="c-row">
@@ -345,7 +293,7 @@ let CreateOrder = (props, ref) => {
                         <div className="c-input"><Input onChange={changeProductPrice} /></div>
                     </Col>
                     <Col span={8} className="c-col">
-                        <div className="c-label c-right">订单数量</div>
+                        <div className="c-label c-right"><em>*</em>订单数量</div>
                         <div className="c-input"><Input onChange={changeweight} /></div>
                     </Col>
                 </Row>
@@ -356,7 +304,7 @@ let CreateOrder = (props, ref) => {
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">纸管重量</div>
-                        <div className="c-input"><Input onChange={changeweight} /></div>
+                        <div className="c-input"><Input onChange={changeunitWeight} /></div>
                     </Col>
                 </Row>
                 <Row className="c-row">
@@ -367,31 +315,7 @@ let CreateOrder = (props, ref) => {
                 </Row>
             </div>
             <div className="edit-table">
-                <AddYarnInfo saveValue={saveValue} weight={weight} />
-                {/* <EditableProTable
-                    headerTitle="用料要求"
-                    columns={columns}
-                    rowKey="id"
-                    value={materials}
-                    onChange={setmaterials}
-                    recordCreatorProps={{
-                        newRecordType: 'dataSource',
-                        record: () => ({
-                            id: Date.now(),
-                        }),
-                    }}
-                    editable={{
-                        type: 'multiple',
-                        editableKeys,
-                        actionRender: (row, config, defaultDoms) => {
-                            return [defaultDoms.delete];
-                        },
-                        onValuesChange: (record, recordList) => {
-                            setmaterials(recordList);
-                        },
-                        onChange: setEditableRowKeys,
-                    }}
-                /> */}
+                <EditCloth weight={weight} />
             </div>
             <div>
                 <div className="clothing">
@@ -440,9 +364,12 @@ let CreateOrder = (props, ref) => {
                 </div>
             </div>
         </div>
-
     </React.Fragment>
 }
-
-CreateOrder = forwardRef(CreateOrder)
-export default CreateOrder
+const mapStateToProps = (state) => {
+    console.log("创建订单=", state)
+    return {
+        createOrderParam: state.createOrderParam
+    }
+}
+export default connect(mapStateToProps, { createOrderParams })(CreateOrder)

@@ -9,7 +9,6 @@ import logo from "../../assets/img/logo1.png";
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 function SiderNav(props) {
-    console.log("Nav==", props)
     const [collapsed, setcollapsed] = useState(false);
     const [menus, setmenus] = useState([]);
     const [openKeys, setOpenKeys] = useState([]);
@@ -23,7 +22,6 @@ function SiderNav(props) {
             return res.json()
         }).then((res) => {
             if (res.code == 200) {
-                console.log("菜单==", res)
                 setmenus(res.data.menus);
                 props.userData(res.data)
             }

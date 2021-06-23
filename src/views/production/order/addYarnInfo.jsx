@@ -3,16 +3,20 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-10 21:55:30
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-23 00:48:50
+ * @LastEditTime: 2021-06-23 11:03:36
  * @FilePath: \cloud-admin\src\views\production\order\addYarnInfo.jsx
  * @Description: 
  */
 import React, { useState, useEffect } from "react";
 import { PlusCircleOutlined, MinusCircleOutlined, CloseOutlined } from '@ant-design/icons';
-import { message } from "antd";
+import { message, Input } from "antd";
 import { verify_value, arrToObj } from "../../../utils/utils"
 function DefaultItem(yarnName, yarnBrandBatch, rate, knitWastage, planWeight) {
-
+    this.yarnName = yarnName;
+    this.yarnBrandBatch = yarnBrandBatch;
+    this.rate = rate;
+    this.knitWastage = knitWastage;
+    this.planWeight = planWeight;
 }
 function AddYarnInfo(props) {
     const [refresh, setRefresh] = useState(false);
@@ -41,17 +45,18 @@ function AddYarnInfo(props) {
     const [tableBody, settableBody] = useState([]);
     const [addRow, setaddRow] = useState([1, 2, 3, 4, 5]);
     const [mouseEnterRow, setmouseEnterRow] = useState();
-    const [defaultItem, setDefaultItem] = useState({
-        yarnName: "yarnName",
-        yarnBrandBatch: "yarnBrandBatch",
-        // yarnBrandBatch2 = yarnBrandBatch2,
-        // yarnBrandBatch3 = yarnBrandBatch3,
-        // yarnBrandBatch4 = yarnBrandBatch4,
-        // yarnBrandBatch5 = yarnBrandBatch5,
-        rate: "rate",
-        knitWastage: "knitWastage",
-        planWeight: "planWeight",
-    });
+    // const [defaultItem, setDefaultItem] = useState({
+    //     yarnName: "yarnName",
+    //     yarnBrandBatch: "yarnBrandBatch",
+    //     // yarnBrandBatch2 = yarnBrandBatch2,
+    //     // yarnBrandBatch3 = yarnBrandBatch3,
+    //     // yarnBrandBatch4 = yarnBrandBatch4,
+    //     // yarnBrandBatch5 = yarnBrandBatch5,
+    //     rate: "rate",
+    //     knitWastage: "knitWastage",
+    //     planWeight: "planWeight",
+    // });
+    const [defaultItem, setDefaultItem] = useState(["", "", "", "", ""]);
 
     // props.saveValue(90); // 向父组件传递参数
 
@@ -96,15 +101,8 @@ function AddYarnInfo(props) {
         _defaultArr.splice(addIndex - 2, 1);
         settableHead(_tableHead);
         setaddRow(_addRow);
-        const newTableBody = _tableBody.map((item) => {
-            item.yarnName = 
-            // const _arr = Object.keys(item);
-            // _arr.splice(addIndex, 1);
-            // return arrToObj(_arr)
-            // return arrToObj(_defaultArr)
-        })
-        settableBody([..._tableBody]);
-        console.log(_tableBody)
+
+        // settableBody([..._tableBody]);
         setDefaultItem(arrToObj(_defaultArr))
         setRefresh(true);
         if ((addIndex - 1) < 2) {
@@ -115,7 +113,13 @@ function AddYarnInfo(props) {
     // 新增行
     const addRowBtn = () => {
         const tableRow = tableBody;
-        const _defaultItem = new Object(defaultItem)
+        const _defaultItem = new Object({
+            yarnName: "",
+            yarnBrandBatch: "",
+            rate: "",
+            knitWastage: "",
+            planWeight: ""
+        })
         tableRow.push(_defaultItem);
         settableBody(tableRow);
         setRefresh(true);
@@ -136,8 +140,8 @@ function AddYarnInfo(props) {
      * @param {*} index  行的下标
      * @param {*} inds  列的下标
      */
-    const editCel = (index, inds, value) => {
-        console.log("行==", index, "列==", inds)
+    const editCel = (index, inds, value, name) => {
+        console.log("行==", index, "列==", inds, "字段==", name, "值==", value);
         const _tableBody = [...tableBody];
         console.log(_tableBody);
         // 编辑纱支
@@ -149,88 +153,37 @@ function AddYarnInfo(props) {
         if (inds === 1) {
             _tableBody[index].yarnBrandBatch = value;
         }
-
-        if (tableHead.length === 5) {
-            // 编辑比例
-            if (inds === 2) {
-                if (!verify_value(value)) return;
-                _tableBody[index].rate = value;
-                _tableBody[index].planWeight = (parseFloat(props.weight) * _tableBody[index].rate / 100).toFixed(2);
+        // 编辑比例
+        if (inds === 2) {
+            if (!verify_value(value)) return;
+            let totalRate = _tableBody.map((item) => {
+                console.log(item)
+                return item.rate;
+            })
+            if (totalRate > 100) {
+                message.warning("纱比例总和只能等于100%");
+                return
             }
-            // 编辑损耗
-            if (inds === 3) {
-                if (!verify_value(value)) return;
-                _tableBody[index].knitWastage = value;
-                _tableBody[index].planWeight = (parseFloat(props.weight) * _tableBody[index].rate * (1 + value) / 10000).toFixed(2);
-            }
+            console.log("==", _tableBody[index]);
+            console.log(_tableBody[index].rate = value)
+            _tableBody[index].rate = value;
+            // _tableBody[index].planWeight = (parseFloat(props.weight * value / 100)).toFixed(2);
         }
-
-        if (tableHead.length === 6) {
-            // 编辑比例
-            if (inds === 3) {
-                _tableBody[index].rate = value;
-            }
-            // 编辑损耗
-            if (inds === 4) {
-                _tableBody[index].knitWastage = value;
-            }
-
+        // 编辑损耗
+        if (inds === 3) {
+            if (!verify_value(value)) return;
+            _tableBody[index].knitWastage = value;
+            console.log(props.weight)
+            // console.log(_tableBody[index].rate / 100)
+            // console.log(value / 100)
+            // const _rate = parseFloat(_tableBody[index].rate / 100);
+            // const _loss = parseFloat(value / 100);
+            // console.log(parseFloat(props.weight) * _rate * (1 + _loss))
+            // _tableBody[index].planWeight = (parseFloat(props.weight) * _rate * (1 + _loss)).toFixed(2);
         }
-        if (tableHead.length === 7) {
-            // 编辑比例
-            if (inds === 4) {
-                _tableBody[index].rate = value;
-            }
-            // 编辑损耗
-            if (inds === 5) {
-                _tableBody[index].knitWastage = value;
-            }
-
-        }
-        if (tableHead.length === 8) {
-            // 编辑比例
-            if (inds === 5) {
-                _tableBody[index].rate = value;
-            }
-            // 编辑损耗
-            if (inds === 6) {
-                _tableBody[index].knitWastage = value;
-            }
-
-        }
-        if (tableHead.length === 9) {
-            // 编辑比例
-            if (inds === 6) {
-                _tableBody[index].rate = value;
-            }
-            // 编辑损耗
-            if (inds === 7) {
-                _tableBody[index].knitWastage = value;
-            }
-
-        }
-        // 编辑批次2
-        if (inds === 2 && tableHead.length >= 6) {
-            _tableBody[index].yarnBrandBatch2 = value;
-        }
-
-        // 编辑批次3
-        if (inds === 3 && tableHead.length >= 7) {
-            _tableBody[index].yarnBrandBatch3 = value;
-        }
-
-        // 编辑批次4
-        if (inds === 4 && tableHead.length >= 8) {
-            _tableBody[index].yarnBrandBatch4 = value;
-        }
-        // 编辑批次5
-        if (inds === 5 && tableHead.length >= 9) {
-            _tableBody[index].yarnBrandBatch5 = value;
-        }
-
     }
     return <React.Fragment>
-        <span>用料信息<PlusCircleOutlined onClick={addRowBtn} style={{ color: "#2db7f5" }} /></span>
+        <span>用料信息<PlusCircleOutlined onClick={addRowBtn} style={{ color: "#2db7f5", marginLeft: "10px" }} /></span>
         <div className="tableHead">
             {
                 tableHead.map((item, key) => {
@@ -240,7 +193,9 @@ function AddYarnInfo(props) {
                         }} style={{ color: "#2db7f5" }} /></div>
                     }
                     if (item.dataIndex === "yarnBrandBatch") {
-                        return <div className="table-td" key={key}>{item.title}<PlusCircleOutlined onClick={addHead} style={{ color: "#2db7f5" }} /></div>
+                        return <div className="table-td" key={key}>{item.title}
+                            {/* <PlusCircleOutlined onClick={addHead} style={{ color: "#2db7f5" }} /> */}
+                        </div>
                     } else {
                         return <div className="table-td" key={key}>{item.title}</div>
                     }
@@ -250,7 +205,6 @@ function AddYarnInfo(props) {
         <div className="tableBody" onMouseLeave={() => { setmouseEnterRow(-1) }}>
             {
                 tableBody.map((items, keys) => {
-                    // 根据key的大小判断添加多少条数据
                     return <div className="table-tr" key={keys} onMouseEnter={() => { mouseEnter(keys) }}>
                         <div className="delect-icon">
                             {mouseEnterRow == keys && <CloseOutlined onClick={() => { delectedRow(keys) }} />}
@@ -262,10 +216,9 @@ function AddYarnInfo(props) {
                                     if (inds === index) {
                                         str.push(<div className="table-cel" key={inds}>
                                             {
-                                                inds === addRow.length - 1 ? <input name="planWeight" disabled placeholder={keys + "??=" + inds} value={items[key]} /> : <input name={key} defaultValue={items[key]} onChange={(e) => {
-                                                    console.log(e.target.name)
-                                                    editCel(keys, inds, e.target.value)
-                                                }} placeholder={keys + "??=" + inds} />
+                                                inds === addRow.length - 1 ? <input name="planWeight" disabled value={items[key]} /> : <Input name={key} onChange={(e) => {
+                                                    editCel(keys, inds, e.target.value, e.target.name)
+                                                }} />
                                             }
                                         </div>)
                                     }

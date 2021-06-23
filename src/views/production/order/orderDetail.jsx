@@ -3,7 +3,6 @@ import { Col, Row, Input, Tabs, Table } from "antd";
 import { newOrderType, requestUrl, onlyFormat } from "../../../utils/config";
 const { TabPane } = Tabs;
 function OrderDetail(props) {
-    console.log(props)
     document.title = "订单管理";
     const [barCode, setbarCode] = useState([]);
     const [loomData, setloomData] = useState();
@@ -13,12 +12,12 @@ function OrderDetail(props) {
     })
     useEffect(() => {
         props.orderData.orderYarnInfos.map((item) => {
-            console.log("用料信息纱批==", item.yarnBrandBatch.split(","))
+            // console.log("用料信息纱批==", item.yarnBrandBatch.split(","))
         })
         setyarnInfoData(props.orderData.orderYarnInfos)
         getBarCodes();
     }, [])
-    console.log("订单纱批=", yarnBrandBatch)
+    // console.log("订单纱批=", yarnBrandBatch)
     const getBarCodes = () => {
         fetch(requestUrl + "/api-production/order/findLoomDetialByOrderId?id=" + props.orderData.id + "&yarnBatch=" + yarnBrandBatch.join(","), {
             headers: {
@@ -27,7 +26,7 @@ function OrderDetail(props) {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
+                // console.log(res)
                 setloomData(res.data);
                 // setbarCode(res.data[0].barcodes)
             })
@@ -176,7 +175,7 @@ function OrderDetail(props) {
                             onRow={record => {
                                 return {
                                     onClick: () => {
-                                        console.log("机台数据==", record.barcodes);
+                                        // console.log("机台数据==", record.barcodes);
                                         setbarCode(record.barcodes)
                                     },
                                 };

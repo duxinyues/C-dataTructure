@@ -7,7 +7,6 @@ import './index.css';
 import img from "../../utils/imgManger"
 const { Search } = Input
 function Avatars(props) {
-  console.log(props)
   const _logout = () => {
     fakeAuth.signout();
     props.history.push('/login');
@@ -60,7 +59,6 @@ function Avatars(props) {
   )
 }
 const mapStateToProps = (state) => {
-  console.log(state)
   return {
     user: state.userInfoReducer.userData
   }
