@@ -4,15 +4,15 @@ import { DownOutlined } from '@ant-design/icons';
 import JsBarcode from 'jsbarcode';
 import Barcode from "./Barcode";
 import { connect } from "react-redux";
-import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, createOrderDefaultState } from "../../../utils/config";
-import { createOrder, createOrderParams, clearOrderParams } from "../../../actons/action";
+import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, getNowFormatDate } from "../../../utils/config";
+import { createOrder, clearOrderParams, createOrderParams } from "../../../actons/action";
+import { useUpdate } from "../../../hook"
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import EditOrder from "./edit";
 import { getLodop } from '../../../print/LodopFuncs';
 import "./style.css"
 const { Option } = Select;
-
 document.title = "订单管理";
 function Order(props) {
     const [spining, setspining] = useState(true)
@@ -38,8 +38,7 @@ function Order(props) {
     const [seqArr, setseqArr] = useState([]);
     const [selectSeq, setselectSeq] = useState();
     const [companyName, setcompanyName] = useState();
-    const [refresh, setrefresh] = useState(false);
-
+    const [orderParams, setorderParams] = useState({})
     useEffect(() => {
         setcolumns([
             {
@@ -65,10 +64,7 @@ function Order(props) {
             "size": 10,
             "billStatus": 1
         })
-        setTimeout(() => {
-            setrefresh(false)
-        }, 0)
-    }, [refresh]);
+    }, []);
 
 
     const add = () => { setheadType("add") }
@@ -77,14 +73,99 @@ function Order(props) {
     }
     //保存
     const onSave = () => {
-        props.createOrder(props.createOrderParam);
-        props.createOrderParams(createOrderDefaultState);
-        setrefresh(true)
+        const params = orderParams;
+        delete params.orderParams;
+        params.bizDate = params.bizDate ? params.bizDate : getNowFormatDate();
+        params.techType = (params.techType1 && params.techType2) ? params.techType1 + "-" + params.techType2 : "";
+        console.log("订单信息===", params)
+        if (!params.customerId) {
+            message.error("请选择客户！");
+            return;
+        }
+        if (!params.fabricType) {
+            message.error("请选择布类！");
+            return;
+        }
+        if (!params.inches || !params.needles) {
+            message.error("请先设置针寸！");
+            return;
+        }
+        if (!params.type) {
+            message.error("请设置类型！");
+            return;
+        }
+        if (!params.customerBillCode) {
+            message.error("请输入合同号！");
+            return;
+        }
+        if (!params.orderYarnInfos || params.orderYarnInfos.length == 0) {
+            message.error("必须添加用料信息");
+            return;
+        }
+        if (!params.orderLooms || params.orderLooms.length == 0) {
+            message.error("必须添加机台信息");
+            return;
+        }
+        if (!params.weight) {
+            message.error("请输入订单");
+            return;
+        }
+        const yarnInfo = params.orderYarnInfos.some((item) => (item.yarnName == ""));
+        if (yarnInfo) {
+            message.error("请完善用料信息");
+            return;
+        }
+
+        const loomEmpty = params.orderLooms.some((item) => item.loomCode == "");
+        if (loomEmpty) {
+            message.error("请完善机台信息");
+            return;
+        }
+        // 删除多余的key值
+        params.orderYarnInfos.map((item) => {
+            delete item.key;
+        })
+        // 删除多余的key、loom
+        params.orderLooms.map((item) => {
+            delete item.loom;
+            delete item.key;
+        });
+        fetch(requestUrl + "/api-production/order/saveOrModify", {
+            method: "POST",
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token"),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(params)
+        })
+            .then(res => { return res.json() })
+            .then(res => {
+                console.log(res)
+                if (res.code === 200) {
+                    message.success("订单创建成功！")
+                    setorderParams({});
+                    setheadType("detail");
+                    getOrderList({
+                        "page": 1,
+                        "size": 10,
+                        "billStatus": 1
+                    })
+                } else {
+                    message.error("创建失败！")
+                }
+            })
     }
+    //取消创建订单组件
+    const cancel = () => {
+        setheadType("detail");
+        setorderParams({});
+    }
+    // 取消打印
     const onCancel = () => {
         setvisible(false);
-        props.createOrderParams(createOrderDefaultState);
-        setrefresh(true)
+        setseq(0);
+        setselectClothLoom();
+        setselectClothYarnBatch();
     }
     // 打印
     const openClothTicket = (value) => {
@@ -206,28 +287,19 @@ function Order(props) {
        </div>`
 
         LODOP.ADD_PRINT_HTML(10, 55, "100%", "100%", strHtml);
-        LODOP.PREVIEW(); // 打印预览
-        // LODOP.PRINT(); // 直接打印
+        // LODOP.PREVIEW(); // 打印预览
+        LODOP.PRINT(); // 直接打印
         setvisible(false)
     }
     const openPrint = () => {
         setvisible(true)
     }
-
     //  获取创建订单组件的状态
     const getCreateOrderState = (value) => {
-        if (value.state === "detail") {
-            getOrderList({
-                "page": current,
-                "size": size,
-                "billStatus": 1
-            })
-        }
-        setheadType(value.state);
+        console.log("子组件", value)
+        setorderParams(value);
     }
-    const cancel = () => {
-        setheadType("detail");
-    }
+
     const onFinish = (value) => {
         setspining(true)
         const param = value;
@@ -370,15 +442,17 @@ function Order(props) {
         setselectClothLoom(value)
     }
     const changeClothYarnBatch = (value) => {
-        console.log("=====", value.replace("+", ","))
         setselectClothYarnBatch(value.replace("+", ","))
+        const params = value.replace("+", ",")
+        getseq(params)
     }
-    const getseq = () => {
-        if (!selectClothLoom || !selectClothYarnBatch) {
+    const getseq = (clothYarnBatch) => {
+        if (!selectClothLoom || !clothYarnBatch) {
             message.error("请先设置机台或者批次")
             return;
         }
-        fetch(requestUrl + `/api-production/orderBarcode/findToPrintBarcode?id=${orderDetail.id}&yarnBatch=${selectClothYarnBatch}&loomId=${selectClothLoom}`, {
+        const arr = [];
+        fetch(requestUrl + `/api-production/orderBarcode/findToPrintBarcode?id=${orderDetail.id}&yarnBatch=${clothYarnBatch}&loomId=${selectClothLoom}`, {
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token")
             }
@@ -389,13 +463,14 @@ function Order(props) {
                 if (res.code === 200) {
                     setseq(res.data.seq)
                     setcompanyName(res.data.companyName);
+                    for (let index = 1; index <= seq; index++) {
+                        arr.push(index)
+                    }
+                    console.log(arr)
+                    setseqArr(arr.reverse())
                 }
             })
-        const arr = [];
-        for (let index = 1; index <= seq; index++) {
-            arr.push(index)
-        }
-        setseqArr(arr.reverse())
+
     }
     // 起始号
     const changeSeq = (value) => {
@@ -563,7 +638,7 @@ function Order(props) {
                     </Select>
                 </Form.Item>
                 <Form.Item label="起始号" name="seq" rules={[{ required: true, message: '请设置起始号' }]}>
-                    <Select onFocus={getseq} onChange={changeSeq}>
+                    <Select onChange={changeSeq}>
                         {
                             seqArr.map((item, key) => {
                                 return <Option value={key + 1} key={key}>{key + 1}</Option>
@@ -585,9 +660,10 @@ function Order(props) {
     </React.Fragment >
 }
 const mapStateToProps = (state) => {
-    console.log(state)
+    console.log("订单状态==", state)
     return {
-        createOrderParam: state.createOrderParam
+        orderParams: state.createOrderParam,
+        createOrderState: state.createOrderState
     }
 }
-export default connect(mapStateToProps, { createOrder, createOrderParams, clearOrderParams })(Order);
+export default connect(mapStateToProps, { createOrder, clearOrderParams, createOrderParams })(Order);

@@ -113,7 +113,7 @@ function ClothRecord() {
             })
     }
     const getClothData = (page, size) => {
-        fetch(requestUrl + `/api-basedata/clothInspection/findAll?companyId=1&page=${page}&size=${size}`, {
+        fetch(requestUrl + `/api-basedata/clothInspection/findAll?page=${page}&size=${size}`, {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token"),

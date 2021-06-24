@@ -1,8 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Input, InputNumber, Popconfirm, Form, Typography, Space, message, } from 'antd';
+/*
+ * @Author: 1638877065@qq.com
+ * @Date: 2021-06-24 09:12:13
+ * @LastEditTime: 2021-06-24 15:37:16
+ * @LastEditors: 1638877065@qq.com
+ * @Description: 添加机台信息
+ * @FilePath: \cloud-admin\src\views\production\order\loomTable.jsx
+ */
+import React, { useState } from 'react';
+import { Table, Popconfirm, Form, Typography, Space, Select } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { createOrderParams } from "../../../actons/action";
 import { connect } from "react-redux";
+const { Option } = Select;
 const EditableCell = ({
     editing,
     dataIndex,
@@ -11,9 +20,9 @@ const EditableCell = ({
     record,
     index,
     children,
+    props,
     ...restProps
 }) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
     return (
         <td {...restProps}>
             {editing ? (
@@ -25,11 +34,15 @@ const EditableCell = ({
                     rules={[
                         {
                             required: true,
-                            message: "请输入正确的内容",
+                            message: "请选择机台",
                         },
                     ]}
                 >
-                    {inputNode}
+                    <Select>
+                        {
+                            record.loom.map((item) => (<Option value={item.code}>{item.code}</Option>))
+                        }
+                    </Select>
                 </Form.Item>
             ) : (
                 children
@@ -37,38 +50,26 @@ const EditableCell = ({
         </td>
     );
 };
-const EditCloth = (props) => {
-    console.log(props)
+const Editloom = (props) => {
     const _createOrderParam = props.createOrderParam
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
     const [editingKey, setEditingKey] = useState('');
-    useEffect(() => {
-        if (props.data) {
-            props.data.map((item) => {
-                item.key = item.id
-            })
-            setData([...props.data])
-        }
-    }, [])
     const isEditing = (record) => record.key === editingKey;
     const addData = () => {
         const _data = [...data]
         _data.push({
             key: new Date().getTime(),
-            yarnName: "",
-            yarnBrandBatch: 0,
-            rate: 0,
-            knitWastage: 0,
-            planWeight: 0
+            loomCode: "",
+            volQty: 0,
+            loom: props.data
         });
         setData(_data);
-        _createOrderParam.orderYarnInfos = _data;
+        _createOrderParam.orderLooms = _data;
         props.createOrderParams(_createOrderParam);
-        props.onAddCloth(_data)
+        props.onAddLoom(_data);
     }
     const edit = (record) => {
-        console.log("行的数据==", record)
         form.setFieldsValue({
             ...record,
         });
@@ -82,29 +83,24 @@ const EditCloth = (props) => {
             const row = await form.validateFields();
             const newData = [...data];
             const index = newData.findIndex((item) => key === item.key);
-            const totalRate = newData.reduce((pre, cur) => {
-                return pre + cur.rate
-            }, 0)
-            console.log(totalRate)
-            if (totalRate > 100) {
-                message.warning("纱比总和需要等于100");
-                return;
-            }
-            row.planWeight = props.weight * row.rate * (1 + row.knitWastage / 100) / 100;
+            props.data.map((item) => {
+                if (item.code == row.loomCode) row.loomId = item.id
+            })
+            row.volQty = 0;
             if (index > -1) {
                 const item = newData[index];
                 newData.splice(index, 1, { ...item, ...row });
                 setData(newData);
-                _createOrderParam.orderYarnInfos = newData;
+                _createOrderParam.orderLooms = newData;
                 props.createOrderParams(newData);
-                props.onAddCloth(newData)
+                props.onAddLoom(newData);
                 setEditingKey('');
             } else {
                 newData.push(row);
                 setData(newData);
-                _createOrderParam.orderYarnInfos = newData;
+                _createOrderParam.orderLooms = newData;
                 props.createOrderParams(newData);
-                props.onAddCloth(newData);
+                props.onAddLoom(newData);
                 setEditingKey('');
             }
         } catch (errInfo) {
@@ -114,40 +110,23 @@ const EditCloth = (props) => {
     const handleDelete = (key) => {
         const _data = [...data];
         const newData = _data.filter((item) => item.key !== key)
-        setData(newData);
-        _createOrderParam.orderYarnInfos = newData;
-        props.createOrderParams(_createOrderParam);
-        props.onAddCloth(_data)
+        setData(newData)
     }
     const columns = [
         {
-            title: '纱支',
-            dataIndex: 'yarnName',
+            title: '机号',
+            dataIndex: 'loomCode',
             editable: true,
+            width: "80px"
         },
         {
-            title: '批次',
-            dataIndex: 'yarnBrandBatch',
-            editable: true,
-        },
-        {
-            title: '比例',
-            dataIndex: 'rate',
-            editable: true,
-        },
-        {
-            title: '损耗',
-            dataIndex: 'knitWastage',
-            editable: true,
-        },
-        {
-            title: '计划用量',
-            dataIndex: 'planWeight',
-            editable: false,
+            title: '卷数',
+            dataIndex: 'volQty',
         },
         {
             title: '操作',
             dataIndex: 'operation',
+            width: "100px",
             render: (_, record) => {
                 const editable = isEditing(record);
                 return editable ? (
@@ -184,37 +163,58 @@ const EditCloth = (props) => {
             ...col,
             onCell: (record) => ({
                 record,
-                inputType: (col.dataIndex === 'rate' || col.dataIndex === 'knitWastage') ? 'number' : 'text',
+                inputType: 'text',
                 dataIndex: col.dataIndex,
                 title: col.title,
                 editing: isEditing(record),
             }),
         };
     });
-    return (
-        <Form form={form} component={false}>
-            <Space>
-                <span>用料信息</span>
-                <PlusCircleOutlined style={{ color: "blue", marginLeft: "10px" }} onClick={addData} />
-            </Space>
-            <Table
-                components={{
-                    body: {
-                        cell: EditableCell,
-                    },
-                }}
-                bordered
-                dataSource={data}
-                columns={mergedColumns}
-                rowClassName="editable-row"
-                pagination={false}
-            />
-        </Form>
-    );
+    return <React.Fragment>
+        <Space>
+            <span>布票信息</span>
+            <PlusCircleOutlined style={{ color: "blue", marginLeft: "10px" }} onClick={addData} />
+        </Space>
+        <div style={{ display: "flex", width: "100%" }}>
+            <div style={{ minWidth: "315px" }}>
+                <Form form={form} component={false}>
+                    <Table
+                        components={{
+                            body: {
+                                cell: EditableCell,
+                            },
+                        }}
+                        bordered
+                        dataSource={data}
+                        columns={mergedColumns}
+                        rowClassName="editable-row"
+                        pagination={false}
+                    />
+                </Form>
+            </div>
+            <div style={{ width: "100%" }}>
+                <Table
+                    dataSource={[]}
+                    columns={[
+                        { title: "条码", width: "10%" },
+                        { title: "匹号", width: "5%" },
+                        { title: "入库重量", width: "10%" },
+                        { title: "入库时间", width: "20%" },
+                        { title: "出库时间", width: "20%" },
+                        { title: "查布记录", width: "10%" },
+                        { title: "查布员", width: "15%" },
+                        { title: "值机工", width: "15%" }
+                    ]}
+                    rowClassName="editable-row"
+                    pagination={false}
+                />
+            </div>
+        </div>
+    </React.Fragment>
 };
 const mapStateToProps = (state) => {
     return {
         createOrderParam: state.createOrderParam
     }
 }
-export default connect(mapStateToProps, { createOrderParams })(EditCloth)
+export default connect(mapStateToProps, { createOrderParams })(Editloom)

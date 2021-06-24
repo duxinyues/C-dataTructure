@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-17 22:53:41
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-23 19:08:54
+ * @LastEditTime: 2021-06-24 16:06:23
  * @FilePath: \cloud-admin\src\actons\action.js
  * @Description: 
  */
@@ -112,7 +112,7 @@ export const createOrderParams = (value) => (dispatch) => {
     })
 }
 // 清空订单参数
-export const clearOrderParams = (value)=>(dispatch)=>{
+export const clearOrderParams = (value) => (dispatch) => {
     dispatch({
         type: CLEAR_ORDER_PARAMS,
         payload: value
@@ -124,15 +124,118 @@ export const clearOrderParams = (value)=>(dispatch)=>{
  * @returns 
  */
 export const createOrder = (params) => (dispatch) => {
-    if (!params.customerId) { message.error("请选择客户！"); return; }
-    if (!params.fabricType) { message.error("请选择布类！"); return; }
-    if (!params.inches || !params.needles) { message.error("请先设置针寸！"); return; }
-    if (!params.type) { message.error("请设置类型！"); return; }
-    if (!params.customerBillCode) { message.error("请输入合同号！"); return; }
-    if (params.orderYarnInfos.length == 0) { message.error("必须添加用料信息"); return; }
-    if (!params.orderLooms.length == 0) { message.error("必须添加机台信息"); return; }
-    if (!params.weight) { message.error("请输入订单"); return; }
-    return;
+    if (!params.customerId) {
+        message.error("请选择客户！");
+        dispatch({
+            type: CREATE_ORDER,
+            payload: {
+                code: 600
+            }
+        })
+        return;
+    }
+    if (!params.fabricType) {
+        message.error("请选择布类！");
+        dispatch({
+            type: CREATE_ORDER,
+            payload: {
+                code: 600
+            }
+        })
+        return;
+    }
+    if (!params.inches || !params.needles) {
+        message.error("请先设置针寸！");
+        dispatch({
+            type: CREATE_ORDER,
+            payload: {
+                code: 600
+            }
+        })
+        return;
+    }
+    if (!params.type) {
+        message.error("请设置类型！");
+        dispatch({
+            type: CREATE_ORDER,
+            payload: {
+                code: 600
+            }
+        })
+        return;
+    }
+    if (!params.customerBillCode) {
+        message.error("请输入合同号！");
+        dispatch({
+            type: CREATE_ORDER,
+            payload: {
+                code: 600
+            }
+        })
+        return;
+    }
+    if (!params.orderYarnInfos || params.orderYarnInfos.length == 0) {
+        message.error("必须添加用料信息");
+        dispatch({
+            type: CREATE_ORDER,
+            payload: {
+                code: 600
+            }
+        })
+        return;
+    }
+    if (!params.orderLooms || params.orderLooms.length == 0) {
+        message.error("必须添加机台信息");
+        dispatch({
+            type: CREATE_ORDER,
+            payload: {
+                code: 600
+            }
+        })
+        return;
+    }
+    if (!params.weight) {
+        message.error("请输入订单");
+        dispatch({
+            type: CREATE_ORDER,
+            payload: {
+                code: 600
+            }
+        })
+        return;
+    }
+    const yarnInfo = params.orderYarnInfos.some((item) => (item.yarnName == ""));
+    if (yarnInfo) {
+        message.error("请完善用料信息");
+        dispatch({
+            type: CREATE_ORDER,
+            payload: {
+                code:600
+            }
+        })
+        return;
+    }
+
+    const loomEmpty = params.orderLooms.some((item) => item.loomCode == "");
+    if (loomEmpty) {
+        message.error("请完善机台信息");
+        dispatch({
+            type: CREATE_ORDER,
+            payload: {
+                code:600
+            }
+        })
+        return;
+    }
+    // 删除多余的key值
+    params.orderYarnInfos.map((item) => {
+        delete item.key;
+    })
+    // 删除多余的key、loom
+    params.orderLooms.map((item) => {
+        delete item.loom;
+        delete item.key;
+    });
     fetch(requestUrl + "/api-production/order/saveOrModify", {
         method: "POST",
         headers: {
@@ -145,10 +248,13 @@ export const createOrder = (params) => (dispatch) => {
         .then(res => {
             console.log(res)
             if (res.code === 200) {
+                message.success("订单创建成功！")
                 dispatch({
                     type: CREATE_ORDER,
-                    payload: res.data
+                    payload: res
                 })
+            } else {
+                message.error("创建失败！")
             }
         })
 }

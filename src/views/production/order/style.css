@@ -117,57 +117,7 @@
     left: -100vw;
 }
 
-
-
-
-
-
-
-
-
-/* 自定义表格 */
-.tableHead,
-.table-tr,
-.addRowInput {
-    display: flex;
-    align-items: center;
-}
-
-.table-td {
-    width: 100px;
-    /* border: 1px solid blue; */
-    text-align: left;
-    margin: 0 10px 5px;
-}
-
-.addRow-item {
-    border: 1px solid red;
-}
-
-.table-cel {
-    border: 1px solid green;
-    width: 100px;
-    margin: 0 5px 5px;
-}
-
-
-
-.table-cel input {
-    width: 100%;
-    border: none;
-}
-
-.delect-icon {
-    width: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 5px 5px;
-    height: 28px;
-}
-
 /*  */
-
 .header-form .ant-input {
     border-left: none;
 }
@@ -178,13 +128,11 @@
 
 .header-form .searchType .ant-select-selector,
 .header-form .billStatus .ant-select-selector {
-    /* border-right: none !important; */
     height: 26px !important;
 }
 
 .header-form .searchType .ant-select-selector,
 .header-form .billStatus .ant-select-selector {
-    /* border-right: none !important; */
     height: 26px !important;
 }
 

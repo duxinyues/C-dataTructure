@@ -11,24 +11,19 @@ function OrderDetail(props) {
         return item.yarnBrandBatch;
     })
     useEffect(() => {
-        props.orderData.orderYarnInfos.map((item) => {
-            // console.log("用料信息纱批==", item.yarnBrandBatch.split(","))
-        })
         setyarnInfoData(props.orderData.orderYarnInfos)
         getBarCodes();
-    }, [])
-    // console.log("订单纱批=", yarnBrandBatch)
+    }, [props.orderData])
     const getBarCodes = () => {
-        fetch(requestUrl + "/api-production/order/findLoomDetialByOrderId?id=" + props.orderData.id + "&yarnBatch=" + yarnBrandBatch.join(","), {
+        fetch(requestUrl + "/api-production/order/findLoomDetailByOrderId?id=" + props.orderData.id + "&yarnBatch=" + yarnBrandBatch.join(","), {
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token")
             },
         })
             .then(res => { return res.json() })
             .then(res => {
-                // console.log(res)
                 setloomData(res.data);
-                // setbarCode(res.data[0].barcodes)
+                setbarCode(res.data[0].barcodes)
             })
     }
 
@@ -83,7 +78,7 @@ function OrderDetail(props) {
                 <Row className="c-row">
                     <Col span={8} className="c-col">
                         <div className="c-label">类型</div>
-                        <div className="c-input"><Input disabled value={newOrderType[props.orderData.type].name} /></div>
+                        <div className="c-input"><Input disabled value={newOrderType[props.orderData.type - 1].name} /></div>
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">坯布交期</div>
@@ -105,7 +100,7 @@ function OrderDetail(props) {
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">颜色</div>
-                        <div className="c-input"><Input disabled  value={props.orderData.customerColor}/></div>
+                        <div className="c-input"><Input disabled value={props.orderData.customerColor} /></div>
                     </Col>
                 </Row>
                 <Row className="c-row">
@@ -164,7 +159,7 @@ function OrderDetail(props) {
                     布票信息
                 </div>
                 <div className="clothing-data">
-                    <div className="clothing-left">
+                    <div className="clothing-left" style={{width:"125px"}}>
                         <Table
                             columns={[
                                 { title: "机台", dataIndex: "loomCode" },
@@ -175,14 +170,13 @@ function OrderDetail(props) {
                             onRow={record => {
                                 return {
                                     onClick: () => {
-                                        // console.log("机台数据==", record.barcodes);
                                         setbarCode(record.barcodes)
                                     },
                                 };
                             }}
                         />
                     </div>
-                    <div className="clothing-right">
+                    <div className="clothing-right" style={{ width: "100%" }}>
                         <Table
                             columns={[
                                 { title: "条码", dataIndex: "barcode" },
@@ -190,13 +184,14 @@ function OrderDetail(props) {
                                 { title: "入库重量", dataIndex: "weight" },
                                 { title: "入库时间", dataIndex: "inStockTime", render: (time) => (<span>{onlyFormat(time, true)}</span>) },
                                 { title: "出库时间", dataIndex: "outStockTime", render: (time) => (<span>{onlyFormat(time, true)}</span>) },
-                                { title: "纱牌/纱批", dataIndex: "yarnBrandBatch" },
-                                { title: "查布记录", dataIndex: "flawInfo" }
+                                { title: "查布记录", dataIndex: "flawInfo" },
+                                { title: "查布员", dataIndex: "qcId" },
+                                { title: "值机工", dataIndex: "weaverId" }
                             ]}
                             pagination={false}
                             dataSource={barCode}
                             scroll={{
-                                y: 150
+                                y: 250
                             }}
                         />
                     </div>

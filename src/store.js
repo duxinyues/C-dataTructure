@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-17 22:53:41
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-23 18:53:58
+ * @LastEditTime: 2021-06-24 15:44:19
  * @FilePath: \cloud-admin\src\store.js
  * @Description: 
  */
@@ -15,7 +15,8 @@ import {
     selectOrderDataReducer,
     selectDataReducer,
     outStockOrderBarCode_listReducer,
-    createOrderParam
+    createOrderParam,
+    createOrderState
 } from "./reducer/reducer";
 
 const reducers = combineReducers({
@@ -24,7 +25,8 @@ const reducers = combineReducers({
     selectOrderDataReducer,
     selectDataReducer,
     outStockOrderBarCode_listReducer,
-    createOrderParam
+    createOrderParam,
+    createOrderState
 })
 
 
@@ -35,7 +37,7 @@ const store = createStore(
     initialState,
     compose(
         applyMiddleware(...middleware),
-        window .__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__() 
+        window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
     )
 );
 

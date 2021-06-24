@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Input, InputNumber, Popconfirm, Form, Typography, Space, message, } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
-import { createOrderParams } from "../../../actons/action";
+import { Table, Input, Popconfirm, Form, Typography, message, Select } from 'antd';
+import { requestUrl } from "../../../utils/config";
+import { day } from "../../../utils/config"
 import { connect } from "react-redux";
+const { Option } = Select;
 const EditableCell = ({
     editing,
     dataIndex,
@@ -13,7 +14,6 @@ const EditableCell = ({
     children,
     ...restProps
 }) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
     return (
         <td {...restProps}>
             {editing ? (
@@ -29,7 +29,10 @@ const EditableCell = ({
                         },
                     ]}
                 >
-                    {inputNode}
+                    {inputType === 'weight' && <Input />}
+                    {inputType === 'flawInfo' && <>
+                    {}
+                    </>}
                 </Form.Item>
             ) : (
                 children
@@ -37,55 +40,52 @@ const EditableCell = ({
         </td>
     );
 };
-const EditCloth = (props) => {
-    console.log(props)
-    const _createOrderParam = props.createOrderParam
+const EditBarCode = (props) => {
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
     const [editingKey, setEditingKey] = useState('');
+    const [clothData, setclothData] = useState([])
     useEffect(() => {
         if (props.data) {
-            props.data.map((item) => {
-                item.key = item.id
-            })
             setData([...props.data])
         }
-    }, [])
-    const isEditing = (record) => record.key === editingKey;
-    const addData = () => {
-        const _data = [...data]
-        _data.push({
-            key: new Date().getTime(),
-            yarnName: "",
-            yarnBrandBatch: 0,
-            rate: 0,
-            knitWastage: 0,
-            planWeight: 0
-        });
-        setData(_data);
-        _createOrderParam.orderYarnInfos = _data;
-        props.createOrderParams(_createOrderParam);
-        props.onAddCloth(_data)
-    }
+        getClothData()
+    }, [props])
+    const isEditing = (record) => record.id === editingKey;
+
     const edit = (record) => {
-        console.log("行的数据==", record)
         form.setFieldsValue({
             ...record,
         });
-        setEditingKey(record.key);
+        setEditingKey(record.id);
     };
     const cancel = () => {
         setEditingKey('');
     };
+    const getClothData = () => {
+        fetch(requestUrl + `/api-basedata/clothInspection/findAll?page=1&size=1000`, {
+            method: "POST",
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token"),
+                "Content-Type": "application/json"
+            },
+        })
+            .then(res => { return res.json() })
+            .then(res => {
+                console.log(res)
+                if (res.code == 200) {
+                    setclothData(res.data.records);
+                }
+            })
+    }
     const save = async (key) => {
         try {
             const row = await form.validateFields();
             const newData = [...data];
-            const index = newData.findIndex((item) => key === item.key);
+            const index = newData.findIndex((item) => key === item.id);
             const totalRate = newData.reduce((pre, cur) => {
                 return pre + cur.rate
             }, 0)
-            console.log(totalRate)
             if (totalRate > 100) {
                 message.warning("纱比总和需要等于100");
                 return;
@@ -95,16 +95,12 @@ const EditCloth = (props) => {
                 const item = newData[index];
                 newData.splice(index, 1, { ...item, ...row });
                 setData(newData);
-                _createOrderParam.orderYarnInfos = newData;
-                props.createOrderParams(newData);
-                props.onAddCloth(newData)
+                props.editCode(newData)
                 setEditingKey('');
             } else {
                 newData.push(row);
                 setData(newData);
-                _createOrderParam.orderYarnInfos = newData;
-                props.createOrderParams(newData);
-                props.onAddCloth(newData);
+                props.editCode(newData);
                 setEditingKey('');
             }
         } catch (errInfo) {
@@ -113,38 +109,19 @@ const EditCloth = (props) => {
     };
     const handleDelete = (key) => {
         const _data = [...data];
-        const newData = _data.filter((item) => item.key !== key)
+        const newData = _data.filter((item) => item.id !== key)
         setData(newData);
-        _createOrderParam.orderYarnInfos = newData;
-        props.createOrderParams(_createOrderParam);
-        props.onAddCloth(_data)
+        props.editCode(newData);
     }
     const columns = [
-        {
-            title: '纱支',
-            dataIndex: 'yarnName',
-            editable: true,
-        },
-        {
-            title: '批次',
-            dataIndex: 'yarnBrandBatch',
-            editable: true,
-        },
-        {
-            title: '比例',
-            dataIndex: 'rate',
-            editable: true,
-        },
-        {
-            title: '损耗',
-            dataIndex: 'knitWastage',
-            editable: true,
-        },
-        {
-            title: '计划用量',
-            dataIndex: 'planWeight',
-            editable: false,
-        },
+        { title: "条码", dataIndex: "barcode" },
+        { title: "匹号", dataIndex: "seq" },
+        { title: "入库重量", dataIndex: "weight", editable: true },
+        { title: "入库时间", dataIndex: "inStockTime", render: (time) => (<span>{day(time)}</span>) },
+        { title: "出库时间", dataIndex: "outStockTime", render: (time) => (<span>{day(time)}</span>) },
+        { title: "查布记录", dataIndex: "flawInfo", editable: true },
+        { title: "查布员", dataIndex: "qcId", editable: true },
+        { title: "值机工", dataIndex: "weaverId", editable: true },
         {
             title: '操作',
             dataIndex: 'operation',
@@ -153,7 +130,7 @@ const EditCloth = (props) => {
                 return editable ? (
                     <React.Fragment>
                         <Typography.Link
-                            onClick={() => save(record.key)}
+                            onClick={() => save(record.id)}
                             style={{ marginRight: 8 }}
                         >
                             保存
@@ -167,24 +144,23 @@ const EditCloth = (props) => {
                         <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
                             编辑
                         </Typography.Link>
-                        <Popconfirm title="确定删除？" onConfirm={() => { handleDelete(record.key) }}>
+                        <Popconfirm title="确定删除？" onConfirm={() => { handleDelete(record.id) }}>
                             <span style={{ marginLeft: "10px" }} >删除</span>
                         </Popconfirm>
                     </React.Fragment>
                 );
             },
-        },
+        }
     ];
     const mergedColumns = columns.map((col) => {
         if (!col.editable) {
             return col;
         }
-
         return {
             ...col,
             onCell: (record) => ({
                 record,
-                inputType: (col.dataIndex === 'rate' || col.dataIndex === 'knitWastage') ? 'number' : 'text',
+                inputType: col.dataIndex,
                 dataIndex: col.dataIndex,
                 title: col.title,
                 editing: isEditing(record),
@@ -193,10 +169,6 @@ const EditCloth = (props) => {
     });
     return (
         <Form form={form} component={false}>
-            <Space>
-                <span>用料信息</span>
-                <PlusCircleOutlined style={{ color: "blue", marginLeft: "10px" }} onClick={addData} />
-            </Space>
             <Table
                 components={{
                     body: {
@@ -208,6 +180,9 @@ const EditCloth = (props) => {
                 columns={mergedColumns}
                 rowClassName="editable-row"
                 pagination={false}
+                scroll={{
+                    y: 250
+                }}
             />
         </Form>
     );
@@ -217,4 +192,4 @@ const mapStateToProps = (state) => {
         createOrderParam: state.createOrderParam
     }
 }
-export default connect(mapStateToProps, { createOrderParams })(EditCloth)
+export default connect(mapStateToProps)(EditBarCode)

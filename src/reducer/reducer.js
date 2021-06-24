@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-17 22:53:41
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-23 19:24:05
+ * @LastEditTime: 2021-06-24 15:43:59
  * @FilePath: \cloud-admin\src\reducer\reducer.js
  * @Description: 
  * 
@@ -17,7 +17,8 @@ import {
     SAVE_SELECTDATA,
     OUT_STOCK_ORDER_BARCODE,
     CREATE_ORDER_PARAMS,
-    CLEAR_ORDER_PARAMS
+    CLEAR_ORDER_PARAMS,
+    CREATE_ORDER
 } from "../actons/type"
 import { createOrderDefaultState } from "../utils/config";
 
@@ -124,16 +125,28 @@ export function outStockOrderBarCode_listReducer(state = [], action) {
 
 // 订单参数
 
-export const createOrderParam = (state = createOrderDefaultState, action) => {
-    console.log(action)
+export const createOrderParam = (state = {}, action) => {
     switch (action.type) {
         case CREATE_ORDER_PARAMS:
             return {
                 ...state,
-                orderParams: action.payload
+                orderParams: { ...action.payload }
             }
         case CLEAR_ORDER_PARAMS:
-            return createOrderDefaultState
+            console.log("清空参数")
+            return state
+        default:
+            return state
+    }
+}
+
+export const createOrderState = (state = {}, action)=>{
+    switch (action.type) {
+        case CREATE_ORDER:
+            return {
+                ...state,
+                orderState: action.payload
+            }
         default:
             return state
     }
