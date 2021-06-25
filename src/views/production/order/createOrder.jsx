@@ -40,7 +40,8 @@ function CreateOrder(props) {
         props.createOrder(_createOrderParam);
     }
     const selectClothType = (value) => {
-        _createOrderParam.fabricType = value;
+        console.log(value)
+        _createOrderParam.fabricType = value[0];
         props.createOrderParams(_createOrderParam);
         props.createOrder(_createOrderParam);
     }
@@ -124,7 +125,7 @@ function CreateOrder(props) {
     }
     // 每匹重量
     const changetareWeight = ({ target: { value } }) => {
-        _createOrderParam.tareWeight = value;
+        _createOrderParam.unitWeight = value;
         props.createOrderParams(_createOrderParam);
         props.createOrder(_createOrderParam);
     }
@@ -218,7 +219,7 @@ function CreateOrder(props) {
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right"><em>*</em>布类</div>
-                        <div className="c-input"><Select onChange={selectClothType}>
+                        <div className="c-input"><Select mode="tags" onChange={selectClothType}>
                             {clothType.map((item, key) => (<Option value={item} key={key}>{item}</Option>))}
                         </Select></div>
                     </Col>

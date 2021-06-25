@@ -85,12 +85,11 @@ const EditCloth = (props) => {
             const totalRate = newData.reduce((pre, cur) => {
                 return pre + cur.rate
             }, 0)
-            console.log(totalRate)
             if (totalRate > 100) {
                 message.warning("纱比总和需要等于100");
                 return;
             }
-            row.planWeight = props.weight * row.rate * (1 + row.knitWastage / 100) / 100;
+            row.planWeight = (props.weight * row.rate * (1 + row.knitWastage / 100) / 100).toFixed(2);
             if (index > -1) {
                 const item = newData[index];
                 newData.splice(index, 1, { ...item, ...row });

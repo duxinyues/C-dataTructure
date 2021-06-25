@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-17 22:53:41
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-24 15:44:19
+ * @LastEditTime: 2021-06-25 18:43:48
  * @FilePath: \cloud-admin\src\store.js
  * @Description: 
  */
@@ -37,7 +37,7 @@ const store = createStore(
     initialState,
     compose(
         applyMiddleware(...middleware),
-        window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+        // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
     )
 );
 

@@ -4,53 +4,25 @@ import { requestUrl } from "../../../utils/config";
 import { day } from "../../../utils/config"
 import { connect } from "react-redux";
 const { Option } = Select;
-const EditableCell = ({
-    editing,
-    dataIndex,
-    title,
-    inputType,
-    record,
-    index,
-    children,
-    ...restProps
-}) => {
-    return (
-        <td {...restProps}>
-            {editing ? (
-                <Form.Item
-                    name={dataIndex}
-                    style={{
-                        margin: 0,
-                    }}
-                    rules={[
-                        {
-                            required: true,
-                            message: "请输入正确的内容",
-                        },
-                    ]}
-                >
-                    {inputType === 'weight' && <Input />}
-                    {inputType === 'flawInfo' && <>
-                    {}
-                    </>}
-                </Form.Item>
-            ) : (
-                children
-            )}
-        </td>
-    );
-};
 const EditBarCode = (props) => {
     const [form] = Form.useForm();
     const [data, setData] = useState([]);
     const [editingKey, setEditingKey] = useState('');
-    const [clothData, setclothData] = useState([])
+    const [clothData, setclothData] = useState([]);
+    const [checkClothData, setcheckClothData] = useState([]);
+    const [runMachinePerson, setrunMachinePerson] = useState([]);
     useEffect(() => {
+        getClothData();
+        getPerson();
         if (props.data) {
+            props.data.map((item) => {
+                item.clothData = clothData;
+                item.checkClothData = checkClothData;
+                item.runMachinePerson = runMachinePerson;
+            })
             setData([...props.data])
         }
-        getClothData()
-    }, [props])
+    }, [props.data])
     const isEditing = (record) => record.id === editingKey;
 
     const edit = (record) => {
@@ -62,6 +34,7 @@ const EditBarCode = (props) => {
     const cancel = () => {
         setEditingKey('');
     };
+    //  查布记录
     const getClothData = () => {
         fetch(requestUrl + `/api-basedata/clothInspection/findAll?page=1&size=1000`, {
             method: "POST",
@@ -78,33 +51,37 @@ const EditBarCode = (props) => {
                 }
             })
     }
+    const getPerson = () => {
+        fetch(requestUrl + `/api-production/orderBarcode/personDownList`, {
+            headers: {
+                "Authorization": "bearer " + localStorage.getItem("access_token"),
+            }
+        })
+            .then((res) => { return res.json() })
+            .then((res) => {
+                if (res.code == 200) {
+                    const _checkClothData = [];
+                    const _runMachinePerson = [];
+                    res.data.map((item) => {
+                        if (item.position === 1) { _checkClothData.push(item) }
+                        if (item.position === 2) { _runMachinePerson.push(item) }
+                    })
+                    setcheckClothData(_checkClothData);
+                    setrunMachinePerson(_runMachinePerson);
+                }
+            })
+    }
     const save = async (key) => {
         try {
             const row = await form.validateFields();
             const newData = [...data];
-            const index = newData.findIndex((item) => key === item.id);
-            const totalRate = newData.reduce((pre, cur) => {
-                return pre + cur.rate
-            }, 0)
-            if (totalRate > 100) {
-                message.warning("纱比总和需要等于100");
-                return;
-            }
-            row.planWeight = props.weight * row.rate * (1 + row.knitWastage / 100) / 100;
-            if (index > -1) {
-                const item = newData[index];
-                newData.splice(index, 1, { ...item, ...row });
-                setData(newData);
-                props.editCode(newData)
-                setEditingKey('');
-            } else {
-                newData.push(row);
-                setData(newData);
-                props.editCode(newData);
-                setEditingKey('');
-            }
+            console.log("row", row)
+            console.log("newData", newData)
+            setData(newData);
+            props.editCode(newData)
+            setEditingKey('');
         } catch (errInfo) {
-            console.log('Validate Failed:', errInfo);
+            console.log('报错信息:', errInfo);
         }
     };
     const handleDelete = (key) => {
@@ -172,13 +149,81 @@ const EditBarCode = (props) => {
             <Table
                 components={{
                     body: {
-                        cell: EditableCell,
+                        cell: ({
+                            editing,
+                            dataIndex,
+                            title,
+                            inputType,
+                            record,
+                            index,
+                            children,
+                            ...restProps
+                        }) => {
+                            const _data = data;
+                            const selectFlawInfo = (value) => {
+                                _data.map((item) => {
+                                    if (item.id == record.id) {
+                                        item.flawInfo = value.join(",")
+                                    }
+                                });
+                            }
+                            const changeWeight = ({ target: { value } }) => {
+                                _data.map((item) => {
+                                    if (item.id == record.id) {
+                                        item.weight = value
+                                    }
+                                });
+                            }
+                            const selectQc = (value) => {
+                                _data.map((item) => {
+                                    if (item.id == record.id) {
+                                        item.qcId = value
+                                    }
+                                });
+                            }
+                            const selectWeaver = (value) => {
+                                _data.map((item) => {
+                                    if (item.id == record.id) {
+                                        item.weaverId = value
+                                    }
+                                });
+                            }
+                            return (
+                                <td {...restProps}>
+                                    {editing ? (
+                                        <Form.Item
+                                            name={dataIndex}
+                                            style={{
+                                                margin: 0,
+                                            }}
+                                        >
+                                            {inputType === 'weight' && <Input defaultValue={record.weight} onBlur={changeWeight} />}
+                                            {inputType === 'flawInfo' && <Select defaultValue={record.flawInfo} mode="multiple" onChange={selectFlawInfo} >
+                                                {record.clothData.map((item) => (<Option value={item.name}>{item.name}</Option>))}
+                                            </Select>
+                                            }
+                                            {
+                                                inputType === "qcId" && <Select onChange={selectQc} defaultValue={record.qcId}>
+                                                    {record.checkClothData.map((item) => (<Option value={item.id}>{item.name}</Option>))}
+                                                </Select>
+                                            }
+                                            {
+                                                inputType === "weaverId" && <Select onChange={selectWeaver} defaultValue={record.weaverId}>
+                                                    {record.runMachinePerson.map((item) => (<Option value={item.id}>{item.name}</Option>))}
+                                                </Select>
+                                            }
+                                        </Form.Item>
+                                    ) : (
+                                        children
+                                    )}
+                                </td>
+                            );
+                        }
                     },
                 }}
                 bordered
                 dataSource={data}
                 columns={mergedColumns}
-                rowClassName="editable-row"
                 pagination={false}
                 scroll={{
                     y: 250

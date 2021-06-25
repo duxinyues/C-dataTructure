@@ -17,8 +17,8 @@ document.title = "订单管理";
 function Order(props) {
     const [spining, setspining] = useState(true)
     const [columns, setcolumns] = useState();
-    const [headType, setheadType] = useState(); //默认展示详情
-    const [orderList, setorderList] = useState();
+    const [headType, setheadType] = useState("detail"); //默认展示详情
+    const [orderList, setorderList] = useState([]);
     const [searchValue, setsearchValue] = useState("code");
     const [searchType, setsearchType] = useState();
     const [customer, setcustomer] = useState();
@@ -39,11 +39,16 @@ function Order(props) {
     const [selectSeq, setselectSeq] = useState();
     const [companyName, setcompanyName] = useState();
     const [orderParams, setorderParams] = useState({})
+    const [form] = Form.useForm();
     useEffect(() => {
         setcolumns([
             {
                 title: "生产单号",
                 dataIndex: 'code',
+            },
+            {
+                title: "机台",
+                dataIndex: "loomCode"
             },
             {
                 title: "客户",
@@ -142,7 +147,7 @@ function Order(props) {
             .then(res => {
                 console.log(res)
                 if (res.code === 200) {
-                    message.success("订单创建成功！")
+                    message.success(res.msg)
                     setorderParams({});
                     setheadType("detail");
                     getOrderList({
@@ -162,6 +167,7 @@ function Order(props) {
     }
     // 取消打印
     const onCancel = () => {
+        form.resetFields()
         setvisible(false);
         setseq(0);
         setselectClothLoom();
@@ -187,11 +193,14 @@ function Order(props) {
             .then(res => { return res.json() })
             .then(res => {
                 if (res.code === 200) {
+                    form.resetFields()
                     res.data.map((item) => {
+                        getOrderDetail(orderDetail.id)
                         createBarCode(item.barcode, item.seq)
                     })
                 }
             })
+
     }
     const handleBarcode = (r) => {
         setbarcode(r)
@@ -218,10 +227,9 @@ function Order(props) {
                 return item.loomCode
             }
         })
-
         let LODOP = getLodop();
-        LODOP.PRINT_INIT("react使用打印插件CLodop");  //打印初始化
-        const strHtml = `<div style="width:50mm;background: #fff;border: 1px solid #999;">
+        LODOP.PRINT_INIT("");  //打印初始化
+        const strHtml = `<div style="width:50mm;background: #fff;">
         <div class="cloth-circle" style="width: 90px;height: 90px;border: 1px dashed #999;border-radius: 50%; margin: 20px auto;"></div>
         <div style="margin: 0 auto;border:1px solid #999">
          <div style="display:flex;border-bottom: 1px solid #999;width: 100%;height:28px;align-items:center;">
@@ -254,24 +262,24 @@ function Order(props) {
 
          <div style="display:flex;border-bottom: 1px solid #999;width: 100%;height:28px;align-items:center;">
           <p style="border-right:1px solid #999;width:38px;height:28px;line-height: 28px;text-align: center;font-size: 14px;">针寸</p> 
-          <p style="display:flex;align-items:center;line-height: 28px;font-size: 14px;"><span style="width:50%;text-align: center;">${orderDetail.needles}+${orderDetail.inches}</span><span style="width:50%;border-left:1px solid #999;text-align: center;">${newOrderType[orderDetail.type].name}</span></p>
+          <p style="width:138px;display:flex;align-items:center;line-height: 28px;font-size: 14px;"><span style="width:50%;text-align: center;">${orderDetail.needles}+${orderDetail.inches}</span><span style="width:50%;border-left:1px solid #999;text-align: center;">${newOrderType[orderDetail.type - 1].name}</span></p>
          </div> 
          <div style="display:flex;border-bottom:1px solid #999;width:100%;height:28px;align-items:center;">
           <p style="border-right:1px solid #999;width:38px;height:28px;line-height: 28px;text-align: center;font-size: 14px;">机号</p> 
-          <p  style="display:flex;align-items:center;line-height: 28px;font-size: 14px;" ><span style="width:50%;text-align:center;">${loomCode}</span> <span style="width:38px;border-left:1px solid #999;text-align:center;">疋号</span> <span style="width:calc(50% - 39px);text-align:center;border-left:1px solid #999">${seq}</span></p>
+          <p  style="display:flex;align-items:center;line-height: 28px;font-size: 14px;" ><span style="width:69px;text-align:center;">${loomCode}</span> <span style="width:40px;border-left:1px solid #999;text-align:center;">匹号</span> <span style="width:32px;text-align:center;border-left:1px solid #999;padding-left:2px">${seq}</span></p>
          </div> 
          <div style="display:flex;width:100%;height:56px;align-items:center;">
-          <div style="border-right:1px solid #999;width:133px;">
+          <div style="border-right:1px solid #999;width:108px;">
             <div style="line-height:28px;height:28px;font-size: 14px;display:flex;align-items:center;border-bottom:1px solid #999;">
-                <div style="width:37px;height:28px;text-align:center;border-right:1px solid #999;">日期</div> 
-                <div style="padding-left:2px;width:97px;text-align:center;">${onlyFormat(orderDetail.bizDate, false)}</div>
+                <div style="width:38px;height:28px;text-align:center;border-right:1px solid #999;">日期</div> 
+                <div style="width:60px;text-align:center;font-size:10px;">${onlyFormat(orderDetail.bizDate, false)}</div>
             </div> 
             <div style="line-height:28px;height:28px;font-size: 14px;display:flex;align-items:center;">
-                <div style="width:36px;height:28px;text-align:center;border-right:1px solid #999;">值机</div> 
+                <div style="width:38px;height:28px;text-align:center;border-right:1px solid #999;">值机</div> 
                 <div style="padding-left:5px;"></div>
             </div> 
           </div>
-          <div style="display:flex;align-items:center;"><div style="border-right:1px solid #999;width:38px;height:56px;display: flex;justify-content: center;align-items: center;">净重</div> <div style="padding-left:5px;">  </div></div>
+          <div style="display:flex;align-items:center;"><div style="border-right:1px solid #999;width:40px;height:56px;display: flex;justify-content: center;align-items: center;">净重</div> <div style="padding-left:5px;">  </div></div>
          </div> 
          <div class="content-item content-center" style="display:none" >
           <p class="left-side" >备注</p> 
@@ -279,14 +287,14 @@ function Order(props) {
          </div>
         </div> 
         <div style="height:120px;text-align:center;">
-         <p style="text-align:center;font-size:14px;">合同号：${orderDetail.customerBillCode}</p> 
+         <p style="text-align:center;font-size:14px;padding:0;">合同号：${orderDetail.customerBillCode}</p> 
          <p >
-         <svg style="margin:0 auto;display:block;text-anchor: middle;width:160px"  height="40px" x="0px" y="0px" viewBox="0 0 0 70" preserveAspectRatio="xMinYMin meet" xmlns="http://www.w3.org/2000/svg" version="1.1" >${str}</svg>
+         <svg style="margin:0 auto;display:block;text-anchor: middle;width:160px"  height="20px" x="0px" y="0px" viewBox="0 0 0 70" preserveAspectRatio="xMinYMin meet" xmlns="http://www.w3.org/2000/svg" version="1.1" >${str}</svg>
           </p>
         </div> 
        </div>`
-
-        LODOP.ADD_PRINT_HTML(10, 55, "100%", "100%", strHtml);
+        LODOP.SET_PRINT_MODE("PRINT_PAGE_PERCENT", "Full-Page");
+        LODOP.ADD_PRINT_HTML(0, 0, "100%", "100%", strHtml);
         // LODOP.PREVIEW(); // 打印预览
         LODOP.PRINT(); // 直接打印
         setvisible(false)
@@ -331,6 +339,7 @@ function Order(props) {
             .then(res => { return res.json() })
             .then(res => {
                 if (res.code === 200) {
+                    setspining(false);
                     if (res.data.records.length === 0) return;
                     settotal(res.data.total);
                     setsize(res.data.size);
@@ -376,7 +385,7 @@ function Order(props) {
                 }
             })
     }
-
+    // 客户
     const getCustomer = () => {
         fetch(requestUrl + "/api-production/order/getCustomerDownList", {
             headers: {
@@ -390,6 +399,7 @@ function Order(props) {
                 }
             })
     }
+    // 搜索类型
     const selectSearchTyle = (value) => {
         setsearchValue(value);
         if (value === "customerName") {
@@ -424,6 +434,7 @@ function Order(props) {
                 }
             })
     }
+    // 机台
     const getLoom = (orderId) => {
         fetch(requestUrl + "/api-production/orderBarcode/loomDownList?orderId=" + orderId, {
             headers: {
@@ -463,7 +474,7 @@ function Order(props) {
                 if (res.code === 200) {
                     setseq(res.data.seq)
                     setcompanyName(res.data.companyName);
-                    for (let index = 1; index <= seq; index++) {
+                    for (let index = 1; index <= res.data.seq; index++) {
                         arr.push(index)
                     }
                     console.log(arr)
@@ -478,9 +489,9 @@ function Order(props) {
     }
     const menu = (
         <Menu>
-            <Menu.Item key="0">
+            {/* <Menu.Item key="0">
                 复制
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Item key="1">
                 作废
             </Menu.Item>
@@ -512,11 +523,11 @@ function Order(props) {
                         订单管理
                     </div>
                     <div className="custom-right">
-                        <Button key="3" type="primary" onClick={add}>+新建</Button>
-                        <Button key="2" onClick={edit}>编辑</Button>
-                        <Button key="1" onClick={completeOrder}>{btnTex}</Button>
-                        <Button >订单</Button>
-                        <Button key="5" onClick={openPrint}>布票</Button>
+                        <Button type="primary" onClick={add}>+新建</Button>
+                        <Button onClick={edit} disabled={orderList.length == 0}>编辑</Button>
+                        <Button onClick={completeOrder} disabled={orderList.length == 0}>{btnTex}</Button>
+                        {/* <Button disabled={orderList.length == 0}>打印订单</Button> */}
+                        <Button onClick={openPrint} disabled={orderList.length == 0}>打印布票</Button>
                         <Dropdown overlay={menu} trigger={['click']}>
                             <div className="drop">
                                 更多 &nbsp; <DownOutlined />
@@ -595,7 +606,7 @@ function Order(props) {
                         />
                     </div>
                     <div className="right">
-                        {headType === "detail" && <OrderDetail orderData={orderDetail} />}
+                        {(headType === "detail") && <OrderDetail orderData={orderDetail} />}
                         {headType === "edit" && <EditOrder editOrder={getCreateOrderState} orderData={orderDetail} />}
                         {headType === "add" && <CreateOrder createOrder={getCreateOrderState} />}
                     </div>
@@ -617,6 +628,7 @@ function Order(props) {
                 initialValues={{
                     template: "默认模板"
                 }}
+                form={form}
             >
                 <Form.Item label="模板" name="template">
                     <Select>

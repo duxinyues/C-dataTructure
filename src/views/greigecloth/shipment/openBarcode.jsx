@@ -54,7 +54,7 @@ function OpenBarcode(props) {
             columns={[
                 { title: "#", dataIndex: "id" },
                 { title: "条码", dataIndex: "barcode" },
-                { title: "疋号", dataIndex: "seq" },
+                { title: "匹号", dataIndex: "seq" },
                 { title: "入库重量", dataIndex: "weight" },
                 { title: "入库日期", dataIndex: "inStockTime", render: (time) => (<span>{day(time)}</span>) },
                 { title: "查布记录", dataIndex: "flawInfo" }

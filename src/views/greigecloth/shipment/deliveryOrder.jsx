@@ -1,3 +1,12 @@
+/*
+ * @Author: 1638877065@qq.com
+ * @Date: 2021-06-11 10:22:41
+ * @LastEditTime: 2021-06-25 19:23:04
+ * @LastEditors: 1638877065@qq.com
+ * @Description: 细码打印
+ * @FilePath: \cloud-admin\src\views\greigecloth\shipment\deliveryOrder.jsx
+ * 
+ */
 import React, { useState, useRef, useEffect } from "react";
 import { newOrderType, onlyFormat, sliceArrFn, sum } from "../../../utils/config"
 import { Modal, Button } from "antd";
@@ -59,12 +68,12 @@ function DeliveryOrder(props) {
                                                         </div>
                                                         <div className="ob-row">
                                                             纱别：{item.yarnInfo}
-                                                            <p>{newOrderType[item.type].name}<input type="checkbox" defaultChecked checked readonly /></p>
+                                                            <p>{newOrderType[item.type].name}</p>
                                                         </div>
                                                     </div>
                                                     <div className="o-barcode">
                                                         {
-                                                            sliceArrFn(itemss, 10).map((barItem, index) => {
+                                                            sliceArrFn(itemss, 8).map((barItem, index) => {
                                                                 return <div className="o-col">
                                                                     <div className="col-title">{
                                                                         indss > 0 ? indss * 10 + index + 1 : index + 1
@@ -86,7 +95,7 @@ function DeliveryOrder(props) {
                                                     </div>
                                                     <div className="o-col-total">
                                                         {
-                                                            sliceArrFn(itemss, 10).map((barItem, index) => {
+                                                            sliceArrFn(itemss, 8).map((barItem, index) => {
                                                                 return <div className="total-item">{sum(barItem)}</div>
                                                             })
                                                         }

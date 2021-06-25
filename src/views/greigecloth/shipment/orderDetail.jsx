@@ -174,7 +174,7 @@ function OrderDetail(props) {
                     title: "机号",
                     dataIndex: "loomCode"
                 }, {
-                    title: "疋号",
+                    title: "匹号",
                     dataIndex: "seq"
                 }, {
                     title: "重量",

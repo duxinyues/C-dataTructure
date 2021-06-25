@@ -8,7 +8,8 @@ import EditBarcode from "./editBarcode";
 import 'moment/locale/zh-cn';
 import moment from "moment"
 const { Option } = Select;
-let EditOrder = (props, ref) => {
+let EditOrder = (props) => {
+    console.log("编辑信息==", props)
     document.title = "编辑订单";
     const _createOrderParam = props.orderData;
     const defaultData = props.orderData.orderYarnInfos;
@@ -36,6 +37,8 @@ let EditOrder = (props, ref) => {
         })
             .then(res => { return res.json() })
             .then(res => {
+                
+                _createOrderParam.orderLooms = res.data;
                 setloomData(res.data);
                 setbarCode(res.data[0])
             })
@@ -177,7 +180,7 @@ let EditOrder = (props, ref) => {
         console.log("编辑条码==", params)
         const _barcode = barCode;
         _barcode.barcodes = params
-        loomData.map((item)=>{
+        loomData.map((item) => {
             item.id = _barcode.id
         })
         _createOrderParam.orderLooms = loomData;

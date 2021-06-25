@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:45:05
- * @LastEditTime: 2021-06-21 19:46:53
+ * @LastEditTime: 2021-06-25 17:30:18
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布出货单【新增组件】
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\createOrder.jsx
@@ -558,10 +558,10 @@ function CreateEnterStockOrder(props) {
                     <Table
                         columns={[
                             { title: "条码", dataIndex: "barcode" },
-                            { title: "疋号", dataIndex: "seq" },
+                            { title: "匹号", dataIndex: "seq" },
                             { title: "入库重量", dataIndex: "weight" },
                             { title: "入库日期", dataIndex: "inStockTime", render: (time) => (<span>{day(time)}</span>) },
-                            { title: "查布记录", dataIndex: "" }
+                            { title: "查布记录", dataIndex: "flawInfo" }
                         ]}
                         dataSource={barCodeData}
                         rowSelection={rowSelection_modal}

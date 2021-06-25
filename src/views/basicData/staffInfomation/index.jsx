@@ -251,7 +251,7 @@ function StaffInfo() {
             }}
         />
         <Modal
-            className="customModal"
+            className="addStaffInfo"
             destroyOnClose
             title={editType == 1 ? "编辑员工" : "新建员工"}
             visible={visible}

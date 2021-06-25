@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:31:18
- * @LastEditTime: 2021-06-21 19:10:38
+ * @LastEditTime: 2021-06-25 18:18:05
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布列表和详情
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\index.jsx
@@ -245,7 +245,7 @@ function InStock(props) {
                 <Button type="primary" onClick={add}>
                     +新增
                 </Button>
-                <Button disabled={yarn_stock_detail.billStatus === 1} onClick={edit}>
+                <Button disabled={yarn_stock_detail.billStatus === 1 || leftData.length == 0} onClick={edit}>
                     编辑
                 </Button>
                 <Button disabled={disabled} onClick={delect}>
@@ -254,7 +254,7 @@ function InStock(props) {
                 <Button disabled={disabled}>
                     导出
                 </Button>
-                <Button onClick={openOutStockOrder} >
+                <Button onClick={openOutStockOrder} disabled={leftData.length == 0}>
                     细码
                 </Button>
             </div>
@@ -296,7 +296,7 @@ function InStock(props) {
                 {detailType === "add" && <CreateOrder save={save} ref={childRef} />}
             </Spin>
         </div>
-
+        {/* 细码 */}
         {outStockOrder && <DeliveryOrder deliveryOrder={deliveryOrder} modalState={modalState} />}
     </div>
 }
