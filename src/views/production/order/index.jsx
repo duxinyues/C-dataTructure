@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import { PageHeader, Table, Form, Row, Select, Button, Input, Dropdown, Menu, Spin, Modal, message } from "antd";
+import React, { useState, useEffect } from "react";
+import { Table, Form, Row, Select, Button, Input, Dropdown, Menu, Spin, Modal, message } from "antd";
 import { DownOutlined } from '@ant-design/icons';
 import JsBarcode from 'jsbarcode';
-import Barcode from "./Barcode";
 import { connect } from "react-redux";
 import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, getNowFormatDate } from "../../../utils/config";
 import { createOrder, clearOrderParams, createOrderParams } from "../../../actons/action";
-import { useUpdate } from "../../../hook"
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import EditOrder from "./edit";
@@ -34,7 +32,6 @@ function Order(props) {
     const [barcode, setbarcode] = useState();
     const [selectClothLoom, setselectClothLoom] = useState();
     const [selectClothYarnBatch, setselectClothYarnBatch] = useState();
-    const [seq, setseq] = useState(1);
     const [seqArr, setseqArr] = useState([]);
     const [selectSeq, setselectSeq] = useState();
     const [companyName, setcompanyName] = useState();
@@ -103,11 +100,11 @@ function Order(props) {
             message.error("请输入合同号！");
             return;
         }
-        if (!params.orderYarnInfos || params.orderYarnInfos.length == 0) {
+        if (!params.orderYarnInfos || params.orderYarnInfos.length === 0) {
             message.error("必须添加用料信息");
             return;
         }
-        if (!params.orderLooms || params.orderLooms.length == 0) {
+        if (!params.orderLooms || params.orderLooms.length === 0) {
             message.error("必须添加机台信息");
             return;
         }
@@ -115,13 +112,13 @@ function Order(props) {
             message.error("请输入订单");
             return;
         }
-        const yarnInfo = params.orderYarnInfos.some((item) => (item.yarnName == ""));
+        const yarnInfo = params.orderYarnInfos.some((item) => (item.yarnName === ""));
         if (yarnInfo) {
             message.error("请完善用料信息");
             return;
         }
 
-        const loomEmpty = params.orderLooms.some((item) => item.loomCode == "");
+        const loomEmpty = params.orderLooms.some((item) => item.loomCode === "");
         if (loomEmpty) {
             message.error("请完善机台信息");
             return;
@@ -129,11 +126,13 @@ function Order(props) {
         // 删除多余的key值
         params.orderYarnInfos.map((item) => {
             delete item.key;
+            return item;
         })
         // 删除多余的key、loom
         params.orderLooms.map((item) => {
             delete item.loom;
             delete item.key;
+            return item;
         });
         fetch(requestUrl + "/api-production/order/saveOrModify", {
             method: "POST",
@@ -169,7 +168,6 @@ function Order(props) {
     const onCancel = () => {
         form.resetFields()
         setvisible(false);
-        setseq(0);
         setselectClothLoom();
         setselectClothYarnBatch();
     }
@@ -196,7 +194,7 @@ function Order(props) {
                     form.resetFields()
                     res.data.map((item) => {
                         getOrderDetail(orderDetail.id)
-                        createBarCode(item.barcode, item.seq)
+                        createBarCode(item.barcode, item.seq);
                     })
                 }
             })
@@ -472,7 +470,6 @@ function Order(props) {
             .then(res => {
                 console.log(res)
                 if (res.code === 200) {
-                    setseq(res.data.seq)
                     setcompanyName(res.data.companyName);
                     for (let index = 1; index <= res.data.seq; index++) {
                         arr.push(index)
@@ -524,10 +521,10 @@ function Order(props) {
                     </div>
                     <div className="custom-right">
                         <Button type="primary" onClick={add}>+新建</Button>
-                        <Button onClick={edit} disabled={orderList.length == 0}>编辑</Button>
-                        <Button onClick={completeOrder} disabled={orderList.length == 0}>{btnTex}</Button>
+                        <Button onClick={edit} disabled={orderList.length === 0}>编辑</Button>
+                        <Button onClick={completeOrder} disabled={orderList.length === 0}>{btnTex}</Button>
                         {/* <Button disabled={orderList.length == 0}>打印订单</Button> */}
-                        <Button onClick={openPrint} disabled={orderList.length == 0}>打印布票</Button>
+                        <Button onClick={openPrint} disabled={orderList.length === 0}>打印布票</Button>
                         <Dropdown overlay={menu} trigger={['click']}>
                             <div className="drop">
                                 更多 &nbsp; <DownOutlined />

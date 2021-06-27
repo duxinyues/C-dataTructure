@@ -1,3 +1,12 @@
+/*
+ * @FileName: 
+ * @Author: 1638877065@qq.com
+ * @Date: 2021-06-09 23:06:19
+ * @LastEditors: 1638877065@qq.com
+ * @LastEditTime: 2021-06-27 09:31:20
+ * @FilePath: \cloud-admin\src\router\route.js
+ * @Description: router路由
+ */
 import CompanyInfo from "../views/basicData/companyInfomation"
 import DataContent from "../views/dataContent"
 import StaffInfo from "../views/basicData/staffInfomation"
@@ -17,9 +26,9 @@ import Order from "../views/production/order"
 import CheckClothDetail from "../views/production/checkClothDetail"
 import CheckClothWage from "../views/production/checkClothWage"
 import ProductionSchedule from "../views/production/productionSchedule"
+import UserCenter from "../views/userCenter/user"
 import NoFind from "../views/noFind"
-export const routes = [
-    {
+export const routes = [{
         path: '/list/search', // 公司信息
         component: CompanyInfo
     }, {
@@ -62,14 +71,14 @@ export const routes = [
         component: InStock
     },
     {
-        path: "/dashboard20",//  出库明细
+        path: "/dashboard20", //  出库明细
         component: OutStock
     },
     {
-        path: "/dashboard21",//  库存
+        path: "/dashboard21", //  库存
         component: Stock
     }, {
-        path: "/dashboard22",//  坯布入库报表
+        path: "/dashboard22", //  坯布入库报表
         component: InSTockTable
     },
     {
@@ -77,20 +86,21 @@ export const routes = [
         component: EnterStorage
     },
     {
-        path: "/dashboard24",  // 退纱出库
+        path: "/dashboard24", // 退纱出库
         component: OutStorage
     }, {
         path: "/dashboard25", // 出入明细
         component: EnterOutDetail
     }, {
         path: "/dashboard26",
-        component: StockList  // 纱线库存
-    },
-    {
+        component: StockList // 纱线库存
+    }, {
+        path: "/dashboard31",
+        component: UserCenter // 用户管理
+    }, {
         path: "/home",
         component: DataContent
-    },
-    {
+    }, {
         path: "/404",
         component: NoFind
     }
