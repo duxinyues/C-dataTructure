@@ -33,3 +33,8 @@
 .update .ant-picker {
     width: 250px !important;
 }
+.production .ant-form-item-label>label{
+    display: inline-block;
+    line-height: 32px;
+    text-align: right;
+}

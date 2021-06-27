@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader, Row, Select } from "antd";
-import { requestUrl, onlyFormat } from "../../utils/config";
+import { PageHeader, Table, Modal, Button, Form, Input, message, Row, Select } from "antd";
+import { onlyFormat } from "../../utils/config";
+import { getUserList, resetPassword, addAndEditUser, delectUser, disbaleUser, getRoles, getCompanyList } from "../../api/apiModule"
 import "./style.css"
 const { confirm } = Modal;
 const { Option } = Select
@@ -14,92 +15,127 @@ const layout = {
 };
 function UserCenter() {
     document.title = "用户管理";
-    const [data, setdata] = useState([]);
-    const [loading, setloading] = useState(false);
+    const [loading, setloading] = useState(true);
     const [visible, setvisible] = useState(false);
     const [editType, seteditType] = useState(0);
     const [selectRecord, setselectRecord] = useState();
-    const [addressData, setaddressData] = useState([]);
     const [size, setSize] = useState(10);
     const [current, setCurrent] = useState(1);
     const [total, setTotal] = useState(0);
     const [rowId, setRowId] = useState(0);
     const [company, setCompany] = useState([]);
-    const [role, setRole] = useState([])
+    const [role, setRole] = useState([]);
+    const [userList, setUserList] = useState([])
     const [form] = Form.useForm();
-    const selectId = []
     useEffect(() => {
-        getClothData({ "page": 1, "size": 10 });
+        userListFn({ "page": 1, "size": 10 });
+        getCompanyList((res) => {
+            setCompany([...res])
+        });
+        getRoles((res) => {
+            setRole([...res])
+        })
     }, [])
 
     const modalClick = async (param, type) => {
-        getData()
-        await form.setFieldsValue({
-            name: param.name,
-            abbr: param.abbr,
-            contactPhone: param.contactPhone,
-            address: param.address ? param.address.split(" ") : "",
-            detailAddress: param.detailAddress,
-            tareWeight: param.tareWeight,
-            weightDecimal: param.weightDecimal
-        });
+        console.log("param==", param)
         setselectRecord(param);
         setvisible(true);
         seteditType(type);
+        if (type === 2) {
+            await form.setFieldsValue({
+                companyId: "",
+                mobile: param.mobile,
+                nickname: param.nickname,
+                password: param.password,
+                roleId: "",
+                username: param.username,
+                oldPassword: param.oldPassword
+            });
+            return;
+        }
+        const roles = param.roles.map((item) => {
+            return item.id
+        })
+        const companyName = company.filter((item) => {
+            console.log(item)
+            return item.id === param.companyId
+        })
+        console.log(companyName)
+        await form.setFieldsValue({
+            companyId: param.companyId,
+            mobile: param.mobile,
+            nickname: param.nickname,
+            password: param.password,
+            roleId: roles,
+            username: param.username,
+            oldPassword: param.oldPassword
+        });
+
     };
     const onCancel = () => {
-        setselectRecord(false);
+        setselectRecord({});
         setvisible(false)
     }
+    /**
+     * 新增和编辑
+     * @param {*} param 
+     */
     const handleOk = async (param) => {
-        console.log("表单数据")
         const value = await form.validateFields();
         let data;
         if (editType == 2) {
             // 新增
             data = {
-                "abbr": value.abbr,
-                "address": selectId.join(","),
-                "companyId": 1,
-                "contactPhone": value.contactPhone,
-                "detailAddress": value.detailAddress,
-                "name": value.name,
-                "tareWeight": value.tareWeight,
-                "weightDecimal": value.weightDecimal
+                "companyId": value.companyId,
+                "mobile": value.mobile,
+                "nickname": value.nickname,
+                "roleId": value.roleId.join(","),
+                "username": value.username,
+                "password": value.password
             }
-        } else {
-            edit(value.address, addressData)
+        }
+        if (editType == 1) {
             data = {
-                "abbr": value.abbr,
-                "address": selectId.join(","),
-                "companyId": 1,
-                "contactPhone": value.contactPhone,
-                "detailAddress": value.detailAddress,
-                "name": value.name,
-                "tareWeight": value.tareWeight,
-                "weightDecimal": value.weightDecimal,
+                "companyId": value.companyId,
+                "mobile": value.mobile,
+                "nickname": value.nickname,
+                "roleId": value.roleId.join(","),
+                "username": value.username,
                 "id": selectRecord.id
             }
         }
 
-        fetch(requestUrl + `/api-basedata/customer/saveOrModify`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
-            .then((res) => { return res.json() })
-            .then((res) => {
+        if (editType == 3) {
+            data = {
+                "newPassword": value.newPassword,
+                "oldPassword": value.oldPassword,
+                "id": selectRecord.id
+            };
+            if (value.newPassword == value.oldPassword) {
+                message.warning("两次密码不能一致");
+                return;
+            }
+            resetPassword(data, (res) => {
                 setvisible(false)
                 if (res.code == 200) {
-                    getClothData(1, 10);
-                    editType == 2 ? message.success("添加成功！") : message.success("编辑成功！")
+                    message.success(res.msg);
+                    userListFn({ page: 1, size: 10 })
                     return;
                 }
-                editType == 2 ? message.error("添加失败！") : message.error("编辑失败！")
+                message.error(res.msg)
             })
+            return;
+        }
+        addAndEditUser(data, (res) => {
+            setvisible(false)
+            if (res.code == 200) {
+                editType == 2 ? message.success("添加成功！") : message.success("编辑成功！");
+                userListFn({ page: 1, size: 10 })
+                return;
+            }
+            editType == 2 ? message.error(res.msg) : message.error(res.msg)
+        })
     }
     const delect = (param) => {
         confirm({
@@ -107,133 +143,53 @@ function UserCenter() {
             okText: "确定",
             cancelText: "取消",
             onCancel() { },
-            onOk() { delectRequest(param.id); }
+            onOk() {
+                delectUser(param.id, (res) => {
+                    if (res.code == 200) {
+                        message.success("删除成功！");
+                        userListFn({ page: 1, size: 10 })
+                        return;
+                    }
+                    message.error("删除失败！")
+                });
+            }
         })
 
-    }
-    // 删除
-    const delectRequest = (id) => {
-        fetch(requestUrl + `/api-basedata/customer/delete?id=${id}`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code == 200) {
-                    message.success("删除成功！");
-                    getClothData(1, 10)
-                    return;
-                }
-                message.error("删除失败！")
-            })
     }
 
     // 禁用
     const disable = (param) => {
-        const usedStatus = param.usedStatus == 1 ? 2 : 1;
-        fetch(requestUrl + `/api-basedata/customer/modifyEnabled?id=${param.id}&enabled=${usedStatus}`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
+        const usedStatus = param.enabled ? false : true;
+        disbaleUser(param.id, usedStatus, (res) => {
+            if (res.code == 200) {
+                userListFn({ page: 1, size: 10 })
+                param.enabled ? message.success(res.msg) : message.success(res.msg);
+                return;
+            }
+            param.enabled ? message.error(res.msg) : message.success(res.msg);
         })
-            .then(res => { return res.json() })
-            .then((res) => {
-                if (res.code == 200) {
-                    getClothData(1, 10)
-                    param.usedStatus == 1 ? message.success("禁用成功！") : message.success("启用成功！");
-                    return;
-                }
-                param.usedStatus == 1 ? message.error("禁用失败！") : message.success("启用失败！");
-            })
     }
     // 获取用户列表
-    const getClothData = (params) => {
-        fetch(requestUrl + `/api-user/user/findAll`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(params)
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log("用户列表==", res)
-            })
-    }
-    // 选择地址
-    const onChange = (value) => {
-        edit(value, addressData)
-    }
-    // 获取地址
-    const getData = () => {
-        fetch(requestUrl + "/api-basedata/address/findAll", {
-            method: "GET",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then((res) => { return res.json() })
-            .then((res) => {
-                addressMap(res.data)
-                setaddressData(res.data)
-            })
-    }
-    // 整理地址信息
-    const addressMap = (data) => {
-        data.map((item) => {
-            item.value = item.name;
-            item.label = item.name;
-            if (item.subAddress) {
-                item.children = item.subAddress;
-                addressMap(item.children)
-            }
-        })
-        return data
-    }
-    // 编辑选中的地址信息
-    const edit = (selectAddr, addressData) => {
-        addressData.map((item) => {
-            if (selectAddr.indexOf(item.name) > -1) {
-                selectId.push(item.id);
-                if (item.children) {
-                    edit(selectAddr, item.children)
-                }
+    const userListFn = (params) => {
+        getUserList(params, (res) => {
+            if (res.code === 200) {
+                setloading(false);
+                setUserList([...res.data.records]);
+                setTotal(res.data.total);
+                setCurrent(res.data.current)
             }
         })
     }
+
     /**
-     * 获取公司数据
+     * 查询用户
+     * @param {*} value 
      */
-    const getCompany = () => {
-        fetch(requestUrl + "/api-user/user/findCompanyDown", {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-            }
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code === 200) {
-                    setCompany([...res.data])
-                }
-            })
-    }
-    const getRole = () => {
-        fetch(requestUrl + "/api-user/role/findAll", {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            }
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code === 200) {
-                    setRole([...res.data])
-                }
-            })
+    const searchUser = (value) => {
+        value.page = 1;
+        value.size = 10;
+        console.log("查询的字段==", value)
+        userListFn(value)
     }
     // 设置列表选中的class名称
     const setRowClassName = (record) => {
@@ -245,11 +201,11 @@ function UserCenter() {
     }
     const columns = [
         {
-            title: '用户名',
+            title: '姓名',
             dataIndex: 'nickname',
         },
         {
-            title: '姓名',
+            title: '用户名',
             dataIndex: 'username',
         },
         {
@@ -258,23 +214,21 @@ function UserCenter() {
         },
         {
             title: '角色',
-            dataIndex: 'roleId',
+            dataIndex: 'roles',
+            render: (role) => {
+                const roles = role.map((item) => { return item.name })
+                return <span>{roles.join(",")}</span>
+            }
         },
         {
             title: '手机号',
             dataIndex: 'mobile',
         },
-        {
-            title: '最后登录',
-            dataIndex: 'weightDecimal',
-        },
-        {
-            title: '访问次数',
-            dataIndex: 'address',
-        },
+
         {
             title: '加入时间',
-            dataIndex: 'detailAddress',
+            dataIndex: 'createTime',
+            render: (time) => (<span>{onlyFormat(time, true)}</span>)
         },
         {
             title: '操作',
@@ -284,7 +238,8 @@ function UserCenter() {
                 return <div className="tag-content">
                     <span onClick={() => { modalClick(record, 1) }}>编辑</span>
                     <span onClick={() => { delect(record) }}>删除</span>
-                    <span onClick={() => { disable(record) }}>{record.usedStatus == 1 ? "禁用" : "启用"} </span>
+                    <span onClick={() => { modalClick(record, 3) }}>重置密码</span>
+                    <span onClick={() => { disable(record) }}>{record.enabled ? "禁用" : "启用"} </span>
                 </div>
             },
         },
@@ -296,9 +251,9 @@ function UserCenter() {
         onChange: (page, pageSize) => {
             setCurrent(page);
             setSize(pageSize);
-            getClothData(page, pageSize);
+            userListFn({ page: page, size: pageSize })
         },
-        showSizeChanger: true,
+        showSizeChanger: false,
         showTotal: () => (`共${total}条`)
     }
     return <div className="right-container user-center">
@@ -312,14 +267,11 @@ function UserCenter() {
         <div className="search-content">
             <Form
                 form={form}
-                // onFinish={onFinish}
-                initialValues={{
-                    // type: type
-                }}
+                onFinish={searchUser}
             >
                 <Row gutter={24}>
                     <Form.Item
-                        name="type"
+                        name="username"
                         label="用户名"
                         className="col2"
                     >
@@ -330,9 +282,9 @@ function UserCenter() {
                         label="公司名称"
                         className="col2"
                     >
-                        <Select style={{ width: "175px" }} onFocus={getCompany}>
+                        <Select style={{ width: "175px" }}>
                             {
-                                company.map((item) => (<Option value={item.name}>{item.name}</Option>))
+                                company.map((item) => (<Option value={item.id}>{item.name}</Option>))
                             }
                         </Select>
                     </Form.Item>
@@ -341,9 +293,9 @@ function UserCenter() {
                         label="角色"
                         className="col2"
                     >
-                        <Select style={{ width: "175px" }} onFocus={getRole}>
+                        <Select style={{ width: "175px" }} >
                             {
-                                role.map((item) => (<Option value={item.roleId}>{item.name}</Option>))
+                                role.map((item) => (<Option value={item.id}>{item.name}</Option>))
                             }
                         </Select>
                     </Form.Item>
@@ -366,10 +318,9 @@ function UserCenter() {
         <Table
             loading={loading}
             columns={columns}
-            dataSource={data}
+            dataSource={userList}
             rowKey={record => record.id}
             pagination={pagination}
-
             rowClassName={(record) => {
                 return setRowClassName(record)
             }}
@@ -401,35 +352,46 @@ function UserCenter() {
                 form={form}
                 layout="horizontal"
                 name="form_in_modal"
-                onFinish={handleOk}
                 preserve={false}
             >
-                <Form.Item label="名称" name="name" rules={[{ required: true, message: '请输入名称!' }]}>
-                    <Input placeholder="名称" />
-                </Form.Item>
-                <Form.Item label="简称" name="abbr" rules={[{ required: true, message: '请输入简称!' }]}>
-                    <Input placeholder="简称" />
-                </Form.Item>
-                <Form.Item label="电话" name="contactPhone" rules={[{ required: true, message: '请输入电话!' }]}>
-                    <Input placeholder="电话" />
-                </Form.Item>
-                <Form.Item label="地址" name="address" rules={[{ required: true, message: '请输入地址!' }]}>
-
-                    <Cascader
-                        options={addressData}
-                        onChange={onChange}
-                        placeholder="公司地址"
-                    />
-                </Form.Item>
-                <Form.Item label="详细地址" name="detailAddress" rules={[{ required: true, message: '请输入详细地址!' }]}>
-                    <Input placeholder="详细地址" />
-                </Form.Item>
-                <Form.Item label="重量" name="tareWeight" rules={[{ required: true, message: '请输入重量!' }]}>
-                    <Input placeholder="重量" />
-                </Form.Item>
-                <Form.Item label="小数位" name="weightDecimal" rules={[{ required: true, message: '请输入小数位!' }]}>
-                    <Input placeholder="小数位" />
-                </Form.Item>
+                {
+                    (editType === 2 || editType === 1) && <><Form.Item label="用户名" name="username" rules={[{ required: true, message: '请输入用户名!' }]}>
+                        <Input />
+                    </Form.Item>
+                        <Form.Item label="昵称" name="nickname" >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item label="公司" name="companyId" >
+                            <Select>
+                                {
+                                    company.map((item) => (<Option value={item.id}>{item.name}</Option>))
+                                }
+                            </Select>
+                        </Form.Item>
+                        <Form.Item label="角色" name="roleId" >
+                            <Select mode="multiple">
+                                {
+                                    role.map((item) => (<Option value={item.id}>{item.name}</Option>))
+                                }
+                            </Select>
+                        </Form.Item></>
+                }
+                {editType === 2 && <Form.Item label="密码" name="password" >
+                    <Input />
+                </Form.Item>}
+                {(editType === 2 || editType === 1) && <Form.Item label="手机号码" name="mobile" >
+                    <Input />
+                </Form.Item>}
+                {
+                    editType === 3 && <>
+                        <Form.Item label="旧密码" name="oldPassword" rules={[{ required: true, message: '请输入密码!' }]}>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item label="新密码" name="newPassword" rules={[{ required: true, message: '请输入新密码!' }]}>
+                            <Input />
+                        </Form.Item>
+                    </>
+                }
             </Form>
         </Modal>
     </div>

@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-17 22:53:41
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-24 16:06:23
+ * @LastEditTime: 2021-06-27 21:00:50
  * @FilePath: \cloud-admin\src\actons\action.js
  * @Description: 
  */
@@ -210,7 +210,7 @@ export const createOrder = (params) => (dispatch) => {
         dispatch({
             type: CREATE_ORDER,
             payload: {
-                code:600
+                code: 600
             }
         })
         return;
@@ -222,7 +222,7 @@ export const createOrder = (params) => (dispatch) => {
         dispatch({
             type: CREATE_ORDER,
             payload: {
-                code:600
+                code: 600
             }
         })
         return;
@@ -258,3 +258,4 @@ export const createOrder = (params) => (dispatch) => {
             }
         })
 }
+
