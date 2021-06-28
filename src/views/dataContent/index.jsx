@@ -1,28 +1,12 @@
 import React from "react"
 import { withRouter } from "react-router-dom"
 import { Statistic, Table } from "antd";
-import { Chart, Path, Interval, Tooltip } from 'bizcharts';
+// import { Chart, Path, Interval, Tooltip } from 'bizcharts';
+import Charts from "./monthOutStock"
 import "./index.css";
 function DataContent(props) {
+    document.title = "首页"
     console.log(props)
-    const data = [
-        { price: 1, year: 1965 },
-        { price: 1.05, year: 1966 },
-        { price: 1.1, year: 1967 },
-        { price: 1.12, year: 1968 },
-        { price: 1.15, year: 1969 },
-        { price: 1.19, year: 1970 },
-        { price: 1.14, year: 1971 },
-        { price: 1, year: 1972 },
-        { price: 0.96, year: 1973 },
-        { price: 0.92, year: 1974 },
-        { price: 0.88, year: 1975 },
-        { price: 0.87, year: 1976 },
-        { price: 0.89, year: 1977 },
-        { price: 1, year: 1978 },
-        { price: 1.1, year: 1979 },
-    ];
-
     const scale = {
         price: {
             min: 0,
@@ -58,77 +42,75 @@ function DataContent(props) {
             title: "状态"
         }
     ]
-    return <div className="right-container" style={{background:"transparent"}}>
+    return <div className="right-container" style={{ background: "transparent" }}>
         <div className="home" >
             <div className="basic-head">
                 <div className="basic-item">
-                    <Statistic title="当月产量" value={1000} />
-                    <div className="scale" style={{ height: "100px" }}>
-                        <span>周环比67%</span>
-                        <span>日环比 0%</span>
+                    <div className="center">
+                        <Statistic title="当月产量" value={1000} />
+                        <div className="scale" style={{ height: "100px" }}>
+                            <span>周环比67%</span>
+                            <span>日环比 0%</span>
+                        </div>
                     </div>
                     <div className="yesterday-output">
                         昨日产量：0
                     </div>
                 </div>
                 <div className="basic-item">
-                    <Statistic title="当月出布" value={117} />
-                    <div className="scale">
-                        <Chart height={100} autoFit data={data} scale={scale}>
-                            <Path
-                                animate={{
-                                    appear: {
-                                        animation: 'path-in',
-                                        duration: 1000,
-                                        easing: 'easeLinear',
-                                    }
-                                }}
-                                shape="smooth"
-                                position="year*price"
-                            />
-                        </Chart>
+                    <div className="center">
+                        <Statistic title="当月出布" value={117} />
+                        <div className="scale">
+                            <Charts />
+                        </div>
                     </div>
                     <div className="yesterday-output">
                         昨日出布：0
                     </div>
                 </div>
                 <div className="basic-item">
-                    <Statistic title="开机效率" value="未接入MES" />
-                    <div className="scale">
-                        <Chart height={100} autoFit data={[
-                            { year: '1951 年', sales: 100 },
-                            { year: '1952 年', sales: 52 },
-                            { year: '1956 年', sales: 61 },
-                            { year: '1957 年', sales: 45 },
-                            { year: '1958 年', sales: 48 },
-                            { year: '1959 年', sales: 38 },
-                            { year: '1960 年', sales: 38 },
-                            { year: '1962 年', sales: 38 },
-                        ]} >
-                            <Interval position="year*sales" />
-                            <Tooltip shared />
-                        </Chart>
+                    <div className="center">
+                        <Statistic title="开机效率" value="未接入MES" />
+                        <div className="scale">
+                            {/* <Chart height={100} autoFit data={[
+                                { year: '1951 年', sales: 100 },
+                                { year: '1952 年', sales: 52 },
+                                { year: '1956 年', sales: 61 },
+                                { year: '1957 年', sales: 45 },
+                                { year: '1958 年', sales: 48 },
+                                { year: '1959 年', sales: 38 },
+                                { year: '1960 年', sales: 38 },
+                                { year: '1962 年', sales: 38 },
+                            ]} >
+                                <Interval position="year*sales" />
+                                <Tooltip shared />
+                            </Chart> */}
+                        </div>
+
                     </div>
                     <div className="yesterday-output">
                         班次效率 - 停机时长 -
                     </div>
                 </div>
                 <div className="basic-item">
-                    <Statistic title="坯布库存" value="124,105.82" />
-                    <div className="scale">
-                        <Chart height={100} autoFit data={[
-                            { year: '1951 年', sales: 100 },
-                            { year: '1952 年', sales: 52 },
-                            { year: '1956 年', sales: 61 },
-                            { year: '1957 年', sales: 45 },
-                            { year: '1958 年', sales: 48 },
-                            { year: '1959 年', sales: 38 },
-                            { year: '1960 年', sales: 38 },
-                            { year: '1962 年', sales: 38 },
-                        ]} >
-                            <Interval position="year*sales" />
-                            <Tooltip shared />
-                        </Chart>
+                    <div className="center">
+                        <Statistic title="坯布库存" value="124,105.82" />
+                        <div className="scale">
+                            {/* <Chart height={100} autoFit data={[
+                                { year: '1951 年', sales: 100 },
+                                { year: '1952 年', sales: 52 },
+                                { year: '1956 年', sales: 61 },
+                                { year: '1957 年', sales: 45 },
+                                { year: '1958 年', sales: 48 },
+                                { year: '1959 年', sales: 38 },
+                                { year: '1960 年', sales: 38 },
+                                { year: '1962 年', sales: 38 },
+                            ]} >
+                                <Interval position="year*sales" />
+                                <Tooltip shared />
+                            </Chart> */}
+                        </div>
+
                     </div>
                     <div className="yesterday-output">
                         织厂100000703 1,732 条 43,986.42 kg
@@ -139,7 +121,7 @@ function DataContent(props) {
                 <div className="left">
                     订单列表
                     <Table
-                    className="order-list"
+                        className="order-list"
                         columns={columns}
                         dataSource={[]}
                     />

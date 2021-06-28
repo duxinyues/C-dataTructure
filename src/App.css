@@ -108,3 +108,7 @@ input {
     height: 26px;
     line-height: 26px;
 }
+
+.loom .ant-modal-footer {
+    justify-content: flex-end !important;
+}

@@ -174,9 +174,13 @@ function UserCenter() {
         getUserList(params, (res) => {
             if (res.code === 200) {
                 setloading(false);
-                setUserList([...res.data.records]);
+
                 setTotal(res.data.total);
-                setCurrent(res.data.current)
+                setCurrent(res.data.current);
+                if (res.data.records.length === 0) {
+                    message.warning("该用户不存在！")
+                }
+                setUserList([...res.data.records]);
             }
         })
     }
@@ -210,7 +214,7 @@ function UserCenter() {
         },
         {
             title: '公司名称',
-            dataIndex: 'companyId',
+            dataIndex: 'companyName',
         },
         {
             title: '角色',

@@ -1,3 +1,12 @@
+/*
+ * @Author: 1638877065@qq.com
+ * @Date: 2021-05-27 13:49:51
+ * @LastEditTime: 2021-06-28 19:36:10
+ * @LastEditors: 1638877065@qq.com
+ * @Description: 供应商
+ * @FilePath: \cloud-admin\src\views\basicData\supplier\index.jsx
+ * 
+ */
 import { useState, useEffect } from "react";
 import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader, Tag } from "antd";
 import { requestUrl, onlyFormat } from "../../../utils/config";
@@ -29,7 +38,6 @@ function Supplier() {
     }, [])
 
     const modalClick = (param, type) => {
-        console.log("选中的数据==", param);
         form.setFieldsValue({
             name: param.name,
             abbr: param.abbr,
@@ -46,15 +54,15 @@ function Supplier() {
     }
     const handleOk = async (param) => {
         const value = await form.validateFields();
+        console.log(value)
         let data;
         if (editType == 2) {
             // 新增
             data = {
                 "abbr": value.abbr,
                 "address": selectId.join(","),
-                "companyId": 1,
                 "name": value.name,
-                "contactPhone": value.contactPhone,
+                "contactInfo": value.contactInfo,
                 "detailAddress": value.detailAddress,
             }
         } else {
@@ -62,14 +70,12 @@ function Supplier() {
             data = {
                 "abbr": value.abbr,
                 "address": selectId.join(","),
-                "companyId": 1,
                 "name": value.name,
-                "contactPhone": value.contactPhone,
+                "contactInfo": value.contactInfo,
                 "detailAddress": value.detailAddress,
                 "id": selectRecord.id
             }
         }
-        console.log("选中数据", data)
         fetch(requestUrl + `/api-basedata/supplier/saveOrModify`, {
             method: "POST",
             headers: {
@@ -84,15 +90,15 @@ function Supplier() {
                 setvisible(false)
                 if (res.code == 200) {
                     getClothData(1, 10);
-                    editType == 2 ? message.success("添加成功！") : message.success("编辑成功！")
+                    message.success("保存成功")
                     return;
                 }
-                editType == 2 ? message.error("添加失败！") : message.error("编辑失败！")
+               message.error("保存失败")
             })
     }
     const delect = (param) => {
         confirm({
-            title: "确定要删除该供应商吗？",
+            title: "确认删除？",
             okText: "确定",
             cancelText: "取消",
             onCancel() { },
@@ -137,7 +143,7 @@ function Supplier() {
             })
     }
     const getClothData = (page, size) => {
-        fetch(requestUrl + `/api-basedata/supplier/findAll?companyId=1&page=${page}&size=${size}`, {
+        fetch(requestUrl + `/api-basedata/supplier/findAll?page=${page}&size=${size}`, {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token")
@@ -202,46 +208,42 @@ function Supplier() {
     }
     const columns = [
         {
+            title: "#",
+            dataIndex: 'id',
+        },
+        {
             title: '编码',
             dataIndex: 'code',
-            key: 'code',
-            width: 100
         },
         {
             title: '公司名称',
             dataIndex: 'name',
-            key: 'name',
         },
         {
             title: '简称',
             dataIndex: 'abbr',
-            key: 'abbr',
         },
-        {
-            title: '联系号码',
-            dataIndex: 'contactPhone',
-            key: 'contactPhone',
-            width:200
-        },
+
         {
             title: '省市区',
             dataIndex: 'address',
-            key: 'address',
         },
         {
             title: '详细地址',
             dataIndex: 'detailAddress',
-            key: 'detailAddress',
+        },
+        {
+            title: '联系方式',
+            dataIndex: 'contactInfo',
+            width: 200
         },
         {
             title: '更新时间',
             dataIndex: 'updateTime',
-            key: 'updateTime',
-            render: (time) => (<span>{onlyFormat(time,true)}</span>)
+            render: (time) => (<span>{onlyFormat(time, true)}</span>)
         },
         {
             title: '操作',
-            key: 'tags',
             dataIndex: 'tags',
             render: (tags, record) => {
                 return <div className="tag-content">
@@ -279,8 +281,6 @@ function Supplier() {
             pagination={pagination}
             scroll={{
                 scrollToFirstRowOnChange: true,
-                x: 1200,
-                y: 600
             }}
             rowClassName={(record) => {
                 return setRowClassName(record)
@@ -297,7 +297,7 @@ function Supplier() {
             title={editType == 1 ? "编辑供应商" : "新建供应商"}
             visible={visible}
             footer={[
-                <span className="modalFooterBtn">{editType == 1 ? "保存编辑" : "保存并新增"}</span>,
+                <span className="modalFooterBtn">保存并新增</span>,
                 <Button key="submit" type="primary" onClick={handleOk} >
                     保存
                 </Button>,
@@ -306,7 +306,7 @@ function Supplier() {
                 </Button>
             ]}
             onCancel={onCancel}
-            className="customModal"
+            className="customModal loom"
         >
             <Form
                 {...layout}
@@ -319,26 +319,22 @@ function Supplier() {
                 <Form.Item label="名称" name="name" rules={[{ required: true, message: '请输入名称!' }]}>
                     <Input placeholder="名称" />
                 </Form.Item>
-                <Form.Item label="简称" name="abbr" rules={[{ required: true, message: '请输入简称!' }]}>
+                <Form.Item label="简称" name="abbr" >
                     <Input placeholder="简称" />
                 </Form.Item>
-                <Form.Item label="电话" name="contactPhone" rules={[{ required: true, message: '请输入电话!' }]}>
-                    <Input placeholder="电话" />
-                </Form.Item>
-                <Form.Item label="地址" name="address" rules={[{ required: true, message: '请输入地址!' }]}>
+                <Form.Item label="地址" name="address" >
                     <Cascader
                         options={addressData}
                         onChange={onChange}
                         placeholder="公司地址"
                     />
                 </Form.Item>
-                <Form.Item label="详细地址" name="detailAddress" rules={[{ required: true, message: '请输入详细地址!' }]}>
+                <Form.Item label="详细地址" name="detailAddress" >
                     <Input placeholder="详细地址" />
                 </Form.Item>
-                {/* <Form.Item>
-                    <Button type="primary" htmlType="submit" style={{ marginRight: "10px" }}>保存</Button>
-                    <Button type="primary" onClick={onCancel}>取消</Button>
-                </Form.Item> */}
+                <Form.Item label="联系方式" name="contactInfo">
+                    <Input placeholder="联系方式" />
+                </Form.Item>
             </Form>
         </Modal>
     </div>

@@ -1,3 +1,12 @@
+/*
+ * @Author: 1638877065@qq.com
+ * @Date: 2021-05-27 13:49:51
+ * @LastEditTime: 2021-06-28 19:48:15
+ * @LastEditors: 1638877065@qq.com
+ * @Description: 客户
+ * @FilePath: \cloud-admin\src\views\basicData\customer\index.jsx
+ * 
+ */
 import { useState, useEffect } from "react";
 import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader, Tag } from "antd";
 import { requestUrl, onlyFormat } from "../../../utils/config";
@@ -57,19 +66,19 @@ function CustomerData() {
                 "abbr": value.abbr,
                 "address": selectId.join(","),
                 "companyId": 1,
-                "contactPhone": value.contactPhone,
+                "contactInfo": value.contactInfo,
                 "detailAddress": value.detailAddress,
                 "name": value.name,
                 "tareWeight": value.tareWeight,
                 "weightDecimal": value.weightDecimal
             }
         } else {
-            edit(value.address,addressData)
+            edit(value.address, addressData)
             data = {
                 "abbr": value.abbr,
                 "address": selectId.join(","),
                 "companyId": 1,
-                "contactPhone": value.contactPhone,
+                "contactInfo": value.contactInfo,
                 "detailAddress": value.detailAddress,
                 "name": value.name,
                 "tareWeight": value.tareWeight,
@@ -91,15 +100,15 @@ function CustomerData() {
                 setvisible(false)
                 if (res.code == 200) {
                     getClothData(1, 10);
-                    editType == 2 ? message.success("添加成功！") : message.success("编辑成功！")
+                    message.success("保存成功")
                     return;
                 }
-                editType == 2 ? message.error("添加失败！") : message.error("编辑失败！")
+                message.success("保存失败")
             })
     }
     const delect = (param) => {
         confirm({
-            title: "确定要删除该客户？",
+            title: "确认删除？",
             okText: "确定",
             cancelText: "取消",
             onCancel() { },
@@ -156,7 +165,7 @@ function CustomerData() {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log("客户列表==",res)
+                console.log("客户列表==", res)
                 if (res.code == 200) {
                     setloading(false)
                     setSize(res.data.size);
@@ -217,54 +226,45 @@ function CustomerData() {
     }
     const columns = [
         {
+            title: '#',
+            dataIndex: 'id',
+        },
+        {
             title: '编码',
             dataIndex: 'code',
-            key: 'code',
         },
         {
             title: '公司名称',
             dataIndex: 'name',
-            key: 'name',
         },
         {
             title: '简称',
             dataIndex: 'abbr',
-            key: 'abbr',
-        },
-        {
-            title: '联系号码',
-            dataIndex: 'contactPhone',
-            key: 'contactPhone',
-        },
-        {
-            title: '加重',
-            dataIndex: 'tareWeight',
-            key: 'tareWeight',
-        },
-        {
+        }, {
             title: '小数位',
             dataIndex: 'weightDecimal',
-            key: 'weightDecimal',
-        },
-        {
+        }, {
+            title: '加重',
+            dataIndex: 'tareWeight',
+        }, {
             title: '省市区',
             dataIndex: 'address',
-            key: 'address',
+            width: 200,
         },
         {
             title: '详细地址',
             dataIndex: 'detailAddress',
-            key: 'detailAddress',
-        },
-        {
+        }, {
+            title: '联系方式',
+            dataIndex: 'contactInfo',
+        }, {
             title: '更新时间',
             dataIndex: 'updateTime',
-            key: 'updateTime',
-            render: (time) => (<span>{onlyFormat(time,true)}</span>)
+            width: 200,
+            render: (time) => (<span>{onlyFormat(time, true)}</span>)
         },
         {
             title: '操作',
-            key: 'tags',
             dataIndex: 'tags',
             width: 200,
             render: (tags, record) => {
@@ -302,11 +302,6 @@ function CustomerData() {
             dataSource={data}
             rowKey={record => record.id}
             pagination={pagination}
-            scroll={{
-                scrollToFirstRowOnChange: true,
-                x: 1200,
-                y: 600
-            }}
             rowClassName={(record) => {
                 return setRowClassName(record)
             }}
@@ -317,12 +312,12 @@ function CustomerData() {
             }}
         />
         <Modal
-            className="customModal"
+            className="customModal loom"
             destroyOnClose={true}
-            title={editType == 1 ? "编辑客户" : "新建供应商"}
+            title={editType == 1 ? "编辑客户" : "新建客户"}
             visible={visible}
             footer={[
-                <span className="modalFooterBtn">{editType == 1 ? "保存编辑" : "保存并新增"}</span>,
+                <span className="modalFooterBtn">保存并新增</span>,
                 <Button key="submit" type="primary" onClick={handleOk} >
                     保存
                 </Button>,
@@ -343,27 +338,26 @@ function CustomerData() {
                 <Form.Item label="名称" name="name" rules={[{ required: true, message: '请输入名称!' }]}>
                     <Input placeholder="名称" />
                 </Form.Item>
-                <Form.Item label="简称" name="abbr" rules={[{ required: true, message: '请输入简称!' }]}>
+                <Form.Item label="简称" name="abbr">
                     <Input placeholder="简称" />
                 </Form.Item>
-                <Form.Item label="电话" name="contactPhone" rules={[{ required: true, message: '请输入电话!' }]}>
-                    <Input placeholder="电话" />
-                </Form.Item>
-                <Form.Item label="地址" name="address" rules={[{ required: true, message: '请输入地址!' }]}>
-
+                <Form.Item label="地址" name="address" >
                     <Cascader
                         options={addressData}
                         onChange={onChange}
                         placeholder="公司地址"
                     />
                 </Form.Item>
-                <Form.Item label="详细地址" name="detailAddress" rules={[{ required: true, message: '请输入详细地址!' }]}>
+                <Form.Item label="详细地址" name="detailAddress" >
                     <Input placeholder="详细地址" />
                 </Form.Item>
-                <Form.Item label="重量" name="tareWeight" rules={[{ required: true, message: '请输入重量!' }]}>
+                <Form.Item label="联系方式" name="contactInfo" >
+                    <Input placeholder="联系方式" />
+                </Form.Item>
+                <Form.Item label="重量" name="tareWeight" >
                     <Input placeholder="重量" />
                 </Form.Item>
-                <Form.Item label="小数位" name="weightDecimal" rules={[{ required: true, message: '请输入小数位!' }]}>
+                <Form.Item label="小数位" name="weightDecimal">
                     <Input placeholder="小数位" />
                 </Form.Item>
             </Form>

@@ -31,7 +31,7 @@ function ClothRecord() {
         setvisible(false)
     }
     const handleOk = async (param) => {
-      const value =  await form.validateFields()
+        const value = await form.validateFields()
         let data;
         if (editType == 2) {
             data = {
@@ -58,15 +58,15 @@ function ClothRecord() {
                 setvisible(false)
                 if (res.code == 200) {
                     getClothData(1, 10);
-                    editType == 2 ? message.success("添加成功！") : message.success("编辑成功！")
+                    message.success("保存成功！")
                     return;
                 }
-                editType == 2 ? message.error(res.msg) : message.error("编辑失败！")
+                message.success("保存失败")
             })
     }
     const delectClothRecord = (param) => {
         confirm({
-            title: "确定要删除该记录？",
+            title: "确认删除？",
             okText: "确定",
             cancelText: "取消",
             onCancel() { },
@@ -152,7 +152,7 @@ function ClothRecord() {
             title: '更新时间',
             dataIndex: 'updateTime',
             key: 'updateTime',
-            render: (time) => (<span>{onlyFormat(time,true)}</span>)
+            render: (time) => (<span>{onlyFormat(time, true)}</span>)
         },
         {
             title: '操作',
@@ -192,11 +192,6 @@ function ClothRecord() {
             dataSource={clothData}
             rowKey={record => record.id}
             pagination={pagination}
-            scroll={{
-                scrollToFirstRowOnChange: true,
-                x: 1200,
-                y: 600
-            }}
             rowClassName={(record) => {
                 return setRowClassName(record)
             }}
@@ -208,7 +203,7 @@ function ClothRecord() {
         />
 
         <Modal
-            className="customModal"
+            className="customModal loom"
             destroyOnClose
             title={editType == 1 ? "编辑查布记录" : "新建查布记录"}
             visible={visible}

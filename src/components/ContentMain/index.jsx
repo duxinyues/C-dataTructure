@@ -9,7 +9,7 @@ class ContentMain extends Component {
         return (
             <div className="routeWrap">
                 <Switch>
-                    <Route exact path="/" render={() => <Redirect to="/dataCount" push />} />
+                    <Route exact path="/" render={() => <Redirect to="/home" push />} />
                     {
                         routes.map((item,key) => {
                             return (

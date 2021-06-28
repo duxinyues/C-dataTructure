@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { Col, Row, Input, Tabs, Table } from "antd";
 import { newOrderType, requestUrl, onlyFormat } from "../../../utils/config";
+import { getBarCodes } from "../../../api/apiModule"
 const { TabPane } = Tabs;
 function OrderDetail(props) {
     document.title = "订单管理";
@@ -11,24 +12,19 @@ function OrderDetail(props) {
         return item.yarnBrandBatch;
     }) : []
     useEffect(() => {
-        if(props.orderData){
+        if (props.orderData) {
             setyarnInfoData(props.orderData.orderYarnInfos);
-            getBarCodes();
-        }
-    }, [props.orderData])
-    const getBarCodes = () => {
-        fetch(requestUrl + "/api-production/order/findLoomDetailByOrderId?id=" + props.orderData.id + "&yarnBatch=" + yarnBrandBatch.join(","), {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
+            getBarCodes(props.orderData.id,yarnBrandBatch.join(","),(res) => {
+                if (res.data.length === 0) {
+                    setloomData([]);
+                    setbarCode([]);
+                    return;
+                }
                 setloomData(res.data);
                 setbarCode(res.data[0].barcodes)
-            })
-    }
-
+            });
+        }
+    }, [props.orderData])
     return <React.Fragment>
         <div className="detail-title">
             标题

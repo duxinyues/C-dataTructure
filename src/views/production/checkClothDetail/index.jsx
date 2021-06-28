@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { PageHeader, Button, Table, Form, Input, Row, DatePicker, Select, Col } from "antd";
-import { checkClothDetail, getPerson } from "../../../api/apiModule"
+import { checkClothDetail, getPerson, getLoom } from "../../../api/apiModule"
 import "../productionSchedule/style.css"
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -14,9 +14,10 @@ function ProductionSchedule() {
     const columns = [
         { title: "条码", dataIndex: "barcode" },
         { title: "查布日期", dataIndex: "id" },
-        { title: "班次", dataIndex: "shift" },
-        { title: "查布员", dataIndex: "qcId" },
-        { title: "机号", dataIndex: "loomId" },
+        { title: "班次", dataIndex: "shift", render: (param) => (<span>{param === 1 ? "白班" : "晚班"}</span>) },
+        { title: "查布员", dataIndex: "qcName" },
+        { title: "值机工", dataIndex: "weaverName" },
+        { title: "机号", dataIndex: "loomCode" },
         { title: "匹号", dataIndex: "seq" },
         { title: "入库重量", dataIndex: "weight" },
         { title: "查布记录", dataIndex: "flawInfo" },
@@ -27,7 +28,8 @@ function ProductionSchedule() {
         { title: "用料信息", dataIndex: "yarnInfo" }
     ]
     const [checkClothData, setcheckClothData] = useState([]);
-    const [runMachinePerson, setrunMachinePerson] = useState([])
+    const [runMachinePerson, setrunMachinePerson] = useState([]);
+    const [loom, setloom] = useState([])
     useEffect(() => {
         listData({ page: 1, size: 10 });
         getPerson((res) => {
@@ -41,6 +43,9 @@ function ProductionSchedule() {
                 setcheckClothData(_checkClothData);
                 setrunMachinePerson(_runMachinePerson);
             }
+        })
+        getLoom((res) => {
+            setloom([...res.data])
         })
     }, [])
     const onFinish = (value) => {
@@ -100,7 +105,7 @@ function ProductionSchedule() {
                             >
                                 <Select>
                                     {
-                                        checkClothData.map((item) => (<Option>{item.name}</Option>))
+                                        checkClothData.map((item) => (<Option value={item.id}>{item.name}</Option>))
                                     }
                                 </Select>
                             </Form.Item>
@@ -108,7 +113,11 @@ function ProductionSchedule() {
                                 name="weaverId"
                                 label="值机工"
                             >
-                                <Input />
+                                <Select>
+                                    {
+                                        runMachinePerson.map((item) => (<Option value={item.id}>{item.name}</Option>))
+                                    }
+                                </Select>
                             </Form.Item>
                             <Form.Item >
                                 <Button type="primary" htmlType="submit">
@@ -130,7 +139,8 @@ function ProductionSchedule() {
                                 label="班次"
                             >
                                 <Select >
-
+                                    <Option value="1">白班</Option>
+                                    <Option value="2">晚班</Option>
                                 </Select>
                             </Form.Item>
                             <Form.Item
@@ -145,7 +155,11 @@ function ProductionSchedule() {
                                 name="loomId"
                                 label="机号"
                             >
-                                <Input />
+                                <Select>
+                                    {
+                                        loom.map((item) => (<Option value={item.id}>{item.code}</Option>))
+                                    }
+                                </Select>
                             </Form.Item>
                             <Form.Item
                                 name="fabricType"

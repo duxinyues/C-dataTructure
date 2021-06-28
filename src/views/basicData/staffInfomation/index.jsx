@@ -53,8 +53,8 @@ function StaffInfo() {
     const handleOk = async (param) => {
         const value = await form.validateFields();
         let data;
-        console.log("手机==",value)
-        if (!checkPhone(value.mobilePhoneNo)) {
+        console.log("手机==", value)
+        if (value.mobilePhoneNo && !checkPhone(value.mobilePhoneNo)) {
             message.error("请输入正确的手机号码！");
             return;
         }
@@ -89,11 +89,11 @@ function StaffInfo() {
             .then(res => {
                 setvisible(false)
                 if (res.code === 200) {
-                    editType === 1 ? message.success("修改成功！") : message.success("添加成功！");
+                    message.success("保存成功")
                     getPerson(1, 10);
                     return;
                 }
-                editType === 1 ? message.error("修改失败！") : message.error(res.msg);
+                message.success("保存失败")
             })
     }
     const onCancel = () => {
@@ -114,7 +114,7 @@ function StaffInfo() {
     // 删除员工
     const delect = (param) => {
         confirm({
-            title: '确定删除该员工信息吗？',
+            title: '确认删除？',
             okText: "确定",
             cancelText: "取消",
             onOk() {
@@ -185,11 +185,6 @@ function StaffInfo() {
             dataIndex: 'position',
             key: 'position',
             render: (index) => (<span>{positionArr[index - 1]}</span>)
-        },
-        {
-            title: '考勤ID',
-            dataIndex: 'companyId',
-            key: 'companyId',
         },
         {
             title: '手机号',
@@ -280,7 +275,7 @@ function StaffInfo() {
                 <Form.Item label="工号" name="code" rules={[{ required: true, message: "请输入工号" }]}>
                     <Input placeholder="工号" />
                 </Form.Item>
-                <Form.Item label="职位" name="position">
+                <Form.Item label="职位" name="position" rules={[{ required: true, message: "请选择职位" }]}>
                     <Select
                         placeholder="选择职位"
                         onChange={onGenderChange}

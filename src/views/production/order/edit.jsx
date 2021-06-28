@@ -171,18 +171,13 @@ let EditOrder = (props) => {
             })
     }
     const onAddCloth = (params) => {
-        console.log("编辑用料==", params)
         _createOrderParam.orderYarnInfos = params;
         props.editOrder(_createOrderParam);
     }
 
     const editCode = (params) => {
-        console.log("编辑条码==", params)
         const _barcode = barCode;
         _barcode.barcodes = params
-        loomData.map((item) => {
-            item.id = _barcode.id
-        })
         _createOrderParam.orderLooms = loomData;
         props.editOrder(_createOrderParam);
     }

@@ -1,3 +1,12 @@
+/*
+ * @Author: 1638877065@qq.com
+ * @Date: 2021-05-27 13:49:51
+ * @LastEditTime: 2021-06-28 20:15:27
+ * @LastEditors: 1638877065@qq.com
+ * @Description: 公司信息
+ * @FilePath: \cloud-admin\src\views\basicData\companyInfomation\index.jsx
+ * 
+ */
 import { PageHeader, Input, Form, Button, Cascader, message } from "antd";
 import { useState, useEffect } from "react";
 import { requestUrl } from "../../../utils/config"
@@ -51,10 +60,10 @@ function CompanyInfo() {
             .then((res) => {
                 if (res.code == 200) {
                     getCompanyData();
-                    message.success("编辑成功！");
+                    message.success("保存成功")
                     return;
                 }
-                message.error("编辑失败！");
+                message.success("保存失败")
             })
     }
 
@@ -68,7 +77,7 @@ function CompanyInfo() {
             .then((res) => { return res.json() })
             .then((res) => {
                 console.log("地址信息", res)
-                addressMap(res.data)
+                // addressMap(res.data)
                 setaddressData(res.data)
             })
     }
@@ -97,7 +106,7 @@ function CompanyInfo() {
 
     }
     const getCompanyData = () => {
-        fetch(requestUrl + "/api-basedata/company/findById?id=1", {
+        fetch(requestUrl + "/api-basedata/company/findById", {
             method: "POST",
             headers: {
                 "Authorization": "bearer " + localStorage.getItem("access_token")
@@ -111,7 +120,7 @@ function CompanyInfo() {
                     form.setFieldsValue({
                         name: res.data.name,
                         abbr: res.data.abbr,
-                        address: res.data.address.split(" "),
+                        // address: res.data.address.split(" "),
                         contactAddress: res.data.contactAddress,
                         contactPhone: res.data.contactPhone,
                         remark: res.data.remark
@@ -139,7 +148,7 @@ function CompanyInfo() {
                     <Input value="盛泽" />
                 </Form.Item>
                 <Form.Item label="公司简介" name="remark">
-                    <TextArea rows={4} value="公司简介" />
+                    <Input.TextArea rows={4} autoSize />
                 </Form.Item>
                 <Form.Item
                     name="address"

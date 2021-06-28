@@ -5,6 +5,7 @@ import JsBarcode from 'jsbarcode';
 import { connect } from "react-redux";
 import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, getNowFormatDate } from "../../../utils/config";
 import { createOrder, clearOrderParams, createOrderParams } from "../../../actons/action";
+import { createOrders, getLoom } from "../../../api/apiModule"
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import EditOrder from "./edit";
@@ -65,6 +66,11 @@ function Order(props) {
             "page": 1,
             "size": 10,
             "billStatus": 1
+        });
+        getLoom((res) => {
+            if(res.code ===200){
+                setorderLoom([...res.data])
+            }
         })
     }, []);
 
@@ -104,10 +110,7 @@ function Order(props) {
             message.error("必须添加用料信息");
             return;
         }
-        if (!params.orderLooms || params.orderLooms.length === 0) {
-            message.error("必须添加机台信息");
-            return;
-        }
+       
         if (!params.weight) {
             message.error("请输入订单");
             return;
@@ -117,47 +120,28 @@ function Order(props) {
             message.error("请完善用料信息");
             return;
         }
-
-        const loomEmpty = params.orderLooms.some((item) => item.loomCode === "");
-        if (loomEmpty) {
-            message.error("请完善机台信息");
-            return;
-        }
+       
         // 删除多余的key值
         params.orderYarnInfos.map((item) => {
             delete item.key;
             return item;
         })
-        // 删除多余的key、loom
-        params.orderLooms.map((item) => {
-            delete item.loom;
-            delete item.key;
-            return item;
-        });
-        fetch(requestUrl + "/api-production/order/saveOrModify", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(params)
+       
+        createOrders(params, (res) => {
+            console.log(res)
+            if (res.code === 200) {
+                message.success(res.msg)
+                setheadType("detail");
+                getOrderList({
+                    "page": 1,
+                    "size": 10,
+                    "billStatus": 1
+                })
+            } else {
+                message.error("创建失败！")
+            }
+            setorderParams({});
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code === 200) {
-                    message.success(res.msg)
-                    setorderParams({});
-                    setheadType("detail");
-                    getOrderList({
-                        "page": 1,
-                        "size": 10,
-                        "billStatus": 1
-                    })
-                } else {
-                    message.error("创建失败！")
-                }
-            })
     }
     //取消创建订单组件
     const cancel = () => {
@@ -350,7 +334,6 @@ function Order(props) {
     }
     // 订单详情
     const getOrderDetail = (id) => {
-        getLoom(id);
         getClothBatch(id)
         fetch(requestUrl + "/api-production/order/findById?id=" + id, {
             headers: {
@@ -433,19 +416,19 @@ function Order(props) {
             })
     }
     // 机台
-    const getLoom = (orderId) => {
-        fetch(requestUrl + "/api-production/orderBarcode/loomDownList?orderId=" + orderId, {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            }
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code === 200) {
-                    setorderLoom(res.data)
-                }
-            })
-    }
+    // const getLoom = (orderId) => {
+    //     fetch(requestUrl + "/api-production/orderBarcode/loomDownList?orderId=" + orderId, {
+    //         headers: {
+    //             "Authorization": "bearer " + localStorage.getItem("access_token")
+    //         }
+    //     })
+    //         .then(res => { return res.json() })
+    //         .then(res => {
+    //             if (res.code === 200) {
+    //                 setorderLoom(res.data)
+    //             }
+    //         })
+    // }
     const changeClothLoom = (value) => {
         console.log(value)
         setselectClothLoom(value)
@@ -537,8 +520,8 @@ function Order(props) {
                         订单管理
                     </div>
                     <div className="custom-right">
-                        <Button key="1" type="primary" onClick={onSave}>保存</Button>,
-                        <Button key="2" onClick={cancel}>取消</Button>,
+                        <Button key="1" type="primary" onClick={onSave}>保存</Button>
+                        <Button key="2" onClick={cancel}>取消</Button>
                     </div>
                 </div>}
                 <div className="inventory-container">
@@ -635,7 +618,7 @@ function Order(props) {
                 <Form.Item label="机号" name="loomId" rules={[{ required: true, message: '请选择机台' }]}>
                     <Select onChange={changeClothLoom}>
                         {
-                            orderLoom.map((item, key) => (<Option value={item.loomId} key={key}>{item.loomCode}</Option>))
+                            orderLoom.map((item, key) => (<Option value={item.id} key={key}>{item.code}</Option>))
                         }
                     </Select>
                 </Form.Item>

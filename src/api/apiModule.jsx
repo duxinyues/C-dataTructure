@@ -107,6 +107,24 @@ export const getRoles = (callback) => {
             }
         })
 }
+/**
+ * 切换公司
+ * @param {*} companyId 
+ * @param {*} userId 
+ * @param {*} callback 
+ */
+export const switchConpany = (companyId, userId, callback) => {
+    fetch(requestUrl + "/api-user/user/modifyAdminCompany?companyId=" + companyId + "&id=" + userId, {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+        }
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
 
 /**
  *  获取下拉框公司数据
@@ -194,6 +212,122 @@ export const getPerson = (callback) => {
     })
         .then((res) => { return res.json() })
         .then((res) => {
+            callback(res)
+        })
+}
+/**
+ * 下拉框机台数据
+ * @param {*} callback 
+ */
+export const getLoom = (callback) => {
+    fetch(requestUrl + "/api-production/order/getLoomDownList", {
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+        }
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+
+/**
+ * 创建订单
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const createOrders = (params, callback) => {
+    fetch(requestUrl + "/api-production/order/saveOrModify", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+/**
+ * 获取订单条码
+ */
+export const getBarCodes = (orderId, yarnBrandBatch, callback) => {
+    fetch(requestUrl + "/api-production/order/findLoomDetailByOrderId?id=" + orderId + "&yarnBatch=" + yarnBrandBatch, {
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        },
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+
+/**
+ * 获取用户信息
+ * @param {*} callback 
+ */
+export const getUserInfo = (callback) => {
+    fetch(requestUrl + "/api-user/user/findById", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        },
+    }).then(res => {
+        return res.json()
+    }).then((res) => {
+        callback(res)
+    }).catch((err) => { })
+}
+
+/**
+ * 新增、修改机台
+ */
+
+export const addAndEditLoom = (params, callback) => {
+    fetch(requestUrl + "/api-basedata/loom/saveOrModify", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then((res) => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+/**
+ * 机台禁用、启用
+ * @param {*} id 
+ * @param {*} status 
+ * @param {*} callback 
+ */
+export const disableLoom = (id, status, callback) => {
+    fetch(requestUrl + `/api-basedata/loom/modifyEnabled?id=${id}&enabled=${status}`, {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        },
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+
+export const delectLoom = (id, callback) => {
+    fetch(requestUrl + "/api-basedata/loom/delete?id=" + id, {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        },
+    })
+        .then(res => { return res.json() })
+        .then(res => {
             callback(res)
         })
 }

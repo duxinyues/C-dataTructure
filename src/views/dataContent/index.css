@@ -19,9 +19,16 @@
     border-radius: 10px;
 }
 
-.basic-item .scale {
+.basic-item .center {
+    border: 1px solid blue;
+    height: 150px;
     border-bottom: 1px solid #999;
     padding-bottom: 10px;
+}
+
+.basic-item .scale {
+    height: 85px;
+    border: 1px solid green;
 }
 
 .basic-table {
@@ -59,4 +66,8 @@
 
 .to-do {
     margin-top: 10px;
+}
+
+.yesterday-output {
+    border: 1px solid red;
 }

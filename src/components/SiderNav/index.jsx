@@ -1,31 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import { connect } from "react-redux";
 import { requestUrl } from "../../utils/config";
 import { USER_INFO } from "../../actons/type";
+import {getUserInfo} from "../../api/apiModule"
 import './index.css';
 import logo from "../../assets/img/logo1.png";
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 function SiderNav(props) {
+    const history = useHistory()
     const [collapsed, setcollapsed] = useState(false);
     const [menus, setmenus] = useState([]);
     const [openKeys, setOpenKeys] = useState([]);
     useEffect(() => {
-        fetch(requestUrl + "/api-user/user/findById?id=1", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        }).then(res => {
-            return res.json()
-        }).then((res) => {
+        getUserInfo((res)=>{
             if (res.code == 200) {
                 setmenus(res.data.menus);
                 props.userData(res.data)
             }
-        }).catch((err) => { })
+        })
     }, [])
     const renderMenus = (menu, key) => {
         if (menu.children) {
@@ -56,6 +51,9 @@ function SiderNav(props) {
     const onOpenChange = (keys) => {
         setOpenKeys([keys.pop()]);
     }
+    const goHome = () => {
+        history.push("/home")
+    }
     return (
         <Sider
             width="208"
@@ -67,10 +65,8 @@ function SiderNav(props) {
                 console.log(broken);
             }}
         >
-            <div className="logo" ><img src={logo} alt="" style={{ width: "100%" }} /></div>
+            <div className="logo" onClick={goHome} ><img src={logo} alt="" style={{ width: "100%" }} /></div>
             <Menu
-                // defaultSelectedKeys={['1']}
-                // defaultOpenKeys={['sub1', 'sub2']}
                 openKeys={openKeys}
                 onOpenChange={onOpenChange}
                 mode="inline"

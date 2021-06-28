@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-24 09:12:13
- * @LastEditTime: 2021-06-24 15:37:16
+ * @LastEditTime: 2021-06-28 09:59:58
  * @LastEditors: 1638877065@qq.com
  * @Description: 添加机台信息
  * @FilePath: \cloud-admin\src\views\production\order\loomTable.jsx
@@ -173,10 +173,10 @@ const Editloom = (props) => {
     return <React.Fragment>
         <Space>
             <span>布票信息</span>
-            <PlusCircleOutlined style={{ color: "blue", marginLeft: "10px" }} onClick={addData} />
+            {/* <PlusCircleOutlined style={{ color: "blue", marginLeft: "10px" }} onClick={addData} /> */}
         </Space>
         <div style={{ display: "flex", width: "100%" }}>
-            <div style={{ minWidth: "315px" }}>
+            {/* <div style={{ minWidth: "315px" }}>
                 <Form form={form} component={false}>
                     <Table
                         components={{
@@ -191,7 +191,7 @@ const Editloom = (props) => {
                         pagination={false}
                     />
                 </Form>
-            </div>
+            </div> */}
             <div style={{ width: "100%" }}>
                 <Table
                     dataSource={[]}
