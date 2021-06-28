@@ -181,7 +181,7 @@ function ClothRecord() {
     }
     return <div className="right-container">
         <PageHeader
-            title="查布记录"
+            title="验布记录"
             extra={[
                 <Button key="1" type="primary" onClick={() => { modalClick({}, 2) }}>
                     新增

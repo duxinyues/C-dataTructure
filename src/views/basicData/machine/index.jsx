@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-28 20:31:06
+ * @LastEditTime: 2021-06-28 20:37:53
  * @LastEditors: 1638877065@qq.com
  * @Description: 机台信息
  * @FilePath: \cloud-admin\src\views\basicData\machine\index.jsx
@@ -209,7 +209,7 @@ function MachineData(props) {
     }
     return <div className="right-container">
         <PageHeader
-            title="机台资料"
+            title="机台"
             extra={[
                 <Button key="1" type="primary" onClick={() => { modalClick({}, 2) }}>
                     新增

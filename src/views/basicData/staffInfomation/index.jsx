@@ -224,7 +224,7 @@ function StaffInfo() {
     }
     return <div className="right-container">
         <PageHeader
-            title="员工资料"
+            title="员工"
             extra={[
                 <Button key="1" type="primary" onClick={() => { edit({}, 2) }}>
                     新建

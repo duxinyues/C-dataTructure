@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-28 19:36:10
+ * @LastEditTime: 2021-06-28 20:37:31
  * @LastEditors: 1638877065@qq.com
  * @Description: 供应商
  * @FilePath: \cloud-admin\src\views\basicData\supplier\index.jsx
@@ -316,7 +316,7 @@ function Supplier() {
                 onFinish={handleOk}
                 preserve={false}
             >
-                <Form.Item label="名称" name="name" rules={[{ required: true, message: '请输入名称!' }]}>
+                <Form.Item label="公司名称" name="name" rules={[{ required: true, message: '请输入名称!' }]}>
                     <Input placeholder="名称" />
                 </Form.Item>
                 <Form.Item label="简称" name="abbr" >
