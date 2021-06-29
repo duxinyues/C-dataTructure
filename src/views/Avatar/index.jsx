@@ -41,11 +41,11 @@ function Avatars(props) {
           }
         </SubMenu>
       }
-      <Menu.Item>
+      {/* <Menu.Item>
         <Link to="/user">
           <span className="label">个人设置</span>
         </Link>
-      </Menu.Item>
+      </Menu.Item> */}
       <Menu.Item>
         <div>
           <span className="label" onClick={_logout}>退出登录</span>

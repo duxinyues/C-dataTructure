@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { Col, Row, Input, Tabs, Table } from "antd";
-import { newOrderType, requestUrl, onlyFormat } from "../../../utils/config";
+import { newOrderType, onlyFormat } from "../../../utils/config";
 import { getBarCodes } from "../../../api/apiModule"
 const { TabPane } = Tabs;
 function OrderDetail(props) {
@@ -14,7 +14,7 @@ function OrderDetail(props) {
     useEffect(() => {
         if (props.orderData) {
             setyarnInfoData(props.orderData.orderYarnInfos);
-            getBarCodes(props.orderData.id,yarnBrandBatch.join(","),(res) => {
+            getBarCodes(props.orderData.id, yarnBrandBatch.join(","), (res) => {
                 if (res.data.length === 0) {
                     setloomData([]);
                     setbarCode([]);
@@ -26,9 +26,9 @@ function OrderDetail(props) {
         }
     }, [props.orderData])
     return <React.Fragment>
-        <div className="detail-title">
+        {/* <div className="detail-title">
             标题
-        </div>
+        </div> */}
         <div className="detail-content">
             <div className="basic-data">
                 <Row className="c-row">
@@ -47,7 +47,7 @@ function OrderDetail(props) {
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
-                        <div className="c-label">客户单号</div>
+                        <div className="c-label">合同号</div>
                         <div className="c-input"><Input disabled value={props.orderData ? props.orderData.customerBillCode : ""} /></div>
                     </Col>
                     <Col span={8} className="c-col">
@@ -61,9 +61,10 @@ function OrderDetail(props) {
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
-                        <div className="c-label">成品规格</div>
-                        <div className="c-input"><Input disabled value={props.orderData ? props.orderData.techType : ""} /></div>
+                        <div className="c-label">类型</div>
+                        <div className="c-input"><Input disabled value={props.orderData ? newOrderType[props.orderData.type - 1].name : ""} /></div>
                     </Col>
+
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">针寸</div>
                         <div className="c-input"><Input disabled value={props.orderData ? props.orderData.needles + "-" + props.orderData.inches : ""} /></div>
@@ -75,30 +76,32 @@ function OrderDetail(props) {
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
-                        <div className="c-label">类型</div>
-                        <div className="c-input"><Input disabled value={props.orderData ? newOrderType[props.orderData.type - 1].name : ""} /></div>
+                        <div className="c-label">成品规格</div>
+                        <div className="c-input"><Input disabled value={props.orderData ? props.orderData.techType : ""} /></div>
                     </Col>
                     <Col span={8} className="c-col">
-                        <div className="c-label c-right">坯布交期</div>
+                        <div className="c-label c-right">颜色</div>
+                        <div className="c-input"><Input disabled value={props.orderData ? props.orderData.customerColor : ""} /></div>
+                    </Col>
+
+                    <Col span={8} className="c-col">
+                        <div className="c-label c-right">每匹重量</div>
+                        <div className="c-input"><Input disabled value={props.orderData ? props.orderData.unitWeight : ""} /></div>
+                    </Col>
+
+                </Row>
+                <Row className="c-row">
+                    <Col span={8} className="c-col">
+                        <div className="c-label ">订单交期</div>
                         <div className="c-input"><Input disabled value={props.orderData ? onlyFormat(props.orderData.deliveryDate, false) : ""} /></div>
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">加工单价</div>
                         <div className="c-input"><Input disabled value={props.orderData ? props.orderData.productPrice : ""} /></div>
                     </Col>
-                </Row>
-                <Row className="c-row">
                     <Col span={8} className="c-col">
-                        <div className="c-label">订单数量</div>
+                        <div className="c-label c-right">订单数量</div>
                         <div className="c-input"><Input disabled value={props.orderData ? props.orderData.weight : ""} /></div>
-                    </Col>
-                    <Col span={8} className="c-col">
-                        <div className="c-label c-right">要求匹重</div>
-                        <div className="c-input"><Input disabled value={props.orderData ? props.orderData.unitWeight : ""} /></div>
-                    </Col>
-                    <Col span={8} className="c-col">
-                        <div className="c-label c-right">颜色</div>
-                        <div className="c-input"><Input disabled value={props.orderData ? props.orderData.customerColor : ""} /></div>
                     </Col>
                 </Row>
                 <Row className="c-row">
@@ -134,7 +137,7 @@ function OrderDetail(props) {
                             dataSource={props.orderData ? yarnInfoData : []}
                         />
                     </TabPane>
-                    <TabPane tab="查看收纱" key="2">
+                    <TabPane tab="收料明细" key="2">
                         <Table
                             columns={[
                                 { title: "生产单号" },
@@ -153,15 +156,15 @@ function OrderDetail(props) {
                 </Tabs>
             </div>
             <div>
-                <div className="clothing">
+                <div className="clothing" style={{ color: "#1890FF", marginTop: "21px", marginBottom: "9px" }}>
                     布票信息
                 </div>
                 <div className="clothing-data">
                     <div className="clothing-left" style={{ width: "125px" }}>
                         <Table
                             columns={[
-                                { title: "机台", dataIndex: "loomCode" },
-                                { title: "卷数", dataIndex: "volQty" },
+                                { title: "机号", dataIndex: "loomCode" },
+                                { title: "匹数", dataIndex: "volQty" },
                             ]}
                             dataSource={props.orderData ? loomData : []}
                             pagination={false}
@@ -174,7 +177,7 @@ function OrderDetail(props) {
                             }}
                         />
                     </div>
-                    <div className="clothing-right" style={{ width: "100%" }}>
+                    <div className="clothing-right" style={{ width: "calc(100% - 125px)" }}>
                         <Table
                             columns={[
                                 { title: "条码", dataIndex: "barcode" },
@@ -188,9 +191,7 @@ function OrderDetail(props) {
                             ]}
                             pagination={false}
                             dataSource={barCode}
-                            scroll={{
-                                y: 250
-                            }}
+                            style={{ height: "250px", overflowY: "scroll" }}
                         />
                     </div>
                 </div>

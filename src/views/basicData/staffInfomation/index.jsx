@@ -1,6 +1,7 @@
 import { withRouter } from "react-router-dom";
 import { Table, PageHeader, Button, Modal, Form, Input, message, Select, Tag } from "antd";
-import { requestUrl, onlyFormat, checkPhone } from "../../../utils/config";
+import {  onlyFormat, checkPhone, positionValue } from "../../../utils/config";
+import { addEditParson, delectParson, disablePerson, getPersonList } from "../../../api/apiModule"
 import { useEffect, useState } from "react";
 import "./index.css"
 const { confirm } = Modal;
@@ -30,41 +31,31 @@ function StaffInfo() {
         getPerson(1, 10);
     }, [])
     const getPerson = (page, size) => {
-        fetch(requestUrl + `/api-basedata/person/findAll?companyId=1&page=${page}&size=${size}`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
+        getPersonList(page, size, (res) => {
+            setloading(false);
+            if (res.code == 200) {
+                setSize(res.data.size);
+                setCurrent(res.data.current);
+                setTotal(res.data.total)
+                setdata(res.data.records);
+                return;
             }
+            message.error("请求错误！")
         })
-            .then((res) => { return res.json() })
-            .then((res) => {
-                setloading(false);
-                if (res.code == 200) {
-                    setSize(res.data.size);
-                    setCurrent(res.data.current);
-                    setTotal(res.data.total)
-                    setdata(res.data.records);
-                    return;
-                }
-                message.error("请求错误！")
-
-            })
     }
     const handleOk = async (param) => {
         const value = await form.validateFields();
         let data;
-        console.log("手机==", value)
         if (value.mobilePhoneNo && !checkPhone(value.mobilePhoneNo)) {
             message.error("请输入正确的手机号码！");
             return;
         }
-        // 新增
         if (editType === 2) {
             data = {
                 "code": value.code,
                 "mobilePhoneNo": value.mobilePhoneNo,
                 "name": value.name,
-                "position": value.position
+                "position": positionValue(value.position) 
             }
         } else {
             // 编辑
@@ -73,28 +64,40 @@ function StaffInfo() {
                 "id": selectuser.id,
                 "mobilePhoneNo": value.mobilePhoneNo,
                 "name": value.name,
-                "position": value.position
+                "position": positionValue(value.position)
             }
         }
-        setloading(false);
-
-        fetch(requestUrl + "/api-basedata/person/saveOrModify", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        }).then((res) => { return res.json() })
-            .then(res => {
-                setvisible(false)
-                if (res.code === 200) {
-                    message.success("保存成功")
-                    getPerson(1, 10);
-                    return;
-                }
-                message.success("保存失败")
-            })
+        addEditParson(data, (res) => {
+            setvisible(false)
+            if (res.code === 200) {
+                message.success("保存成功")
+                getPerson(1, 10);
+                return;
+            }
+            message.success("保存失败")
+        })
+    }
+    const saveAdd = async () => {
+        const value = await form.validateFields();
+        let data;
+        if (value.mobilePhoneNo && !checkPhone(value.mobilePhoneNo)) {
+            message.error("请输入正确的手机号码！");
+            return;
+        }
+        addEditParson({
+            "code": value.code,
+            "mobilePhoneNo": value.mobilePhoneNo,
+            "name": value.name,
+            "position": positionValue(value.position)
+        }, (res) => {
+            if (res.code === 200) {
+                form.resetFields();
+                message.success("保存成功")
+                getPerson(1, 10);
+                return;
+            }
+            message.success("保存失败")
+        })
     }
     const onCancel = () => {
         setvisible(false);
@@ -118,48 +121,29 @@ function StaffInfo() {
             okText: "确定",
             cancelText: "取消",
             onOk() {
-                delectRequst(param.id)
+                delectParson(param.id, (res) => {
+                    if (res.code == 200) {
+                        message.success("删除成功！");
+                        getPerson(1, 10);
+                        return;
+                    }
+                    message.error("删除失败！")
+                })
             },
             onCancel() { },
         });
     }
-    const delectRequst = (id) => {
-        fetch(requestUrl + "/api-basedata/person/delete?id=" + id, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-        })
-            .then((res) => { return res.json() })
-            .then((res) => {
-                if (res.code == 200) {
-                    message.success("删除成功！");
-                    getPerson(1, 10);
-                    return;
-                }
-                message.error("删除失败！")
-            })
-    }
 
     const disable = (param) => {
         const userStatus = param.usedStatus == 1 ? 2 : 1
-        fetch(requestUrl + "/api-basedata/person/modifyEnabled?id=" + param.id + "&enabled=" + userStatus, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
+        disablePerson(param.id, userStatus, (res) => {
+            if (res.code == 200) {
+                param.usedStatus == 1 ? message.success("禁用成功！") : message.success("启用成功！")
+                getPerson(1, 10);
+                return;
+            }
+            param.usedStatus == 1 ? message.error("禁用失败！") : message.error("启用失败！")
         })
-            .then((res) => { return res.json() })
-            .then((res) => {
-                if (res.code == 200) {
-                    param.usedStatus == 1 ? message.success("禁用成功！") : message.success("启用成功！")
-                    getPerson(1, 10);
-                    return;
-                }
-                param.usedStatus == 1 ? message.error("禁用失败！") : message.error("启用失败！")
-            })
     }
     const onGenderChange = (param) => {
     }
@@ -251,7 +235,7 @@ function StaffInfo() {
             title={editType == 1 ? "编辑员工" : "新建员工"}
             visible={visible}
             footer={[
-                <span className="modalFooterBtn">{editType == 1 ? "保存编辑" : "保存并新增"}</span>,
+                <span className="modalFooterBtn" onClick={saveAdd}>保存并新增</span>,
                 <Button key="submit" type="primary" onClick={handleOk} >
                     保存
                 </Button>,
@@ -281,9 +265,9 @@ function StaffInfo() {
                         onChange={onGenderChange}
                         allowClear
                     >
-                        <Option value="1">查布员</Option>
-                        <Option value="2">值机员</Option>
-                        <Option value="3">其他</Option>
+                        <Option value="查布员">查布员</Option>
+                        <Option value="值机员">值机员</Option>
+                        <Option value="其他">其他</Option>
                     </Select>
                 </Form.Item>
                 <Form.Item label="手机号码" name='mobilePhoneNo'>

@@ -30,10 +30,9 @@
 }
 
 .inventory-container .right {
-    /* min-width: 730px; */
     border-left: 1px solid #f0f2f5;
     padding-left: 10px;
-    width: 100%;
+    width: calc(100% - 414px);
 }
 
 .detail-title {

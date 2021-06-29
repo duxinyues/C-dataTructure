@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-28 20:37:31
+ * @LastEditTime: 2021-06-29 12:07:55
  * @LastEditors: 1638877065@qq.com
  * @Description: 供应商
  * @FilePath: \cloud-admin\src\views\basicData\supplier\index.jsx
@@ -9,7 +9,10 @@
  */
 import { useState, useEffect } from "react";
 import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader, Tag } from "antd";
-import { requestUrl, onlyFormat } from "../../../utils/config";
+import {  onlyFormat } from "../../../utils/config";
+import { addEditSupplier, delectSupplier, disableSupplier, getSupplier, getAddressInfo } from "../../../api/apiModule"
+import { connect } from "react-redux"
+import { setAddress } from "../../../actons/action"
 const { confirm } = Modal;
 const layout = {
     labelCol: {
@@ -19,7 +22,7 @@ const layout = {
         span: 20,
     },
 };
-function Supplier() {
+function Supplier(props) {
     document.title = "供应商";
     const [data, setdata] = useState([]);
     const [visible, setvisible] = useState(false);
@@ -34,7 +37,14 @@ function Supplier() {
     const selectId = []
     useEffect(() => {
         getClothData(1, 10);
-        getData()
+        if (props.address) {
+            setaddressData([...props.address]);
+        } else {
+            getAddressInfo(localStorage.getItem("access_token"), (res) => {
+                props.setAddress(res);
+                setaddressData([...res]);
+            })
+        }
     }, [])
 
     const modalClick = (param, type) => {
@@ -54,7 +64,6 @@ function Supplier() {
     }
     const handleOk = async (param) => {
         const value = await form.validateFields();
-        console.log(value)
         let data;
         if (editType == 2) {
             // 新增
@@ -76,25 +85,34 @@ function Supplier() {
                 "id": selectRecord.id
             }
         }
-        fetch(requestUrl + `/api-basedata/supplier/saveOrModify`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
+        addEditSupplier(data, (res) => {
+            setvisible(false)
+            if (res.code == 200) {
+                getClothData(1, 10);
+                message.success("保存成功")
+                return;
+            }
+            message.error("保存失败")
         })
-            .then((res) => { return res.json() })
-            .then((res) => {
-                console.log(res)
-                setvisible(false)
-                if (res.code == 200) {
-                    getClothData(1, 10);
-                    message.success("保存成功")
-                    return;
-                }
-               message.error("保存失败")
-            })
+    }
+    const saveAdd = async () => {
+        const value = await form.validateFields();
+        addEditSupplier({
+            "abbr": value.abbr,
+            "address": selectId.join(","),
+            "name": value.name,
+            "contactInfo": value.contactInfo,
+            "detailAddress": value.detailAddress,
+        }, (res) => {
+            console.log(res)
+            if (res.code == 200) {
+                form.resetFields();
+                getClothData(1, 10);
+                message.success("保存成功")
+                return;
+            }
+            message.error("保存失败")
+        })
     }
     const delect = (param) => {
         confirm({
@@ -102,92 +120,44 @@ function Supplier() {
             okText: "确定",
             cancelText: "取消",
             onCancel() { },
-            onOk() { delectRequest(param.id); }
+            onOk() {
+                delectSupplier(param.id, (res) => {
+                    if (res.code == 200) {
+                        message.success("删除成功！");
+                        getClothData(1, 10)
+                        return;
+                    }
+                    message.error("删除失败！")
+                })
+            }
         })
-    }
-    // 删除记录
-    const delectRequest = (id) => {
-        fetch(requestUrl + `/api-basedata/supplier/delete?id=${id}`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code == 200) {
-                    message.success("删除成功！");
-                    getClothData(1, 10)
-                    return;
-                }
-                message.error("删除失败！")
-            })
     }
     // 禁用
     const disable = (param) => {
         const usedStatus = param.usedStatus == 1 ? 2 : 1;
-        fetch(requestUrl + `/api-basedata/supplier/modifyEnabled?id=${param.id}&enabled=${usedStatus}`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
+        disableSupplier(param.id, usedStatus, (res) => {
+            if (res.code == 200) {
+                getClothData(1, 10)
+                param.usedStatus == 1 ? message.success("禁用成功！") : message.success("启用成功！");
+                return;
+            }
+            param.usedStatus == 1 ? message.error("禁用失败！") : message.success("启用失败！");
         })
-            .then(res => { return res.json() })
-            .then((res) => {
-                if (res.code == 200) {
-                    getClothData(1, 10)
-                    param.usedStatus == 1 ? message.success("禁用成功！") : message.success("启用成功！");
-                    return;
-                }
-                param.usedStatus == 1 ? message.error("禁用失败！") : message.success("启用失败！");
-            })
     }
     const getClothData = (page, size) => {
-        fetch(requestUrl + `/api-basedata/supplier/findAll?page=${page}&size=${size}`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
+        getSupplier(page, size, (res) => {
+            if (res.code == 200) {
+                setTotal(res.data.total);
+                setSize(res.data.size);
+                setCurrent(res.data.current);
+                setdata(res.data.records);
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code == 200) {
-                    setTotal(res.data.total);
-                    setSize(res.data.size);
-                    setCurrent(res.data.current);
-                    setdata(res.data.records);
-                }
-            })
     }
     const onChange = (value) => {
         edit(value, addressData)
     }
-    const getData = () => {
-        fetch(requestUrl + "/api-basedata/address/findAll", {
-            method: "GET",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then((res) => { return res.json() })
-            .then((res) => {
-                console.log(res)
-                addressMap(res.data)
-                setaddressData(res.data)
-            })
-    }
-    // 整理地址信息
-    const addressMap = (data) => {
-        data.map((item) => {
-            item.value = item.name;
-            item.label = item.name;
-            if (item.subAddress) {
-                item.children = item.subAddress;
-                addressMap(item.children)
-            }
-        })
-        return data
-    }
+        
     // 编辑选中的地址信息
     const edit = (selectAddr, addressData) => {
         addressData.map((item) => {
@@ -297,7 +267,7 @@ function Supplier() {
             title={editType == 1 ? "编辑供应商" : "新建供应商"}
             visible={visible}
             footer={[
-                <span className="modalFooterBtn">保存并新增</span>,
+                <span className="modalFooterBtn" onClick={saveAdd}>保存并新增</span>,
                 <Button key="submit" type="primary" onClick={handleOk} >
                     保存
                 </Button>,
@@ -339,4 +309,9 @@ function Supplier() {
         </Modal>
     </div>
 }
-export default Supplier
+const mapStateToProps = (state) => {
+    return {
+        address: state.addressInfoReducer.address
+    }
+}
+export default connect(mapStateToProps, { setAddress })(Supplier)

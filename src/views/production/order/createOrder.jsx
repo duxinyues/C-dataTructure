@@ -1,6 +1,6 @@
 import React, { useState, useEffect, } from "react"
-import { Col, Row, Input, DatePicker, Select } from "antd";
-import { newOrderType, requestUrl } from "../../../utils/config";
+import { Col, Row, Input, DatePicker, Select, message } from "antd";
+import { newOrderType, requestUrl, r } from "../../../utils/config";
 import { createOrderParams } from "../../../actons/action";
 import { connect } from "react-redux";
 import EditCloth from './clothTable';
@@ -59,29 +59,41 @@ function CreateOrder(props) {
     }
     // 规格
     const changeTechType1 = ({ target: { value } }) => {
-        _createOrderParam.techType1 =  value;
+        _createOrderParam.techType1 = value;
         props.createOrderParams(_createOrderParam);
         props.createOrder(_createOrderParam);
     }
     const changeTechType2 = ({ target: { value } }) => {
-        _createOrderParam.techType2 =  value;
+        _createOrderParam.techType2 = value;
         props.createOrderParams(_createOrderParam);
         props.createOrder(_createOrderParam);
     }
     //针
     const changeInches = ({ target: { value } }) => {
+        if (!r.test(value)) {
+            message.warning("请输入正整数！");
+            return;
+        }
         _createOrderParam.inches = value;
         props.createOrderParams(_createOrderParam);
         props.createOrder(_createOrderParam);
     }
     // 寸
     const changeneedles = ({ target: { value } }) => {
+        if (!r.test(value)) {
+            message.warning("请输入正整数！");
+            return;
+        }
         _createOrderParam.needles = value;
         props.createOrderParams(_createOrderParam);
         props.createOrder(_createOrderParam);
     }
     // 总针数
     const changeTotalInches = ({ target: { value } }) => {
+        if (!r.test(value)) {
+            message.warning("请输入正整数！");
+            return;
+        }
         _createOrderParam.totalInches = value;
         props.createOrderParams(_createOrderParam);
         props.createOrder(_createOrderParam);
@@ -135,11 +147,11 @@ function CreateOrder(props) {
         props.createOrderParams(_createOrderParam);
         props.createOrder(_createOrderParam);
     }
-    const onAddCloth = (value)=>{
+    const onAddCloth = (value) => {
         _createOrderParam.orderYarnInfos = value;
         props.createOrder(_createOrderParam);
     }
-    const onAddLoom = (value)=>{
+    const onAddLoom = (value) => {
         _createOrderParam.orderLooms = value;
         props.createOrder(_createOrderParam);
     }
@@ -185,9 +197,9 @@ function CreateOrder(props) {
             })
     }
     return <React.Fragment>
-        <div className="detail-title">
+        {/* <div className="detail-title">
             新建订单
-        </div>
+        </div> */}
         <div className="detail-content">
             <div className="basic-data">
                 <Row className="c-row">
@@ -210,7 +222,7 @@ function CreateOrder(props) {
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
-                        <div className="c-label">合同编号</div>
+                        <div className="c-label"><em>*</em>合同号</div>
                         <div className="c-input"><Input onChange={onchangeCode} /></div>
                     </Col>
                     <Col span={8} className="c-col">
@@ -219,23 +231,11 @@ function CreateOrder(props) {
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right"><em>*</em>布类</div>
-                        <div className="c-input"><Select mode="tags" onChange={selectClothType}>
-                            {clothType.map((item, key) => (<Option value={item} key={key}>{item}</Option>))}
-                        </Select></div>
-                    </Col>
-                </Row>
-                <Row className="c-row">
-                    <Col span={8} className="c-col spec">
-                        <div className="c-label">成品规格</div>
-                        <div className="c-input"><Input placeholder="布封" onChange={changeTechType1} />-<Input placeholder="克重" onChange={changeTechType2} /></div>
-                    </Col>
-                    <Col span={8} className="c-col spec">
-                        <div className="c-label c-right"><em>*</em>针寸</div>
-                        <div className="c-input"><Input placeholder="针数" onChange={changeInches} />-<Input placeholder="寸数" onChange={changeneedles} /></div>
-                    </Col>
-                    <Col span={8} className="c-col">
-                        <div className="c-label c-right">总针数</div>
-                        <div className="c-input"><Input onChange={changeTotalInches} /></div>
+                        <div className="c-input">
+                            <Select onChange={selectClothType}>
+                                {clothType.map((item, key) => (<Option value={item} key={key}>{item}</Option>))}
+                            </Select>
+                        </div>
                     </Col>
                 </Row>
                 <Row className="c-row">
@@ -249,13 +249,28 @@ function CreateOrder(props) {
                             </Select>
                         </div>
                     </Col>
+
+                    <Col span={8} className="c-col spec">
+                        <div className="c-label c-right"><em>*</em>针寸</div>
+                        <div className="c-input"><Input placeholder="针数" onChange={changeInches} />-<Input placeholder="寸数" onChange={changeneedles} /></div>
+                    </Col>
+                    <Col span={8} className="c-col">
+                        <div className="c-label c-right">总针数</div>
+                        <div className="c-input"><Input onChange={changeTotalInches} /></div>
+                    </Col>
+                </Row>
+                <Row className="c-row">
+                    <Col span={8} className="c-col spec">
+                        <div className="c-label">成品规格</div>
+                        <div className="c-input"><Input placeholder="布封" onChange={changeTechType1} />-<Input placeholder="克重" onChange={changeTechType2} /></div>
+                    </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">颜色</div>
                         <div className="c-input"><Input onChange={changeCustomerColor} /></div>
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">每匹重量</div>
-                        <div className="c-input"><Input onChange={changetareWeight} /></div>
+                        <div className="c-input"><Input onChange={changetareWeight} type="number" /></div>
                     </Col>
                 </Row>
                 <Row className="c-row">
@@ -269,7 +284,7 @@ function CreateOrder(props) {
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right"><em>*</em>订单数量</div>
-                        <div className="c-input"><Input onChange={changeweight} /></div>
+                        <div className="c-input"><Input onChange={changeweight} type="number" /></div>
                     </Col>
                 </Row>
                 <Row className="c-row">
@@ -289,10 +304,10 @@ function CreateOrder(props) {
                     </Col>
                 </Row>
             </div>
-            <div className="edit-table">
+            <div className="edit-table" style={{ marginTop: "20px" }}>
                 <EditCloth onAddCloth={onAddCloth} weight={weight} data={[]} />
             </div>
-            <div>
+            <div style={{ marginTop: "20px" }}>
                 <EditLoom onAddLoom={onAddLoom} data={loom} />
             </div>
         </div>

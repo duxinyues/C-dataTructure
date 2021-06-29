@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Table, Form, Row, Select, Button, Input, Dropdown, Menu, Spin, Modal, message } from "antd";
+import { Table, Form, Row, Select, Button, Input, Dropdown, Menu, Spin, Modal, message, Col, DatePicker } from "antd";
 import { DownOutlined } from '@ant-design/icons';
 import JsBarcode from 'jsbarcode';
 import { connect } from "react-redux";
 import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, getNowFormatDate } from "../../../utils/config";
 import { createOrder, clearOrderParams, createOrderParams } from "../../../actons/action";
-import { createOrders, getLoom } from "../../../api/apiModule"
+import { createOrders, getLoom, getOrderCustomerDownList, getOrderData, orderStatus } from "../../../api/apiModule"
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import EditOrder from "./edit";
@@ -18,14 +18,13 @@ function Order(props) {
     const [columns, setcolumns] = useState();
     const [headType, setheadType] = useState("detail"); //默认展示详情
     const [orderList, setorderList] = useState([]);
-    const [searchValue, setsearchValue] = useState("code");
-    const [searchType, setsearchType] = useState();
+    const [searchType, setsearchType] = useState("code");
     const [customer, setcustomer] = useState();
     const [orderDetail, setorderDetail] = useState();
     const [total, settotal] = useState();
     const [current, setcurrent] = useState();
     const [size, setsize] = useState();
-    const [billStatus, setbillStatus] = useState(3);
+    const [billStatus, setbillStatus] = useState(1);
     const [btnTex, setbtnTex] = useState("完工");
     const [visible, setvisible] = useState(false);
     const [orderLoom, setorderLoom] = useState([]);
@@ -36,17 +35,14 @@ function Order(props) {
     const [seqArr, setseqArr] = useState([]);
     const [selectSeq, setselectSeq] = useState();
     const [companyName, setcompanyName] = useState();
-    const [orderParams, setorderParams] = useState({})
+    const [orderParams, setorderParams] = useState({});
+    const [inoutValue, setInputValue] = useState("")
     const [form] = Form.useForm();
     useEffect(() => {
         setcolumns([
             {
                 title: "生产单号",
                 dataIndex: 'code',
-            },
-            {
-                title: "机台",
-                dataIndex: "loomCode"
             },
             {
                 title: "客户",
@@ -61,15 +57,20 @@ function Order(props) {
                 dataIndex: "weight"
             }
         ]);
-        getCustomer()
+
         getOrderList({
             "page": 1,
             "size": 10,
-            "billStatus": 1
+            "billStatus": billStatus
         });
         getLoom((res) => {
-            if(res.code ===200){
+            if (res.code === 200) {
                 setorderLoom([...res.data])
+            }
+        });
+        getOrderCustomerDownList((res) => {
+            if (res.code === 200) {
+                setcustomer(res.data)
             }
         })
     }, []);
@@ -110,7 +111,7 @@ function Order(props) {
             message.error("必须添加用料信息");
             return;
         }
-       
+
         if (!params.weight) {
             message.error("请输入订单");
             return;
@@ -120,18 +121,17 @@ function Order(props) {
             message.error("请完善用料信息");
             return;
         }
-       
+
         // 删除多余的key值
         params.orderYarnInfos.map((item) => {
             delete item.key;
             return item;
         })
-       
+
         createOrders(params, (res) => {
             console.log(res)
             if (res.code === 200) {
                 message.success(res.msg)
-                setheadType("detail");
                 getOrderList({
                     "page": 1,
                     "size": 10,
@@ -141,6 +141,7 @@ function Order(props) {
                 message.error("创建失败！")
             }
             setorderParams({});
+            setheadType("detail");
         })
     }
     //取消创建订单组件
@@ -174,15 +175,16 @@ function Order(props) {
         })
             .then(res => { return res.json() })
             .then(res => {
+
                 if (res.code === 200) {
-                    form.resetFields()
                     res.data.map((item) => {
                         getOrderDetail(orderDetail.id)
                         createBarCode(item.barcode, item.seq);
                     })
                 }
             })
-
+        form.resetFields()
+        setvisible(false);
     }
     const handleBarcode = (r) => {
         setbarcode(r)
@@ -210,7 +212,7 @@ function Order(props) {
             }
         })
         let LODOP = getLodop();
-        LODOP.PRINT_INIT("");  //打印初始化
+        LODOP.PRINT_INIT(""); //打印初始化
         const strHtml = `<div style="width:50mm;background: #fff;">
         <div class="cloth-circle" style="width: 90px;height: 90px;border: 1px dashed #999;border-radius: 50%; margin: 20px auto;"></div>
         <div style="margin: 0 auto;border:1px solid #999">
@@ -279,7 +281,6 @@ function Order(props) {
         LODOP.ADD_PRINT_HTML(0, 0, "100%", "100%", strHtml);
         // LODOP.PREVIEW(); // 打印预览
         LODOP.PRINT(); // 直接打印
-        setvisible(false)
     }
     const openPrint = () => {
         setvisible(true)
@@ -290,8 +291,12 @@ function Order(props) {
         setorderParams(value);
     }
 
+    const getValue = ({ target: { value } }) => {
+        setInputValue(value)
+    }
+    // 搜索
     const onFinish = (value) => {
-        setspining(true)
+        // setspining(true)
         const param = value;
         if (value.billStatus === "进行中") {
             param.billStatus = 1
@@ -299,38 +304,54 @@ function Order(props) {
             param.billStatus = value.billStatus
         }
         delete param.searchType;
+        if (searchType === "code") param.code = inoutValue;
+        if (searchType === "customerBillCode") { param.customerBillCode = inoutValue }
+        if (searchType === "beginTime") { param.beginTime = inoutValue }
+        if (searchType === "greyFabricCode") { param.greyFabricCode = inoutValue }
+        if (searchType === "customerName") { param.customerName = inoutValue }
+        if (searchType === "fabricType") { param.fabricType = inoutValue }
+        if (searchType === "needles") { param.needles = inoutValue }
+        if (searchType === "inches") { param.inches = inoutValue }
+        if (searchType === "totalInches") { param.totalInches = inoutValue }
+        if (searchType === "techType") { param.techType = inoutValue }
+        if (searchType === "remark") { param.remark = inoutValue }
+        if (searchType === "yarnName") { param.yarnName = inoutValue }
+        if (searchType === "yarnBrandBatch") { param.yarnBrandBatch = inoutValue }
+        if (searchType === "loomId") { param.loomId = inoutValue }
+        if (searchType === "barcode") { param.barcode = inoutValue }
+        if (searchType === "type") { param.type = inoutValue }
 
-        if (value.code === "undefined") param.code = "";
         param.page = 1;
         param.size = 10;
+
+        console.log(searchType)
+        console.log("parama===", param)
         getOrderList(param)
+    }
+    // 选择机台
+    const selectLoom = (value) => {
+        setInputValue(value)
+    }
+    // 选择日期
+    const selectDate = (date, dateString) => {
+        setInputValue(dateString)
     }
     /**
      * 订单列表
      * @param {*} param 
      */
     const getOrderList = (param) => {
-        fetch(requestUrl + "/api-production/order/findAll", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(param)
+        getOrderData(param, (res) => {
+            if (res.code === 200) {
+                setspining(false);
+                if (res.data.records.length === 0) return;
+                settotal(res.data.total);
+                setsize(res.data.size);
+                setcurrent(res.data.current);
+                setorderList(res.data.records);
+                getOrderDetail(res.data.records[0].id);
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code === 200) {
-                    setspining(false);
-                    if (res.data.records.length === 0) return;
-                    settotal(res.data.total);
-                    setsize(res.data.size);
-                    setcurrent(res.data.current);
-                    setorderList(res.data.records);
-                    getOrderDetail(res.data.records[0].id);
-
-                }
-            })
     }
     // 订单详情
     const getOrderDetail = (id) => {
@@ -366,69 +387,38 @@ function Order(props) {
                 }
             })
     }
-    // 客户
-    const getCustomer = () => {
-        fetch(requestUrl + "/api-production/order/getCustomerDownList", {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code === 200) {
-                    setcustomer(res.data)
-                }
-            })
-    }
     // 搜索类型
     const selectSearchTyle = (value) => {
-        setsearchValue(value);
-        if (value === "customerName") {
-            setsearchType("customerName")
-        }
-
-        if (value === "type") {
-            setsearchType("type")
-        }
-
+        setsearchType(value)
     }
     // 完工
     const completeOrder = () => {
-        const _billStatus = billStatus
-        fetch(requestUrl + "/api-production/order/updateBillStatus?id=" + orderDetail.id + "&billStatus=" + _billStatus, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
+        const _billStatus = billStatus;
+        orderStatus(orderDetail.id, _billStatus, (res) => {
+            if (res.code === 200) {
+                if (billStatus === 2) {
+                    setbillStatus(1);
+                    setbtnTex("反完工")
+                }
+                if (billStatus === 1) {
+                    setbillStatus(2);
+                    setbtnTex("完工")
+                }
             }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code === 200) {
-                    if (billStatus === 3) {
-                        setbillStatus(1);
-                        setbtnTex("反完工")
-                    }
-                    if (billStatus === 1) {
-                        setbillStatus(3);
-                        setbtnTex("完工")
-                    }
-                }
-            })
     }
-    // 机台
-    // const getLoom = (orderId) => {
-    //     fetch(requestUrl + "/api-production/orderBarcode/loomDownList?orderId=" + orderId, {
-    //         headers: {
-    //             "Authorization": "bearer " + localStorage.getItem("access_token")
-    //         }
-    //     })
-    //         .then(res => { return res.json() })
-    //         .then(res => {
-    //             if (res.code === 200) {
-    //                 setorderLoom(res.data)
-    //             }
-    //         })
-    // }
+    //  订单作废
+    const orderInvalid = () => {
+        orderStatus(orderDetail.id, 3, (res) => {
+            if (res.code === 200) {
+                getOrderList({
+                    "page": 1,
+                    "size": 10,
+                    "billStatus": billStatus
+                })
+            }
+        })
+    }
     const changeClothLoom = (value) => {
         console.log(value)
         setselectClothLoom(value)
@@ -472,7 +462,7 @@ function Order(props) {
             {/* <Menu.Item key="0">
                 复制
             </Menu.Item> */}
-            <Menu.Item key="1">
+            <Menu.Item onClick={orderInvalid}>
                 作废
             </Menu.Item>
             <Menu.Item key="2">
@@ -500,7 +490,7 @@ function Order(props) {
             <div className="right-container">
                 {headType === "detail" && <div className="custom">
                     <div className="title">
-                        订单管理
+                        单据详情
                     </div>
                     <div className="custom-right">
                         <Button type="primary" onClick={add}>+新建</Button>
@@ -534,31 +524,45 @@ function Order(props) {
                                 searchType: orderSearch[0].title
                             }}
                         >
-                            <Row>
-                                <Form.Item name="billStatus" className="billStatus" style={{ marginRight: "10px" }}>
-                                    <Select>
-                                        <Option value="1">进行中</Option>
-                                        <Option value="2">未审核</Option>
-                                        <Option value="3">已完工</Option>
-                                        <Option value="4">已作废</Option>
-                                    </Select>
-                                </Form.Item>
-                                <div>
-                                    <Form.Item name="searchType" className="searchType">
-                                        <Select className="cu" onChange={selectSearchTyle} >
-                                            {
-                                                orderSearch.map((item, key) => (<Option value={item.type} key={key}>{item.title}</Option>))
-                                            }
+                            <Row span={24}>
+                                <Col span={6}>
+                                    <Form.Item name="billStatus" className="billStatus" style={{ marginRight: "10px" }}>
+                                        <Select>
+                                            <Option value="1">进行中</Option>
+                                            <Option value="2">已完工</Option>
+                                            <Option value="3">已作废</Option>
                                         </Select>
                                     </Form.Item>
-
-                                </div>
-                                <Form.Item name={searchValue} className="">
-                                    <Input />
-                                </Form.Item>
-                                <Form.Item>
-                                    <Button type="primary" htmlType="submit">搜索</Button>
-                                </Form.Item>
+                                </Col>
+                                <Col span={14}>
+                                    <Form.Item name={searchType} className="searchType">
+                                        <Input.Group compact>
+                                            <Select defaultValue={orderSearch[0].title} style={{ width: "100px" }} className="cu" onChange={selectSearchTyle} >
+                                                {
+                                                    orderSearch.map((item, key) => (<Option value={item.type} key={key}>{item.title}</Option>))
+                                                }
+                                            </Select>
+                                            {
+                                                searchType === "loomId" && <Select style={{ width: "120px", borderRight: "1px solid #ccc" }} onChange={selectLoom}>
+                                                    {
+                                                        orderLoom.map((item) => (<Option value={item.id}>{item.code}</Option>))
+                                                    }
+                                                </Select>
+                                            }
+                                            {
+                                                searchType === "beginTime" && <DatePicker onChange={selectDate} style={{}} />
+                                            }
+                                            {
+                                                (searchType !== "loomId" && searchType !== "beginTime") && <Input style={{ width: "120px" }} onChange={getValue} />
+                                            }
+                                        </Input.Group>
+                                    </Form.Item>
+                                </Col>
+                                <Col span={4}>
+                                    <Form.Item>
+                                        <Button style={{ height: "26px", display: "flex", alignItems: "center" }} type="primary" htmlType="submit">搜索</Button>
+                                    </Form.Item>
+                                </Col>
                             </Row>
                         </Form>
                         <Table

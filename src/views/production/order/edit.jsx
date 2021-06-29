@@ -11,6 +11,7 @@ const { Option } = Select;
 let EditOrder = (props) => {
     console.log("编辑信息==", props)
     document.title = "编辑订单";
+    const today = moment();
     const _createOrderParam = props.orderData;
     const defaultData = props.orderData.orderYarnInfos;
     const [customer, setcustomer] = useState([{ id: 1, name: "111" }]);
@@ -37,9 +38,10 @@ let EditOrder = (props) => {
         })
             .then(res => { return res.json() })
             .then(res => {
-                
+
                 _createOrderParam.orderLooms = res.data;
                 setloomData(res.data);
+
                 setbarCode(res.data[0])
             })
     }
@@ -182,9 +184,9 @@ let EditOrder = (props) => {
         props.editOrder(_createOrderParam);
     }
     return <React.Fragment>
-        <div className="detail-title">
+        {/* <div className="detail-title">
             新建订单
-        </div>
+        </div> */}
         <div className="detail-content">
             <div className="basic-data">
                 <Row className="c-row">
@@ -207,7 +209,7 @@ let EditOrder = (props) => {
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
-                        <div className="c-label">客户单号</div>
+                        <div className="c-label">合同号</div>
                         <div className="c-input"><Input onChange={onchangeCode} defaultValue={props.orderData.customerBillCode} /></div>
                     </Col>
                     <Col span={8} className="c-col">
@@ -222,20 +224,6 @@ let EditOrder = (props) => {
                     </Col>
                 </Row>
                 <Row className="c-row">
-                    <Col span={8} className="c-col spec">
-                        <div className="c-label">成品规格</div>
-                        <div className="c-input"><Input placeholder="布封" onChange={changeTechType1} defaultValue={props.orderData.techType.split("-")[0]} />-<Input placeholder="克重" onChange={changeTechType2} defaultValue={props.orderData.techType.split("-")[1]} /></div>
-                    </Col>
-                    <Col span={8} className="c-col spec">
-                        <div className="c-label c-right"><em>*</em>针寸</div>
-                        <div className="c-input"><Input placeholder="针数" onChange={changeInches} defaultValue={props.orderData.needles} />-<Input placeholder="寸数" onChange={changeneedles} defaultValue={props.orderData.inches} /></div>
-                    </Col>
-                    <Col span={8} className="c-col">
-                        <div className="c-label c-right">总针数</div>
-                        <div className="c-input"><Input onChange={changeTotalInches} defaultValue={props.orderData.totalInches} /></div>
-                    </Col>
-                </Row>
-                <Row className="c-row">
                     <Col span={8} className="c-col">
                         <div className="c-label"><em>*</em>类型</div>
                         <div className="c-input">
@@ -246,19 +234,34 @@ let EditOrder = (props) => {
                             </Select>
                         </div>
                     </Col>
+
+                    <Col span={8} className="c-col spec">
+                        <div className="c-label c-right"><em>*</em>针寸</div>
+                        <div className="c-input"><Input placeholder="针数" onChange={changeInches} defaultValue={props.orderData.needles} />-<Input placeholder="寸数" onChange={changeneedles} defaultValue={props.orderData.inches} /></div>
+                    </Col>
                     <Col span={8} className="c-col">
-                        <div className="c-label c-right">工艺要求</div>
+                        <div className="c-label c-right">总针数</div>
+                        <div className="c-input"><Input onChange={changeTotalInches} defaultValue={props.orderData.totalInches} /></div>
+                    </Col>
+                </Row>
+                <Row className="c-row">
+                    <Col span={8} className="c-col spec">
+                        <div className="c-label">成品规格</div>
+                        <div className="c-input"><Input placeholder="布封" onChange={changeTechType1} defaultValue={props.orderData.techType.split("-")[0]} />-<Input placeholder="克重" onChange={changeTechType2} defaultValue={props.orderData.techType.split("-")[1]} /></div>
+                    </Col>
+                    <Col span={8} className="c-col">
+                        <div className="c-label c-right">颜色</div>
                         <div className="c-input"><Input onChange={changeCustomerColor} defaultValue={props.orderData.customerColor} /></div>
                     </Col>
                     <Col span={8} className="c-col">
-                        <div className="c-label c-right">要求匹重</div>
+                        <div className="c-label c-right">每匹重量</div>
                         <div className="c-input"><Input defaultValue={props.orderData.unitWeight} /></div>
                     </Col>
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
-                        <div className="c-label">坯布交期</div>
-                        <div className="c-input"><DatePicker onChange={selectDeliveryDate} defaultValue={moment(props.orderData.deliveryDate)} /></div>
+                        <div className="c-label">订单交期</div>
+                        <div className="c-input"><DatePicker onChange={selectDeliveryDate} defaultValue={moment(props.orderData.deliveryDate ? props.orderData.deliveryDate : today)} /></div>
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">加工单价</div>
@@ -290,7 +293,7 @@ let EditOrder = (props) => {
                 <EditCloth data={defaultData} onAddCloth={onAddCloth} weight={weight} />
             </div>
             <div>
-                <div className="clothing">
+                <div className="clothing" style={{ marginTop: "21px", color: "#1890FF", marginBottom: "9px" }}>
                     布票信息
                 </div>
                 <div className="clothing-data">
@@ -312,7 +315,7 @@ let EditOrder = (props) => {
                         />
                     </div>
                     <div className="clothing-right">
-                        <EditBarcode editCode={editCode} data={barCode.barcodes} />
+                        <EditBarcode editCode={editCode} data={barCode ? barCode.barcodes : []} />
                     </div>
                 </div>
             </div>

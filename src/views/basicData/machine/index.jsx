@@ -1,17 +1,17 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-28 20:37:53
+ * @LastEditTime: 2021-06-29 09:34:04
  * @LastEditors: 1638877065@qq.com
  * @Description: 机台信息
  * @FilePath: \cloud-admin\src\views\basicData\machine\index.jsx
  * 
  */
 import { withRouter } from "react-router-dom";
-import { Table, PageHeader, Button, Modal, Form, Input, message, Select, Tag } from "antd";
+import { Table, PageHeader, Button, Modal, Form, Input, message, Select } from "antd";
 import { useState, useEffect } from "react"
-import { requestUrl, onlyFormat } from "../../../utils/config"
-import { addAndEditLoom, disableLoom, delectLoom } from "../../../api/apiModule"
+import { onlyFormat } from "../../../utils/config"
+import { addAndEditLoom, disableLoom, delectLoom, getLoomList } from "../../../api/apiModule"
 import { machineConfigData } from "../../../utils/mahineData";
 import "./index.css"
 const { confirm } = Modal;
@@ -128,21 +128,14 @@ function MachineData(props) {
         })
     }
     const getMachineData = (page, size) => {
-        fetch(requestUrl + `/api-basedata/loom/findAll?companyId=1&page=${page}&size=${size}`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
+        getLoomList(page, size, (res) => {
+            if (res.code == 200) {
+                setTotal(res.data.total);
+                setSize(res.data.size);
+                setCurrent(res.data.current);
+                setmachineData(res.data.records)
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code == 200) {
-                    setTotal(res.data.total);
-                    setSize(res.data.size);
-                    setCurrent(res.data.current);
-                    setmachineData(res.data.records)
-                }
-            })
     }
     const onGenderChange = (value) => {
         console.log("选中的机种", value)

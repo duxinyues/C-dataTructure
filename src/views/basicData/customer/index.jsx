@@ -1,15 +1,18 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-28 20:38:24
+ * @LastEditTime: 2021-06-29 11:51:54
  * @LastEditors: 1638877065@qq.com
  * @Description: 客户
  * @FilePath: \cloud-admin\src\views\basicData\customer\index.jsx
  * 
  */
 import { useState, useEffect } from "react";
-import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader, Tag } from "antd";
-import { requestUrl, onlyFormat } from "../../../utils/config";
+import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader } from "antd";
+import { onlyFormat } from "../../../utils/config";
+import { setAddress } from "../../../actons/action"
+import { getCustomerList, addEditCustomer, delectCustomer, disableCustomer, getAddressInfo } from "../../../api/apiModule"
+import { connect } from "react-redux"
 const { confirm } = Modal;
 const layout = {
     labelCol: {
@@ -19,7 +22,7 @@ const layout = {
         span: 20,
     },
 };
-function CustomerData() {
+function CustomerData(props) {
     document.title = "客户";
     const [data, setdata] = useState([]);
     const [loading, setloading] = useState(true);
@@ -35,10 +38,17 @@ function CustomerData() {
     const selectId = []
     useEffect(() => {
         getClothData(1, 10);
+        if (props.address) {
+            setaddressData([...props.address])
+        } else {
+            getAddressInfo(localStorage.getItem("access_token"), (res) => {
+                setaddressData([...res]);
+                props.setAddress(res);
+            })
+        }
     }, [])
 
     const modalClick = async (param, type) => {
-        getData()
         await form.setFieldsValue({
             name: param.name,
             abbr: param.abbr,
@@ -65,7 +75,6 @@ function CustomerData() {
             data = {
                 "abbr": value.abbr,
                 "address": selectId.join(","),
-                "companyId": 1,
                 "contactInfo": value.contactInfo,
                 "detailAddress": value.detailAddress,
                 "name": value.name,
@@ -77,7 +86,6 @@ function CustomerData() {
             data = {
                 "abbr": value.abbr,
                 "address": selectId.join(","),
-                "companyId": 1,
                 "contactInfo": value.contactInfo,
                 "detailAddress": value.detailAddress,
                 "name": value.name,
@@ -86,25 +94,35 @@ function CustomerData() {
                 "id": selectRecord.id
             }
         }
-
-        fetch(requestUrl + `/api-basedata/customer/saveOrModify`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
+        addEditCustomer(data, (res) => {
+            setvisible(false)
+            if (res.code == 200) {
+                getClothData(1, 10);
+                message.success("保存成功")
+                return;
+            }
+            message.success("保存失败")
         })
-            .then((res) => { return res.json() })
-            .then((res) => {
-                setvisible(false)
-                if (res.code == 200) {
-                    getClothData(1, 10);
-                    message.success("保存成功")
-                    return;
-                }
-                message.success("保存失败")
-            })
+    }
+    const savaAdd = async () => {
+        const value = await form.validateFields();
+        addEditCustomer({
+            "abbr": value.abbr,
+            "address": selectId.join(","),
+            "contactInfo": value.contactInfo,
+            "detailAddress": value.detailAddress,
+            "name": value.name,
+            "tareWeight": value.tareWeight,
+            "weightDecimal": value.weightDecimal
+        }, (res) => {
+            if (res.code == 200) {
+                getClothData(1, 10);
+                message.success("保存成功");
+                form.resetFields();
+                return;
+            }
+            message.success("保存失败")
+        })
     }
     const delect = (param) => {
         confirm({
@@ -112,98 +130,46 @@ function CustomerData() {
             okText: "确定",
             cancelText: "取消",
             onCancel() { },
-            onOk() { delectRequest(param.id); }
+            onOk() {
+                delectCustomer(param.id, (res) => {
+                    if (res.code == 200) {
+                        message.success("删除成功！");
+                        getClothData(1, 10)
+                        return;
+                    }
+                    message.error("删除失败！")
+                })
+            }
         })
 
     }
-    // 删除
-    const delectRequest = (id) => {
-        fetch(requestUrl + `/api-basedata/customer/delete?id=${id}`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code == 200) {
-                    message.success("删除成功！");
-                    getClothData(1, 10)
-                    return;
-                }
-                message.error("删除失败！")
-            })
-    }
-
     // 禁用
     const disable = (param) => {
         const usedStatus = param.usedStatus == 1 ? 2 : 1;
-        fetch(requestUrl + `/api-basedata/customer/modifyEnabled?id=${param.id}&enabled=${usedStatus}`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
+        disableCustomer(param.id, usedStatus, (res) => {
+            if (res.code == 200) {
+                getClothData(1, 10)
+                param.usedStatus == 1 ? message.success("禁用成功！") : message.success("启用成功！");
+                return;
+            }
+            param.usedStatus == 1 ? message.error("禁用失败！") : message.success("启用失败！");
         })
-            .then(res => { return res.json() })
-            .then((res) => {
-                if (res.code == 200) {
-                    getClothData(1, 10)
-                    param.usedStatus == 1 ? message.success("禁用成功！") : message.success("启用成功！");
-                    return;
-                }
-                param.usedStatus == 1 ? message.error("禁用失败！") : message.success("启用失败！");
-            })
     }
     // 获取列表数据
     const getClothData = (page, size) => {
-        fetch(requestUrl + `/api-basedata/customer/findAll?page=${page}&size=${size}`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
+        getCustomerList(page, size, (res) => {
+            if (res.code == 200) {
+                setloading(false)
+                setSize(res.data.size);
+                setTotal(res.data.total);
+                setCurrent(res.data.current)
+                setdata(res.data.records);
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log("客户列表==", res)
-                if (res.code == 200) {
-                    setloading(false)
-                    setSize(res.data.size);
-                    setTotal(res.data.total);
-                    setCurrent(res.data.current)
-                    setdata(res.data.records);
-                }
-            })
     }
     // 选择地址
     const onChange = (value) => {
         edit(value, addressData)
-    }
-    // 获取地址
-    const getData = () => {
-        fetch(requestUrl + "/api-basedata/address/findAll", {
-            method: "GET",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then((res) => { return res.json() })
-            .then((res) => {
-                addressMap(res.data)
-                setaddressData(res.data)
-            })
-    }
-    // 整理地址信息
-    const addressMap = (data) => {
-        data.map((item) => {
-            item.value = item.name;
-            item.label = item.name;
-            if (item.subAddress) {
-                item.children = item.subAddress;
-                addressMap(item.children)
-            }
-        })
-        return data
     }
     // 编辑选中的地址信息
     const edit = (selectAddr, addressData) => {
@@ -317,7 +283,7 @@ function CustomerData() {
             title={editType == 1 ? "编辑客户" : "新建客户"}
             visible={visible}
             footer={[
-                <span className="modalFooterBtn">保存并新增</span>,
+                <span className="modalFooterBtn" onClick={savaAdd}>保存并新增</span>,
                 <Button key="submit" type="primary" onClick={handleOk} >
                     保存
                 </Button>,
@@ -364,4 +330,9 @@ function CustomerData() {
         </Modal>
     </div>
 }
-export default CustomerData
+const mapStateToProps = (state) => {
+    return {
+        address: state.addressInfoReducer.address
+    }
+}
+export default connect(mapStateToProps, { setAddress })(CustomerData)

@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-17 22:53:41
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-27 21:00:50
+ * @LastEditTime: 2021-06-29 11:41:17
  * @FilePath: \cloud-admin\src\actons\action.js
  * @Description: 
  */
@@ -16,7 +16,8 @@ import {
     OUT_STOCK_ORDER_BARCODE,
     CREATE_ORDER,
     CREATE_ORDER_PARAMS,
-    CLEAR_ORDER_PARAMS
+    CLEAR_ORDER_PARAMS,
+    ADDRESS_INFO
 } from "./type";
 import {
     message
@@ -259,3 +260,9 @@ export const createOrder = (params) => (dispatch) => {
         })
 }
 
+export const setAddress = (params) => (dispatch) => {
+    dispatch({
+        type: ADDRESS_INFO,
+        payload: params
+    })
+}

@@ -1,14 +1,13 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-24 09:12:13
- * @LastEditTime: 2021-06-28 09:59:58
+ * @LastEditTime: 2021-06-29 17:32:02
  * @LastEditors: 1638877065@qq.com
  * @Description: 添加机台信息
  * @FilePath: \cloud-admin\src\views\production\order\loomTable.jsx
  */
 import React, { useState } from 'react';
 import { Table, Popconfirm, Form, Typography, Space, Select } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
 import { createOrderParams } from "../../../actons/action";
 import { connect } from "react-redux";
 const { Option } = Select;
@@ -171,8 +170,8 @@ const Editloom = (props) => {
         };
     });
     return <React.Fragment>
-        <Space>
-            <span>布票信息</span>
+        <Space style={{ marginBottom: "9px" }}>
+            <span style={{ fontSize: "16px", color: "#1890FF" }}>布票信息</span>
             {/* <PlusCircleOutlined style={{ color: "blue", marginLeft: "10px" }} onClick={addData} /> */}
         </Space>
         <div style={{ display: "flex", width: "100%" }}>

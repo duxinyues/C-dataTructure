@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-17 22:53:41
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-24 15:43:59
+ * @LastEditTime: 2021-06-29 11:23:10
  * @FilePath: \cloud-admin\src\reducer\reducer.js
  * @Description: 
  * 
@@ -18,16 +18,15 @@ import {
     OUT_STOCK_ORDER_BARCODE,
     CREATE_ORDER_PARAMS,
     CLEAR_ORDER_PARAMS,
-    CREATE_ORDER
+    CREATE_ORDER,
+    ADDRESS_INFO
 } from "../actons/type"
-import { createOrderDefaultState } from "../utils/config";
 
 //reducer的作用就是返回一个新的状态
 const initialState = {
     //存储自己想要的状态
     tokenInfor: {} //访问当前文件中的时候定义一个初始状态(数据)
 }
-
 /**
  * reducer是一个纯函数，接收旧的state和action，返回新的state
  * @param {*} state 
@@ -73,6 +72,19 @@ export function userInfoReducer(state = userDataState, action) {
             return state
     }
 }
+
+export function addressInfoReducer(state = [], action) {
+    switch (action.type) {
+        case ADDRESS_INFO:
+            return {
+                ...state,
+                address: action.payload
+            }
+        default:
+            return state
+    }
+}
+
 /**
  * 创建出库单所选的订单
  */
@@ -140,7 +152,7 @@ export const createOrderParam = (state = {}, action) => {
     }
 }
 
-export const createOrderState = (state = {}, action)=>{
+export const createOrderState = (state = {}, action) => {
     switch (action.type) {
         case CREATE_ORDER:
             return {

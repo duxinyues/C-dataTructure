@@ -1,11 +1,10 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-28 17:41:57
+ * @LastEditTime: 2021-06-29 19:33:09
  * @LastEditors: 1638877065@qq.com
  * @Description: 工具函数
  * @FilePath: \cloud-admin\src\utils\config.js
- * 
  */
 // export const requestUrl = "http://39.104.13.107:8000";
 export const requestUrl = "http://192.168.2.70:8000";
@@ -164,3 +163,16 @@ export const createOrderDefaultState = {
   "weight": 0,
   "yarnLength": ""
 }
+
+export const positionValue = (value) => {
+  switch (value) {
+    case "查布员":
+      return 1
+    case "值机员":
+      return 2
+    case "其他":
+      return 3
+  }
+}
+
+export  const  r = /^\+?[1-9][0-9]*$/

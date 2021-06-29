@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { PageHeader, Button, Table, Form, Input, Row, DatePicker, Select, Col } from "antd";
-import { productionSchedule, getCustomer } from "../../../api/apiModule"
+import { productionSchedule, getCustomer } from "../../../api/apiModule";
+import { onlyFormat } from "../../../utils/config"
 import "./style.css"
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -24,8 +25,8 @@ function ProductionSchedule() {
         { title: "机号", dataIndex: "loomId" },
         { title: "库存重量", dataIndex: "stockWeight" },
         { title: "出货重量", dataIndex: "outStockWeight" },
-        // { title: "欠织重量", dataIndex: "id" },
-        { title: "更新时间", dataIndex: "updateTime" },
+        { title: "欠织重量", dataIndex: "id" },
+        { title: "更新时间", dataIndex: "updateTime", render: (time) => (<span>{onlyFormat(time, true)}</span>) },
         { title: "针寸", dataIndex: "needles" },
         { title: "成品规格", dataIndex: "techType" },
         { title: "客户颜色", dataIndex: "customerColor" }
@@ -91,13 +92,19 @@ function ProductionSchedule() {
                         <Col span={4} >
                             <Form.Item
                                 name="knitOrderCode"
-                                label="生产单号"
+                                label="单号"
                             >
                                 <Input />
                             </Form.Item>
                             <Form.Item
                                 name="inches"
                                 label="寸数"
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="customerBillCode"
+                                label="合同号"
                             >
                                 <Input />
                             </Form.Item>
@@ -113,6 +120,33 @@ function ProductionSchedule() {
                                     }
                                 </Select>
                             </Form.Item>
+                            <Form.Item
+                                name="needles"
+                                label="针数"
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="greyFabricCode"
+                                label="坯布编码"
+                            >
+                                <Input />
+                            </Form.Item>
+
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item
+                                name="fabricType"
+                                label="布类"
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="yarnInfo"
+                                label="纱支"
+                            >
+                                <Input />
+                            </Form.Item>
                             <Form.Item >
                                 <Button type="primary" htmlType="submit">
                                     搜索
@@ -127,22 +161,7 @@ function ProductionSchedule() {
                                 </Button>
                             </Form.Item>
                         </Col>
-                        <Col span={4}>
-                            <Form.Item
-                                name="fabricType"
-                                label="布类"
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-                        <Col span={4}>
-                            <Form.Item
-                                name="needles"
-                                label="针数"
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
+
                     </Row>
                 </Form>
             </div>

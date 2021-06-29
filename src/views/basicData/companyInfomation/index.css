@@ -8,11 +8,13 @@
 em {
     color: red;
 }
+
 .company-content input,
 .company-content textarea,
 .company-content .ant-form-item-control {
     width: 310px !important;
 }
+
 .company-name {
     font-size: 14px;
     font-weight: 400;
@@ -33,8 +35,12 @@ em {
     margin-left: 150px;
 }
 
-.company-logo  img{
+.company-logo img {
     width: 100%;
     height: 100%;
     border-radius: 50%;
+}
+
+.jianjie .ant-input {
+    height: auto !important;
 }

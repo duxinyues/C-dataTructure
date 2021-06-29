@@ -373,14 +373,14 @@ function UserCenter() {
                             </Select>
                         </Form.Item>
                         <Form.Item label="角色" name="roleId" >
-                            <Select mode="multiple">
+                            <Select mode="multiple" defaultValue={role[0].name}>
                                 {
                                     role.map((item) => (<Option value={item.id}>{item.name}</Option>))
                                 }
                             </Select>
                         </Form.Item></>
                 }
-                {editType === 2 && <Form.Item label="密码" name="password" >
+                {editType === 2 && <Form.Item label="密码" name="password" rules={[{ required: true, message: '请设置密码!' }]}>
                     <Input />
                 </Form.Item>}
                 {(editType === 2 || editType === 1) && <Form.Item label="手机号码" name="mobile" >

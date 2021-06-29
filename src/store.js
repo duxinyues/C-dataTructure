@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-17 22:53:41
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-06-25 18:43:48
+ * @LastEditTime: 2021-06-29 12:14:23
  * @FilePath: \cloud-admin\src\store.js
  * @Description: 
  */
@@ -16,7 +16,8 @@ import {
     selectDataReducer,
     outStockOrderBarCode_listReducer,
     createOrderParam,
-    createOrderState
+    createOrderState,
+    addressInfoReducer
 } from "./reducer/reducer";
 
 const reducers = combineReducers({
@@ -26,7 +27,8 @@ const reducers = combineReducers({
     selectDataReducer,
     outStockOrderBarCode_listReducer,
     createOrderParam,
-    createOrderState
+    createOrderState,
+    addressInfoReducer
 })
 
 

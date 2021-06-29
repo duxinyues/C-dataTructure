@@ -4,33 +4,31 @@ import { Form, Input, Button, Checkbox, message, Tabs, Spin } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { connect } from "react-redux"
 import { fakeAuth } from '../../utils/fakeAuth'
-import { login } from "../../actons/action"
-import { requestUrl } from "../../utils/config"
+import { login, getAddressInfo } from "../../api/apiModule"
+import { setAddress } from "../../actons/action"
 import './index.css';
 import Footer from "../../components/Footer/index"
 import img from "../../utils/imgManger"
 const { TabPane } = Tabs;
 const NormalLoginForm = (props) => {
+  console.log(props)
   const [spinning, setspinning] = useState(false)
   const onFinish = (params) => {
-    console.log("登录==", params);
     setspinning(true)
-    fetch(requestUrl + `/api-uaa/oauth/token?username=${params.username}&password=${params.password}&grant_type=password&scope=app&client_id=webApp&client_secret=webApp`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    }).then((res) => {
-      return res.json()
-    }).then((res) => {
-      console.log("登录", res)
+    login(params, (res) => {
+      setspinning(false);
       if (res.code === 200) {
         fakeAuth.setToken(res.data.access_token);
-        setspinning(false);
         props.history.push('/home');
         message.success('登陆成功', 1);
+        getAddressInfo(res.data.access_token, (res) => {
+          props.setAddress(res);
+          localStorage.setItem("address",res)
+        })
         return;
       }
       message.error("登录失败请重新登录！")
-    }).catch((err) => console.log(err))
+    })
   };
   const callback = (key) => {
     console.log(key)
@@ -146,7 +144,6 @@ const NormalLoginForm = (props) => {
             </TabPane>
           </Tabs> */}
         </div>
-
       </Spin>
       <Footer />
     </div>
@@ -154,8 +151,7 @@ const NormalLoginForm = (props) => {
 };
 
 const mapStateToProps = state => {
-  console.log(state.loginReducer.tokenInfor)
   return { tokenData: state.loginReducer.tokenInfor }
 };
 
-export default connect(mapStateToProps, { login })(withRouter(NormalLoginForm));
+export default connect(mapStateToProps, { setAddress })(withRouter(NormalLoginForm));

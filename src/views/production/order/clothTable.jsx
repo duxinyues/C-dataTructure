@@ -68,7 +68,6 @@ const EditCloth = (props) => {
         props.onAddCloth(_data)
     }
     const edit = (record) => {
-        console.log("行的数据==", record)
         form.setFieldsValue({
             ...record,
         });
@@ -82,23 +81,27 @@ const EditCloth = (props) => {
             const row = await form.validateFields();
             const newData = [...data];
             const index = newData.findIndex((item) => key === item.key);
-            const totalRate = newData.reduce((pre, cur) => {
-                return pre + cur.rate
-            }, 0)
-            if (totalRate > 100) {
-                message.warning("纱比总和需要等于100");
-                return;
-            }
             row.planWeight = (props.weight * row.rate * (1 + row.knitWastage / 100) / 100).toFixed(2);
             if (index > -1) {
                 const item = newData[index];
                 newData.splice(index, 1, { ...item, ...row });
+                const totalRate = newData.reduce((pre, cur) => {
+                    return pre + cur.rate
+                }, 0);
+                if (totalRate > 100) {
+                    message.warning("纱比总和需要等于100");
+                    return;
+                }
                 setData(newData);
                 _createOrderParam.orderYarnInfos = newData;
                 props.createOrderParams(newData);
                 props.onAddCloth(newData)
                 setEditingKey('');
             } else {
+                if (row.rate > 100) {
+                    message.warning("纱比总和需要等于100");
+                    return;
+                }
                 newData.push(row);
                 setData(newData);
                 _createOrderParam.orderYarnInfos = newData;
@@ -192,9 +195,9 @@ const EditCloth = (props) => {
     });
     return (
         <Form form={form} component={false}>
-            <Space>
-                <span>用料信息</span>
-                <PlusCircleOutlined style={{ color: "blue", marginLeft: "10px" }} onClick={addData} />
+            <Space style={{ marginBottom: "9px", display: "flex", alignItems: "center" }}>
+                <span style={{ fontSize: "16px", color: "#1890FF" }}>用料要求</span>
+                <PlusCircleOutlined style={{ color: "#1890FF", marginLeft: "10px" }} onClick={addData} />
             </Space>
             <Table
                 components={{

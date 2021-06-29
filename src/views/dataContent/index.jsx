@@ -48,7 +48,7 @@ function DataContent(props) {
                 <div className="basic-item">
                     <div className="center">
                         <Statistic title="当月产量" value={1000} />
-                        <div className="scale" style={{ height: "100px" }}>
+                        <div className="scale">
                             <span>周环比67%</span>
                             <span>日环比 0%</span>
                         </div>
@@ -72,21 +72,7 @@ function DataContent(props) {
                     <div className="center">
                         <Statistic title="开机效率" value="未接入MES" />
                         <div className="scale">
-                            {/* <Chart height={100} autoFit data={[
-                                { year: '1951 年', sales: 100 },
-                                { year: '1952 年', sales: 52 },
-                                { year: '1956 年', sales: 61 },
-                                { year: '1957 年', sales: 45 },
-                                { year: '1958 年', sales: 48 },
-                                { year: '1959 年', sales: 38 },
-                                { year: '1960 年', sales: 38 },
-                                { year: '1962 年', sales: 38 },
-                            ]} >
-                                <Interval position="year*sales" />
-                                <Tooltip shared />
-                            </Chart> */}
                         </div>
-
                     </div>
                     <div className="yesterday-output">
                         班次效率 - 停机时长 -
