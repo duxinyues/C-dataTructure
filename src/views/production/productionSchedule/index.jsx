@@ -16,20 +16,18 @@ function ProductionSchedule() {
     const columns = [
         { title: "#", dataIndex: "id" },
         { title: "生产单号", dataIndex: "knitOrderCode" },
-        { title: "客户", dataIndex: "id" },
-        { title: "客户单号", dataIndex: "customerBillCode" },
+        { title: "客户", dataIndex: "customerName" },
+        { title: "合同号", dataIndex: "customerBillCode" },
+        { title: "坯布编码", dataIndex: "greyFabricCode" },
         { title: "布类", dataIndex: "fabricType" },
-        { title: "纱别", dataIndex: "yarnInfo" },
+        { title: "针寸", dataIndex: "needles" },
+        { title: "纱支", dataIndex: "yarnInfo" },
         { title: "订单数量", dataIndex: "weight" },
-        { title: "今日产量", dataIndex: "outputToday" },
+        { title: "昨日产量", dataIndex: "outputToday" },
         { title: "机号", dataIndex: "loomId" },
         { title: "库存重量", dataIndex: "stockWeight" },
         { title: "出货重量", dataIndex: "outStockWeight" },
-        { title: "欠织重量", dataIndex: "id" },
-        { title: "更新时间", dataIndex: "updateTime", render: (time) => (<span>{onlyFormat(time, true)}</span>) },
-        { title: "针寸", dataIndex: "needles" },
-        { title: "成品规格", dataIndex: "techType" },
-        { title: "客户颜色", dataIndex: "customerColor" }
+        { title: "欠织重量", dataIndex: "id" } 
     ]
     useEffect(() => {
         listData({ page: 1, size: 10 })

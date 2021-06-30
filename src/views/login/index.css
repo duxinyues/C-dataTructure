@@ -12,33 +12,40 @@
         background-size: 100%;
         position: relative;
     }
+
     .login-form {
         width: 368px;
     }
+
     .ant-tabs-nav .ant-tabs-nav-wrap {
         border-bottom: 1px solid transparent !important;
     }
+
     .login-form .title {
-        text-align: center;
         margin-bottom: 88px;
         display: flex;
         align-items: center;
+        justify-content: center;
     }
+
     .logo-img {
         width: 39px;
         height: 32px;
         margin-right: 22px;
     }
+
     .login-form .title span {
         font-size: 28px;
         font-weight: 500;
         color: rgba(0, 0, 0, 0.85);
         line-height: 33px;
     }
+
     .row .ant-form-item-control-input-content {
         display: flex;
         justify-content: space-between;
     }
+
     .btn .ant-btn-primary {
         width: 100%;
         display: flex;

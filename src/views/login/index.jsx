@@ -38,7 +38,7 @@ const NormalLoginForm = (props) => {
       <Spin spinning={spinning} tip="正在登录...">
         <div className="login-form">
           <div className="title">
-            <img src={img.logo} className="logo-img" />
+            {/* <img src={img.logo} className="logo-img" /> */}
             <span>数织通</span>
           </div>
           {/* <Tabs defaultActiveKey="1" onChange={callback}>

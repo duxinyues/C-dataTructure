@@ -35,3 +35,7 @@
 .custom .left .title {
     margin-right: 10px;
 }
+
+.ant-picker {
+    width: 250px !important;
+}

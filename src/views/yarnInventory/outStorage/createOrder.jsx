@@ -81,7 +81,7 @@ function CreateOutStockOrder(props) {
             width:130
         },
         {
-            title: '客户单号',
+            title: '合同号',
             dataIndex: 'customerCode',
             key: 'customerCode',
             width:130

@@ -57,7 +57,7 @@ function DeliveryOrder(props) {
                                                         <div className="ob-row">
                                                             <div>客户：{props.deliveryOrder.customerName}</div>
                                                             <div>日期：{onlyFormat(props.deliveryOrder.bizDate, false)}</div>
-                                                            <div>客户单号：{item.customerBillCode}</div>
+                                                            <div>合同号：{item.customerBillCode}</div>
                                                             <div>坯布编码：{item.greyFabricCode}</div>
                                                         </div>
                                                         <div className="ob-row">

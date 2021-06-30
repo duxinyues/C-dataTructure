@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { PageHeader, Form, Row, DatePicker, Input, Button, Select, Table } from "antd";
-import { requestUrl, getMonthFE } from "../../../utils/config";
+import { Form, Row, DatePicker, Input, Button, Select, Table, AutoComplete } from "antd";
+import { getMonthFE } from "../../../utils/config";
+import { fabricStatement, getCustomer, getLoom, getClothType } from "../../../api/apiModule"
 import moment from 'moment';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -18,9 +19,20 @@ function InSTockTable() {
     const [type, settype] = useState("order");// 设置查询维度
     const [columns, setcolumns] = useState([]);
     const [loom, setloom] = useState([]);
+    const [clothData, setClothData] = useState([]);
     useEffect(() => {
-        getCustomer();
-        getLoom();
+        getCustomer((res) => {
+            setcustomer(res)
+        });
+        getLoom((res) => {
+            if (res.code == 200) {
+                setloom(res.data)
+            }
+        });
+        getClothType((res) => {
+            console.log(res);
+            setClothData([...res.data])
+        })
         getData({ page: 1, size: 10, type: type, beginTime: date[0], endTime: date[1] });
         setcolumns([
             {
@@ -37,7 +49,7 @@ function InSTockTable() {
                 key: 'customerName',
 
             }, {
-                title: "客户单号",
+                title: "合同号",
                 dataIndex: 'customerBillCode',
                 key: 'customerBillCode',
             }, {
@@ -49,7 +61,7 @@ function InSTockTable() {
                 dataIndex: 'fabricType',
                 key: 'fabricType',
             }, {
-                title: "纱别",
+                title: "纱支",
                 dataIndex: 'yarnName',
                 key: 'yarnName',
             }, {
@@ -58,7 +70,7 @@ function InSTockTable() {
                 key: 'orderWeight',
 
             }, {
-                title: "卷数",
+                title: "条数",
                 dataIndex: 'volQty',
             }, {
                 title: "入库重量",
@@ -77,12 +89,6 @@ function InSTockTable() {
             }, {
                 title: "针寸",
                 dataIndex: "inches"
-            }, {
-                title: "成品规格	",
-                dataIndex: 'techType',
-            }, {
-                title: "客户颜色",
-                dataIndex: 'customerColor',
             }, {
                 title: "状态",
                 dataIndex: 'billStatus',
@@ -108,60 +114,20 @@ function InSTockTable() {
         setDate(dateString);
         getData({ page: 1, size: 10, type: type, beginTime: dateString[0], endTime: dateString[1] });
     }
-    //获取出入明细列表
+    //获取入库报表
     const getData = (param) => {
-        fetch(requestUrl + "/api-stock/fabricStockByDay/findAll", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(param)
+        fabricStatement(param, (res) => {
+            if (res.code == 200) {
+                setloading(false);
+                setyarnStockIo(res.data.records);
+                settotal(res.data.total);
+                setsize(res.data.size);
+                setcurrent(res.data.current)
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code == 200) {
-                    setloading(false);
-                    setyarnStockIo(res.data.records);
-                    settotal(res.data.total);
-                    setsize(res.data.size);
-                    setcurrent(res.data.current)
-                }
-            })
+
     }
-    // 获取客户列表
-    const getCustomer = () => {
-        fetch(requestUrl + "/api-stock/stockCommon/findCustomerDown", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code == 200) {
-                    setcustomer(res.data)
-                }
-            })
-    }
-    // 获取机台列表
-    const getLoom = () => {
-        fetch(requestUrl + "/api-stock/stockCommon/findLoomDown", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log("机台数据==", res)
-                if (res.code == 200) {
-                    setloom(res.data)
-                }
-            })
-    }
+
     // 设置维度
     const selectType = (value) => {
         console.log(value)
@@ -183,7 +149,7 @@ function InSTockTable() {
                     key: 'customerName',
 
                 }, {
-                    title: "客户单号",
+                    title: "合同号",
                     dataIndex: 'customerBillCode',
                     key: 'customerBillCode',
                 }, {
@@ -195,7 +161,7 @@ function InSTockTable() {
                     dataIndex: 'fabricType',
                     key: 'fabricType',
                 }, {
-                    title: "纱别",
+                    title: "纱支",
                     dataIndex: 'yarnName',
                     key: 'yarnName',
                 }, {
@@ -204,7 +170,7 @@ function InSTockTable() {
                     key: 'orderWeight',
 
                 }, {
-                    title: "卷数",
+                    title: "条数",
                     dataIndex: 'volQty',
                 }, {
                     title: "入库重量",
@@ -223,12 +189,6 @@ function InSTockTable() {
                 }, {
                     title: "针寸",
                     dataIndex: "inches"
-                }, {
-                    title: "成品规格	",
-                    dataIndex: 'techType',
-                }, {
-                    title: "客户颜色",
-                    dataIndex: 'customerColor',
                 }, {
                     title: "状态",
                     dataIndex: 'billStatus',
@@ -252,11 +212,11 @@ function InSTockTable() {
                     dataIndex: 'fabricType',
                     key: 'fabricType',
                 }, {
-                    title: "纱别",
+                    title: "纱支",
                     dataIndex: 'yarnName',
                     key: 'yarnName',
                 }, {
-                    title: "卷数",
+                    title: "条数",
                     dataIndex: 'volQty',
                 }, {
                     title: "入库重量",
@@ -287,7 +247,7 @@ function InSTockTable() {
                     key: 'customerName',
 
                 }, {
-                    title: "卷数",
+                    title: "条数",
                     dataIndex: 'volQty',
                 }, {
                     title: "入库重量",
@@ -315,7 +275,7 @@ function InSTockTable() {
                     key: 'loomCode',
 
                 }, {
-                    title: "卷数",
+                    title: "条数",
                     dataIndex: 'volQty',
                 }, {
                     title: "入库重量",
@@ -391,7 +351,7 @@ function InSTockTable() {
                                     <Input />
                                 </Form.Item> <Form.Item
                                     name="customerBillCode"
-                                    label="客户单号"
+                                    label="合同号"
                                     className="col2"
                                 >
                                     <Input />
@@ -406,12 +366,17 @@ function InSTockTable() {
                                     className="col2"
                                 >
                                     <Input />
-                                </Form.Item> <Form.Item
+                                </Form.Item>
+                                <Form.Item
                                     name="fabricType"
                                     label="布类"
                                     className="col2"
                                 >
-                                    <Input />
+                                    <AutoComplete style={{width:"140px"}}>
+                                        {
+                                            clothData.map((item) => (<AutoComplete.Option value={item}>{item}</AutoComplete.Option>))
+                                        }
+                                    </AutoComplete>
                                 </Form.Item>
                             </>
                         }

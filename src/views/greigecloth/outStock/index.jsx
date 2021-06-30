@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from "react";
-import ReactToPrint from "react-to-print";
-import {  Form, Row, DatePicker, Input, Button, Select, Table } from "antd";
-import { requestUrl, onlyFormat, getMonthFE } from "../../../utils/config"
+import { useEffect, useState } from "react";
+import { Form, Row, DatePicker, Input, Button, Select, Table, Col } from "antd";
+import { onlyFormat, getMonthFE } from "../../../utils/config"
+import { fabricOut, getCustomer } from "../../../api/apiModule"
 import moment from 'moment';
 import "./index.css"
 const { RangePicker } = DatePicker;
@@ -17,7 +17,9 @@ function OutStock() {
     const [size, setsize] = useState(10);
     const [current, setcurrent] = useState(1)
     useEffect(() => {
-        getCustomer();
+        getCustomer((data) => {
+            setcustomer(data)
+        });
         getData({ page: 1, size: 10, beginTime: date[0], endTime: date[1] })
     }, [])
     const onFinish = (value) => {
@@ -35,7 +37,6 @@ function OutStock() {
             loomId: value.loomId ? value.loomId : "",
             yarnName: value.yarnName ? value.yarnName : "",
         }
-
         console.log("查询表单字段", param)
         getData(param)
     }
@@ -44,42 +45,19 @@ function OutStock() {
     }
     //获取出入明细列表
     const getData = (param) => {
-        fetch(requestUrl + "/api-stock/fabricStockIo/findAllDetail", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(param)
+        fabricOut(param, (res) => {
+            console.log(res)
+            setloading(false);
+            if (res.code == 200) {
+                if (res.data.records === 0) return;
+                setyarnStockIo(res.data.records);
+                settotal(res.data.total);
+                setsize(res.data.size);
+                setcurrent(res.data.current)
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code == 200) {
-                    setloading(false);
-                    setyarnStockIo(res.data.records);
-                    settotal(res.data.total);
-                    setsize(res.data.size);
-                    setcurrent(res.data.current)
-                }
-            })
     }
-    // 获取客户列表
-    const getCustomer = () => {
-        fetch(requestUrl + "/api-stock/stockCommon/findCustomerDown?companyId=1", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code == 200) {
-                    setcustomer(res.data)
-                }
-            })
-    }
+
     // 选择客户
     const selectcustomer = (value) => {
         console.log(value)
@@ -107,13 +85,12 @@ function OutStock() {
             key: 'code',
         }, {
             title: "单据类型",
-            dataIndex: 'billType',
-            key: 'billType',
-
+            dataIndex: 'flag',
+            render: (params) => (<span>{params === 0 && "出库"}{params === 1 && "入库"}</span>)
         }, {
             title: "客户",
-            dataIndex: 'customerId',
-            key: 'customerId',
+            dataIndex: 'order',
+            render: (params) => (<span>{params ? params.customerName : ""}</span>)
         }, {
             title: "日期",
             dataIndex: 'bizDate',
@@ -122,144 +99,148 @@ function OutStock() {
         }, {
             title: "状态",
             dataIndex: 'billStatus',
-            key: 'billStatus',
+            render: (params) => (<span>{params === 0 && "未审核"}{params === 1 && "已审核"}</span>)
         }, {
             title: "生产单号",
-            dataIndex: 'knitOrderId',
-            key: 'knitOrderId',
+            dataIndex: 'order',
+            render: (order) => (<span>{order ? order.code : ""}</span>)
         }, {
-            title: "客户单号",
-            dataIndex: 'colorCode',
-            key: 'colorCode',
+            title: "合同号",
+            dataIndex: 'order',
+            render: (order) => (<span>{order ? order.customerBillCode : ""}</span>)
 
         }, {
             title: "坯布编码",
-            dataIndex: '',
-            key: '',
+            dataIndex: 'order',
+            render: (order) => (<span>{order ? order.greyFabricCode : ""}</span>)
+
         }, {
             title: "布类",
-            dataIndex: 'pcs',
-            key: 'pcs',
+            dataIndex: 'order',
+            render: (order) => (<span>{order ? order.fabricType : ""}</span>)
         }, {
             title: "用料信息",
-            dataIndex: 'spec',
-            key: 'spec',
+            dataIndex: 'order',
+            render: (order) => (<span>{order ? order.yarnInfo : ""}</span>)
         }, {
             title: "机号",
-            dataIndex: 'lackWeight',
-            key: 'lackWeight',
+            dataIndex: 'order',
+            render: (order) => (<span>{order ? order.loomCode : ""}</span>)
         }, {
-            title: "针寸"
+            title: "针寸",
+            dataIndex: 'order',
+            render: (order) => (<span>{order ? order.needles : ""}-{order ? order.inches : ""}</span>)
         }, {
             title: "卷数",
-            dataIndex: "volQty"
+            dataIndex: 'order',
+            render: (order) => (<span>{order ? order.totalVolQty : ""}</span>)
         }, {
             title: "重量",
-            dataIndex: 'netWeight',
-            key: 'netWeight',
+            dataIndex: 'order',
+            render: (order) => (<span>{order ? order.totalWeight : ""}</span>)
         }, {
             title: "金额",
-            dataIndex: 'customerBillCode',
-            key: 'customerBillCode',
+            dataIndex: 'order',
+            render: (order) => (<span>{order ? order.totalMoney : ""}</span>)
         }, {
             title: "创建人",
             dataIndex: 'creatorName',
-            key: 'creatorName',
         }
     ]
-    const componentRef = useRef();
     return <div className="right-container">
         <div className="custom">
             <div className="left">
-                <span className="title">出库明细</span>
+                <span className="title">出入明细</span>
                 <RangePicker onChange={selectDate} defaultValue={[moment(getMonthFE(1), "YYYY-MM-DD"), moment(getMonthFE(2), "YYYY-MM-DD")]} />
             </div>
             <div className="head-bth">
-                <ReactToPrint
-                    trigger={() => <Button>打印</Button>}
-                    content={() => componentRef.current}
-                />
-
+                <Button>打印</Button>
                 <Button>导出</Button>
             </div>
         </div>
         <div className="inventory-container outStock">
             <div className="search-content">
                 <Form form={form} onFinish={onFinish}>
-                    <Row gutter={24}>
-                        <Form.Item
-                            name="code"
-                            label="单号"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name="customerId"
-                            label="客户"
-                            className="col2"
-                        >
-                            <Select onChange={selectcustomer} style={{ minWidth: "175px" }} >
-                                {
-                                    customer.map((item, key) => (<Option value={item.id} key={key}>{item.name}</Option>))
-                                }
-                            </Select>
-                        </Form.Item>
-
-                        <Form.Item
-                            name="greyFabricCode"
-                            label="坯布编码"
-                            className="col11 col2"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name="flag"
-                            label="类型"
-                            className="col11 col2"
-                        >
-                            <Select onChange={selectcustomer} style={{ minWidth: "175px" }} >
-                                <Option value="0" >入库</Option>
-                                <Option value="1" >出库</Option>
-                            </Select>
-                        </Form.Item>
-                    </Row>
-                    <Row gutter={24}>
-                        <Form.Item
-                            name="fabricType"
-                            label="布类"
-                        >
-                            <Input />
-                        </Form.Item>
-
-                        <Form.Item
-                            name="yarnName"
-                            label="用料信息"
-                            className="col2"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name="loomId"
-                            label="机号"
-                            className="col2"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item style={{ marginLeft: "60px" }}>
-                            <Button type="primary" htmlType="submit">
-                                搜索
-                            </Button>
-                            <Button
-                                style={{ margin: '0 8px' }}
-                                onClick={() => {
-                                    form.resetFields();
-                                    getData({ page: 1, size: 10 });
-                                    setDate([]);
-                                }}
+                    <Row gutter={16}>
+                        <Col span={4}>
+                            <Form.Item
+                                name="code"
+                                label="单号"
+                                className="col2"
                             >
-                                清空
-                            </Button>
-                        </Form.Item>
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="fabricType"
+                                label="布类"
+                                className="col2"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item
+                                name="customerId"
+                                label="客户"
+                                className="col2"
+                            >
+                                <Select onChange={selectcustomer} style={{ minWidth: "145px" }} >
+                                    {
+                                        customer.map((item, key) => (<Option value={item.id} key={key}>{item.name}</Option>))
+                                    }
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                name="yarnName"
+                                label="用料信息"
+                                className="col2"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item
+                                name="flag"
+                                label="类型"
+                                className=" col2"
+                            >
+                                <Select onChange={selectcustomer} style={{ minWidth: "145px" }} >
+                                    <Option value="1" >入库</Option>
+                                    <Option value="0" >出库</Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                name="loomId"
+                                label="机号"
+                                className="col2"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item
+                                name="greyFabricCode"
+                                label="坯布编码"
+                                className="col11 col2"
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item >
+                                <Button type="primary" htmlType="submit">
+                                    搜索
+                                </Button>
+                                <Button
+                                    style={{ margin: '0 8px' }}
+                                    onClick={() => {
+                                        form.resetFields();
+                                        getData({ page: 1, size: 10 });
+                                        setDate([]);
+                                    }}
+                                >
+                                    清空
+                                </Button>
+                            </Form.Item>
+                        </Col>
                     </Row>
                 </Form>
             </div>

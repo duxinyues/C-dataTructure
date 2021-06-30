@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { PageHeader, Button, Table, Form, Input, Row, DatePicker, Select, Col } from "antd";
 import { checkClothDetail, getPerson, getLoom } from "../../../api/apiModule"
+import { onlyFormat } from "../../../utils/config"
 import "../productionSchedule/style.css"
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -13,8 +14,8 @@ function ProductionSchedule() {
     const [form] = Form.useForm()
     const columns = [
         { title: "条码", dataIndex: "barcode" },
-        { title: "查布日期", dataIndex: "id" },
-        { title: "班次", dataIndex: "shift", render: (param) => (<span>{param === 1 ? "白班" : "晚班"}</span>) },
+        { title: "查布日期", dataIndex: "inStockTime", render: (time) => (<span>{onlyFormat(time, true)}</span>) },
+        { title: "班次", dataIndex: "shift", render: (param) => (<span>{param === 1 && "白班"}{param === 2 && "晚班"}</span>) },
         { title: "查布员", dataIndex: "qcName" },
         { title: "值机工", dataIndex: "weaverName" },
         { title: "机号", dataIndex: "loomCode" },
@@ -110,14 +111,10 @@ function ProductionSchedule() {
                                 </Select>
                             </Form.Item>
                             <Form.Item
-                                name="weaverId"
-                                label="值机工"
+                                name="customerBillCode"
+                                label="合同号"
                             >
-                                <Select>
-                                    {
-                                        runMachinePerson.map((item) => (<Option value={item.id}>{item.name}</Option>))
-                                    }
-                                </Select>
+                                <Input />
                             </Form.Item>
                             <Form.Item >
                                 <Button type="primary" htmlType="submit">
@@ -144,8 +141,8 @@ function ProductionSchedule() {
                                 </Select>
                             </Form.Item>
                             <Form.Item
-                                name="customerBillCode"
-                                label="合同号"
+                                name="greyFabricCode"
+                                label="坯布编码"
                             >
                                 <Input />
                             </Form.Item>
@@ -170,11 +167,16 @@ function ProductionSchedule() {
                         </Col>
                         <Col span={4}>
                             <Form.Item
-                                name="greyFabricCode"
-                                label="坯布编码"
+                                name="weaverId"
+                                label="值机工"
                             >
-                                <Input />
+                                <Select>
+                                    {
+                                        runMachinePerson.map((item) => (<Option value={item.id}>{item.name}</Option>))
+                                    }
+                                </Select>
                             </Form.Item>
+
                             <Form.Item
                                 name="yarnInfo"
                                 label="用料信息"

@@ -99,7 +99,7 @@ function StockList() {
         }, {
             title: "缸号"
         }, {
-            title: "客户单号",
+            title: "合同号",
             dataIndex: 'inWeight',
             key: 'inWeight'
         }, {
@@ -176,7 +176,7 @@ function StockList() {
                         </Form.Item>
                         <Form.Item
                             name="customerBillCode"
-                            label="客户单号"
+                            label="合同号"
                             className="col2"
                         >
                             <Input />

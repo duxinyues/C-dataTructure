@@ -157,7 +157,7 @@ function EnterOutDetail() {
             dataIndex: 'netWeight',
             key: 'netWeight',
         }, {
-            title: "客户单号",
+            title: "合同号",
             dataIndex: 'customerBillCode',
             key: 'customerBillCode',
         }, {
@@ -229,7 +229,7 @@ function EnterOutDetail() {
                         </Form.Item>
                         <Form.Item
                             name="customerBillCode"
-                            label="客户单号"
+                            label="合同号"
                             className="col2"
                         >
                             <Input />

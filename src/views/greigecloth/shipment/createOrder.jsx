@@ -419,7 +419,7 @@ function CreateEnterStockOrder(props) {
                 <Table
                     columns={[
                         { title: "生产单号", width: 130, dataIndex: "knitOrderCode" },
-                        { title: "客户单号", width: 130, dataIndex: "customerBillCode" },
+                        { title: "合同号", width: 130, dataIndex: "customerBillCode" },
                         { title: "坯布编码", width: 130, dataIndex: "greyFabricCode" },
                         { title: "布类", width: 130, dataIndex: "fabricType" },
                         { title: "纱别", width: 130, dataIndex: "yarnInfo" },
@@ -495,7 +495,7 @@ function CreateEnterStockOrder(props) {
                     </Form.Item>
                     <Form.Item
                         name="customerBillCode"
-                        label="客户单号"
+                        label="合同号"
                         style={{ marginLeft: "10px" }}
                     >
                         <Input style={{ width: "100px" }} />
@@ -535,7 +535,7 @@ function CreateEnterStockOrder(props) {
                             { title: "生产单号", dataIndex: "knitOrderCode" },
                             { title: "客户", dataIndex: "customerName" },
                             { title: "机台", dataIndex: "loomCode" },
-                            { title: "客户单号", dataIndex: "customerBillCode" },
+                            { title: "合同号", dataIndex: "customerBillCode" },
                             { title: "坯布编码", dataIndex: "greyFabricCode" },
                             { title: "布类", dataIndex: "fabricType" },
                             { title: "卷数", dataIndex: "volQty" },

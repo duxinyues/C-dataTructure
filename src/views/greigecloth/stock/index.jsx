@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { PageHeader, Form, Row, Input, Button, Select, Table } from "antd";
-import { requestUrl } from "../../../utils/config"
+import { Form, Row, Input, Button, Select, Table } from "antd";
+import { getCustomer, getFabricStock } from "../../../api/apiModule"
 const { Option } = Select;
 function Stock() {
     document.title = "库存"
@@ -12,7 +12,9 @@ function Stock() {
     const [size, setsize] = useState(10);
     const [current, setcurrent] = useState(1)
     useEffect(() => {
-        getCustomer();
+        getCustomer((res) => {
+            setcustomer(res)
+        });
         getData({ page: 1, size: 10 })
     }, [])
     const onFinish = (value) => {
@@ -35,41 +37,19 @@ function Stock() {
 
     //获取坯布库存
     const getData = (param) => {
-        fetch(requestUrl + "/api-stock/fabricStock/findAll", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(param)
+        getFabricStock(param, (res) => {
+            console.log("坯布库存", res)
+            setloading(false);
+            if (res.code == 200) {
+                res.data.page.records.map((item) => {
+                    item.zc = item.needles + "-" + item.inches
+                })
+                setyarnStockIo(res.data.page.records);
+                settotal(res.data.page.total);
+                setsize(res.data.page.size);
+                setcurrent(res.data.page.current)
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log("坯布库存", res)
-                if (res.code == 200) {
-                    setloading(false);
-                    setyarnStockIo(res.data.page.records);
-                    settotal(res.data.page.total);
-                    setsize(res.data.page.size);
-                    setcurrent(res.data.page.current)
-                }
-            })
-    }
-    // 获取客户列表
-    const getCustomer = () => {
-        fetch(requestUrl + "/api-stock/stockCommon/findCustomerDown", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log("客户==", res)
-                if (res.code == 200) {
-                    setcustomer(res.data)
-                }
-            })
     }
     const pagination = {
         total: total,
@@ -92,7 +72,7 @@ function Stock() {
             title: "生产单号",
             dataIndex: 'knitOrderCode',
         }, {
-            title: "客户单号",
+            title: "合同号",
             dataIndex: 'customerBillCode',
 
         }, {
@@ -112,19 +92,19 @@ function Stock() {
             dataIndex: 'loomCode',
 
         }, {
-            title: "客户颜色",
-            dataIndex: 'customerCode',
+            title: "颜色",
+            dataIndex: 'colorCode',
         }, {
-            title: "卷数",
+            title: "条数",
             dataIndex: 'volQty',
         }, {
             title: "重量",
             dataIndex: 'weight',
         }, {
             title: "针寸",
-            dataIndex: 'inches',
+            dataIndex: 'zc',
         }, {
-            title: "规格"
+            title: "成品规格"
         }
     ]
     return <div className="right-container">

@@ -91,7 +91,7 @@ function CreateEnterStockOrder(props) {
             width: 125
         },
         {
-            title: '客户单号',
+            title: '合同号',
             dataIndex: 'customerCode',
             key: 'customerCode',
             width: 125

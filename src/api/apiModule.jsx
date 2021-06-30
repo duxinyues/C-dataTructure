@@ -762,7 +762,7 @@ export const getOrderData = (params, callback) => {
  * @param {*} status 
  * @param {*} callback 
  */
-export const orderStatus = (id,status,callback)=>{
+export const orderStatus = (id, status, callback) => {
     fetch(requestUrl + "/api-production/order/updateBillStatus?id=" + id + "&billStatus=" + status, {
         method: "POST",
         headers: {
@@ -774,4 +774,90 @@ export const orderStatus = (id,status,callback)=>{
             callback(res)
         })
 }
+/**
+ * 布类
+ * @param {*} callback 
+ */
+export const getClothType = (callback) => {
+    fetch(requestUrl + "/api-production/order/getFabricTypeDownList", {
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+        }
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+/**
+ * 坯布出货单列表
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const fabricIoOrder = (params, callback) => {
+    fetch(requestUrl + "/api-stock/fabricStockIo/findAll", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+/**
+ * 出货明细
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const fabricOut = (params, callback) => {
+    fetch(requestUrl + "/api-stock/fabricStockIo/findAllDetail", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+/**
+ * 入库报表
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const fabricStatement = (params, callback) => {
+    fetch(requestUrl + "/api-stock/fabricStockByDay/findAll", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
 
+export const getFabricStock = (params, callback) => {
+    fetch(requestUrl + "/api-stock/fabricStock/findAll", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}

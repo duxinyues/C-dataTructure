@@ -1,5 +1,5 @@
 import React, { useState, useEffect, } from "react"
-import { Col, Row, Input, Table, DatePicker, Select, message } from "antd";
+import { Col, Row, Input, Table, DatePicker, Select, AutoComplete } from "antd";
 import { newOrderType, requestUrl, onlyFormat } from "../../../utils/config"
 import { createOrderParams } from "../../../actons/action"
 import { connect } from "react-redux"
@@ -64,7 +64,9 @@ let EditOrder = (props) => {
         props.createOrderParams(_createOrderParam);
     }
     const selectClothType = (value) => {
+        console.log("布类==",value)
         _createOrderParam.fabricType = value;
+        console.log("_createOrderParam",_createOrderParam)
         props.editOrder(_createOrderParam);
         props.createOrderParams(_createOrderParam);
     }
@@ -218,9 +220,19 @@ let EditOrder = (props) => {
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right"><em>*</em>布类</div>
-                        <div className="c-input"><Select onChange={selectClothType} defaultValue={props.orderData.fabricType}>
-                            {clothType.map((item, key) => (<Option value={item} key={key}>{item}</Option>))}
-                        </Select></div>
+                        <div className="c-input">
+                            <AutoComplete
+                                style={{ height: "26px" }}
+                                onChange={selectClothType}
+                                defaultValue={props.orderData.fabricType}
+                            >
+                                {clothType.map((email) => (
+                                    <Option key={email} value={email}>
+                                        {email}
+                                    </Option>
+                                ))}
+                            </AutoComplete>
+                        </div>
                     </Col>
                 </Row>
                 <Row className="c-row">
@@ -261,7 +273,7 @@ let EditOrder = (props) => {
                 <Row className="c-row">
                     <Col span={8} className="c-col">
                         <div className="c-label">订单交期</div>
-                        <div className="c-input"><DatePicker onChange={selectDeliveryDate} defaultValue={moment(props.orderData.deliveryDate ? props.orderData.deliveryDate : today)} /></div>
+                        <div className="c-input"><DatePicker onChange={selectDeliveryDate} defaultValue={moment(props.orderData.deliveryDate ? props.orderData.deliveryDate : "")} /></div>
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">加工单价</div>

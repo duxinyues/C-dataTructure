@@ -160,6 +160,20 @@
 .ant-tabs-bottom>div>.ant-tabs-nav::before {
     border: none !important;
 }
-.ant-tabs-top > .ant-tabs-nav, .ant-tabs-bottom > .ant-tabs-nav, .ant-tabs-top > div > .ant-tabs-nav, .ant-tabs-bottom > div > .ant-tabs-nav{
+
+.ant-tabs-top>.ant-tabs-nav,
+.ant-tabs-bottom>.ant-tabs-nav,
+.ant-tabs-top>div>.ant-tabs-nav,
+.ant-tabs-bottom>div>.ant-tabs-nav {
     margin: 0 !important;
+}
+
+.ant-select-selection-search {
+    display: flex;
+    align-items: center;
+}
+
+.ant-select-selection-overflow{
+    flex-wrap: nowrap !important;
+    overflow: hidden;
 }

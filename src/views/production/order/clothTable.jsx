@@ -38,7 +38,6 @@ const EditableCell = ({
     );
 };
 const EditCloth = (props) => {
-    console.log(props)
     const _createOrderParam = props.createOrderParam
     const [form] = Form.useForm();
     const [data, setData] = useState([]);

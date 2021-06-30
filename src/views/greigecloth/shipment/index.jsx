@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:31:18
- * @LastEditTime: 2021-06-25 18:18:05
+ * @LastEditTime: 2021-06-30 14:32:20
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布列表和详情
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\index.jsx
@@ -9,6 +9,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Table, Button, Modal, Spin, message } from "antd";
 import { onlyFormat, requestUrl } from "../../../utils/config";
+import { fabricIoOrder } from "../../../api/apiModule"
 import { SAVE_ORDER, SAVE_SELECTDATA } from "../../../actons/type";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -45,32 +46,23 @@ function InStock(props) {
 
     //  坯布出货
     const getData = (param) => {
-        fetch(requestUrl + "/api-stock/fabricStockIo/findAll", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(param)
-        })
-            .then(res => { return res.json() })
-            .then((res) => {
-                console.log("坯布列表===", res)
-                if (res.code == 200) {
-                    setloading(false)
-                    if (res.data.total == 0) {
-                        setdisabled(true);
-                        setspinning(false);
-                        return;
-                    }
-                    setsize(res.data.size);
-                    setcurrent(res.data.current);
-                    setleftData(res.data.records);
-                    setleftTotal(res.data.total);
-                    setSelectId(res.data.records[0].id);
-                    getYarnStockDetail(res.data.records[0].id)
+        fabricIoOrder(param, (res) => {
+            console.log("坯布列表===", res)
+            if (res.code == 200) {
+                setloading(false)
+                if (res.data.total == 0) {
+                    setdisabled(true);
+                    setspinning(false);
+                    return;
                 }
-            })
+                setsize(res.data.size);
+                setcurrent(res.data.current);
+                setleftData(res.data.records);
+                setleftTotal(res.data.total);
+                setSelectId(res.data.records[0].id);
+                getYarnStockDetail(res.data.records[0].id)
+            }
+        })
     }
     // 坯布出货详情
     const getYarnStockDetail = (id) => {
@@ -290,11 +282,9 @@ function InStock(props) {
                     }}
                 />
             </div>
-            <Spin spinning={spinning}>
-                {detailType === "detail" && <OrderDetail data={yarn_stock_detail} update={update} />}
-                {detailType === "edit" && <EditEnterStockOrder save={save} data={yarn_stock_detail} />}
-                {detailType === "add" && <CreateOrder save={save} ref={childRef} />}
-            </Spin>
+            {detailType === "detail" && <OrderDetail data={yarn_stock_detail} update={update} />}
+            {detailType === "edit" && <EditEnterStockOrder save={save} data={yarn_stock_detail} />}
+            {detailType === "add" && <CreateOrder save={save} ref={childRef} />}
         </div>
         {/* 细码 */}
         {outStockOrder && <DeliveryOrder deliveryOrder={deliveryOrder} modalState={modalState} />}

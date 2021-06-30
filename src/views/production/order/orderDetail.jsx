@@ -141,7 +141,7 @@ function OrderDetail(props) {
                         <Table
                             columns={[
                                 { title: "生产单号" },
-                                { title: "客户单号" },
+                                { title: "合同号" },
                                 { title: "布类" },
                                 { title: "纱别" },
                                 { title: "纱牌/纱批" },
@@ -186,8 +186,8 @@ function OrderDetail(props) {
                                 { title: "入库时间", dataIndex: "inStockTime", render: (time) => (<span>{onlyFormat(time, true)}</span>) },
                                 { title: "出库时间", dataIndex: "outStockTime", render: (time) => (<span>{onlyFormat(time, true)}</span>) },
                                 { title: "查布记录", dataIndex: "flawInfo" },
-                                { title: "查布员", dataIndex: "qcId" },
-                                { title: "值机工", dataIndex: "weaverId" }
+                                { title: "查布员", dataIndex: "qcName" },
+                                { title: "值机工", dataIndex: "weaverName" }
                             ]}
                             pagination={false}
                             dataSource={barCode}

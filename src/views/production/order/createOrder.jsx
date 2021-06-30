@@ -1,7 +1,8 @@
 import React, { useState, useEffect, } from "react"
-import { Col, Row, Input, DatePicker, Select, message } from "antd";
+import { Col, Row, Input, DatePicker, Select, message, AutoComplete } from "antd";
 import { newOrderType, requestUrl, r } from "../../../utils/config";
 import { createOrderParams } from "../../../actons/action";
+import { getClothType } from "../../../api/apiModule"
 import { connect } from "react-redux";
 import EditCloth from './clothTable';
 import EditLoom from "./loomTable";
@@ -18,7 +19,11 @@ function CreateOrder(props) {
     const [loom, setloom] = useState();
     useEffect(() => {
         getcustomer();
-        getClothType();
+        getClothType((res) => {
+            if (res.code === 200) {
+                setclothType(res.data)
+            }
+        })
         getLoom();
     }, [])
     // 选择日期
@@ -41,7 +46,7 @@ function CreateOrder(props) {
     }
     const selectClothType = (value) => {
         console.log(value)
-        _createOrderParam.fabricType = value[0];
+        _createOrderParam.fabricType = value;
         props.createOrderParams(_createOrderParam);
         props.createOrder(_createOrderParam);
     }
@@ -155,20 +160,7 @@ function CreateOrder(props) {
         _createOrderParam.orderLooms = value;
         props.createOrder(_createOrderParam);
     }
-    // 布类型
-    const getClothType = () => {
-        fetch(requestUrl + "/api-production/order/getFabricTypeDownList", {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-            }
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code === 200) {
-                    setclothType(res.data)
-                }
-            })
-    }
+
     const getcustomer = () => {
         fetch(requestUrl + "/api-production/order/getCustomerDownList", {
             headers: {
@@ -232,9 +224,16 @@ function CreateOrder(props) {
                     <Col span={8} className="c-col">
                         <div className="c-label c-right"><em>*</em>布类</div>
                         <div className="c-input">
-                            <Select onChange={selectClothType}>
-                                {clothType.map((item, key) => (<Option value={item} key={key}>{item}</Option>))}
-                            </Select>
+                            <AutoComplete
+                                style={{ height: "26px" }}
+                                onChange={selectClothType}
+                            >
+                                {clothType.map((email) => (
+                                    <Option key={email} value={email}>
+                                        {email}
+                                    </Option>
+                                ))}
+                            </AutoComplete>
                         </div>
                     </Col>
                 </Row>

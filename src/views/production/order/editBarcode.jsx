@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Input, Popconfirm, Form, Typography, message, Select } from 'antd';
-import { requestUrl } from "../../../utils/config";
+import { Table, Input, Popconfirm, Form, Typography, message, Select, AutoComplete } from 'antd';
+import {getClothList,getPerson} from "../../../api/apiModule"
 import { day } from "../../../utils/config"
 import { connect } from "react-redux";
 const { Option } = Select;
@@ -13,7 +13,18 @@ const EditBarCode = (props) => {
     const [runMachinePerson, setrunMachinePerson] = useState([]);
     useEffect(() => {
         getClothData();
-        getPerson();
+        getPerson((res)=>{
+            if (res.code == 200) {
+                const _checkClothData = [];
+                const _runMachinePerson = [];
+                res.data.map((item) => {
+                    if (item.position === 1) { _checkClothData.push(item) }
+                    if (item.position === 2) { _runMachinePerson.push(item) }
+                })
+                setcheckClothData(_checkClothData);
+                setrunMachinePerson(_runMachinePerson);
+            }
+        });
         if (props.data) {
             props.data.map((item) => {
                 item.clothData = clothData;
@@ -36,40 +47,11 @@ const EditBarCode = (props) => {
     };
     //  查布记录
     const getClothData = () => {
-        fetch(requestUrl + `/api-basedata/clothInspection/findAll?page=1&size=1000`, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code == 200) {
-                    setclothData(res.data.records);
-                }
-            })
-    }
-    const getPerson = () => {
-        fetch(requestUrl + `/api-production/orderBarcode/personDownList`, {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
+        getClothList(1,1000,(res)=>{
+            if (res.code == 200) {
+                setclothData(res.data.records);
             }
         })
-            .then((res) => { return res.json() })
-            .then((res) => {
-                if (res.code == 200) {
-                    const _checkClothData = [];
-                    const _runMachinePerson = [];
-                    res.data.map((item) => {
-                        if (item.position === 1) { _checkClothData.push(item) }
-                        if (item.position === 2) { _runMachinePerson.push(item) }
-                    })
-                    setcheckClothData(_checkClothData);
-                    setrunMachinePerson(_runMachinePerson);
-                }
-            })
     }
     const save = async (key) => {
         try {
@@ -90,6 +72,16 @@ const EditBarCode = (props) => {
         setData(newData);
         props.editCode(newData);
     }
+    const getQcName = (id) => {
+        return checkClothData.map((item) => {
+            if (item.id === id) return item.name
+        })
+    }
+    const getWeaverName = (id) => {
+        return runMachinePerson.map((item) => {
+            if (item.id === id) return item.name
+        })
+    }
     const columns = [
         { title: "条码", dataIndex: "barcode" },
         { title: "匹号", dataIndex: "seq" },
@@ -97,8 +89,8 @@ const EditBarCode = (props) => {
         { title: "入库时间", dataIndex: "inStockTime", render: (time) => (<span>{day(time)}</span>) },
         { title: "出库时间", dataIndex: "outStockTime", render: (time) => (<span>{day(time)}</span>) },
         { title: "查布记录", dataIndex: "flawInfo", editable: true },
-        { title: "查布员", dataIndex: "qcId", editable: true },
-        { title: "值机工", dataIndex: "weaverId", editable: true },
+        { title: "查布员", dataIndex: "qcId", editable: true, render: (id) => (<span>{getQcName(id)}</span>) },
+        { title: "值机工", dataIndex: "weaverId", editable: true, render: (id) => (<span>{getWeaverName(id)}</span>) },
         {
             title: '操作',
             dataIndex: 'operation',
@@ -198,17 +190,17 @@ const EditBarCode = (props) => {
                                             }}
                                         >
                                             {inputType === 'weight' && <Input defaultValue={record.weight} onBlur={changeWeight} />}
-                                            {inputType === 'flawInfo' && <Select defaultValue={record.flawInfo} mode="multiple" onChange={selectFlawInfo} >
+                                            {inputType === 'flawInfo' && <Select defaultValue={record.flawInfo ? record.flawInfo : null} mode="multiple" onChange={selectFlawInfo} >
                                                 {record.clothData.map((item) => (<Option value={item.name}>{item.name}</Option>))}
                                             </Select>
                                             }
                                             {
-                                                inputType === "qcId" && <Select onChange={selectQc} defaultValue={record.qcId}>
+                                                inputType === "qcId" && <Select onChange={selectQc} defaultValue={getQcName(record.qcId)}>
                                                     {record.checkClothData.map((item) => (<Option value={item.id}>{item.name}</Option>))}
                                                 </Select>
                                             }
                                             {
-                                                inputType === "weaverId" && <Select onChange={selectWeaver} defaultValue={record.weaverId}>
+                                                inputType === "weaverId" && <Select onChange={selectWeaver} defaultValue={getWeaverName(record.weaverId)}>
                                                     {record.runMachinePerson.map((item) => (<Option value={item.id}>{item.name}</Option>))}
                                                 </Select>
                                             }

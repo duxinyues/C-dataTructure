@@ -82,12 +82,27 @@ function Order(props) {
     }
     //保存
     const onSave = () => {
+        
         const params = orderParams;
         delete params.orderParams;
+
         params.bizDate = params.bizDate ? params.bizDate : getNowFormatDate();
-        params.techType = (params.techType1 && params.techType2) ? params.techType1 + "-" + params.techType2 : "";
         console.log("订单信息===", params)
+        if (params.techType1 && params.techType2) {
+            params.techType = params.techType1 + "-" + params.techType2
+        } else {
+            if (headType === "edit") {
+                params.techType = orderDetail.techType;
+            } else {
+                params.techType = ""
+            }
+        }
+
         if (!params.customerId) {
+            if (headType === "edit") {
+                setheadType("detail");
+                return;
+            }
             message.error("请选择客户！");
             return;
         }
@@ -131,14 +146,14 @@ function Order(props) {
         createOrders(params, (res) => {
             console.log(res)
             if (res.code === 200) {
-                message.success(res.msg)
+                message.success("保存成功！")
                 getOrderList({
                     "page": 1,
                     "size": 10,
                     "billStatus": 1
                 })
             } else {
-                message.error("创建失败！")
+                message.error("保存成功！")
             }
             setorderParams({});
             setheadType("detail");
@@ -409,6 +424,7 @@ function Order(props) {
     }
     //  订单作废
     const orderInvalid = () => {
+        if (orderList.length === 0) return;
         orderStatus(orderDetail.id, 3, (res) => {
             if (res.code === 200) {
                 getOrderList({

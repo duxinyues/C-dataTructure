@@ -13,73 +13,74 @@ function OrderDetail(props) {
         {
             title: '#',
             dataIndex: 'id',
-            key: 'id',
-            width: 70
         },
         {
             title: '生产单号',
             dataIndex: 'orderDto',
-            key: 'orderDto',
             render: (item) => (<span>{item.code ? item.code : ""}</span>),
-            width: 130
         },
         {
-            title: '客户单号',
+            title: '合同号',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.customerBillCode ? item.customerBillCode : ""}</span>),
-            width: 130
         },
         {
             title: '坯布编码',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.greyFabricCode ? item.greyFabricCode : ""}</span>),
-            width: 130
+            // width: 100
         },
         {
             title: '布类',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.fabricType ? item.fabricType : ""}</span>),
-            width: 130
+            // width: 200
         },
         {
-            title: '纱别',
+            title: '纱支',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.yarnName ? item.yarnName : ""}</span>),
-            width: 130
+            // width: 160
+        }, {
+            title: '批次',
+            dataIndex: 'orderDto',
+            key: 'orderDto',
+            render: (item) => (<span>{item.yarnBatch ? item.yarnBatch : ""}</span>),
+            // width: 100
         },
         {
             title: '针寸',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.inches ? item.inches : ""}-{item.needles ? item.needles : ""}</span>),
-            width: 70
+            // width: 70
         },
         {
-            title: '客户颜色',
+            title: '颜色',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.customerColor ? item.customerColor : ""}</span>),
-            width: 70
+            // width: 70
         },
         {
-            title: '出货卷数',
+            title: '出库条数',
             dataIndex: 'volQty',
             key: 'volQty',
-            width: 70,
+            // width: 70,
             render: (item, index) => (<span onClick={() => { props.getOutStockOrderBarCode(props.data.id, index.knitOrderId); setvisible(true); }} style={{ color: "blue", cursor: "pointer" }}>{item}</span>)
         },
         {
             title: '出货重量',
             dataIndex: 'weight',
-            width: 70
+            // width: 70
         },
         {
             title: '单位',
-            width: 40,
+            // width: 40,
             render: () => (<span>kg</span>)
         },
         {
@@ -87,12 +88,12 @@ function OrderDetail(props) {
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.productPrice}</span>),
-            width: 70
+            // width: 70
         },
         {
             title: '金额',
             dataIndex: 'totalMoney',
-            width: 130,
+            // width: 100,
             render: (item) => (<span>{Number(item).toFixed(2)}</span>)
         }
     ];
@@ -171,9 +172,6 @@ function OrderDetail(props) {
                     title: "条码",
                     dataIndex: "barcode"
                 }, {
-                    title: "机号",
-                    dataIndex: "loomCode"
-                }, {
                     title: "匹号",
                     dataIndex: "seq"
                 }, {
@@ -183,9 +181,6 @@ function OrderDetail(props) {
                     title: "出库时间",
                     dataIndex: "outStockTime",
                     render: (time) => (<span>{day(time)}</span>)
-                }, {
-                    title: "纱牌",
-                    dataIndex: "yarnInfo"
                 }, {
                     title: "查布记录",
                     dataIndex: "flawInfo"
