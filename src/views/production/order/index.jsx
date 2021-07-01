@@ -82,7 +82,7 @@ function Order(props) {
     }
     //保存
     const onSave = () => {
-        
+
         const params = orderParams;
         delete params.orderParams;
 
@@ -194,7 +194,7 @@ function Order(props) {
                 if (res.code === 200) {
                     res.data.map((item) => {
                         getOrderDetail(orderDetail.id)
-                        createBarCode(item.barcode, item.seq);
+                        createBarCode(item.barcode, item.seq, value.loomId);
                     })
                 }
             })
@@ -204,7 +204,7 @@ function Order(props) {
     const handleBarcode = (r) => {
         setbarcode(r)
     }
-    const createBarCode = (value, seq) => {
+    const createBarCode = (value, seq, loomId) => {
         JsBarcode(barcode, value, {
             format: 'CODE128',
             renderer: 'svg',
@@ -221,11 +221,12 @@ function Order(props) {
             marginBottom: 0,
         })
         const str = barcode.innerHTML;
-        const loomCode = orderLoom.map((item) => {
-            if (item.loomId === selectClothLoom) {
-                return item.loomCode
-            }
-        })
+        const loomCode = orderLoom.filter((item) => {
+            console.log(item);
+            console.log(loomId);
+            return item.id === loomId
+        })[0].code
+        console.log("机号==", loomCode)
         let LODOP = getLodop();
         LODOP.PRINT_INIT(""); //打印初始化
         const strHtml = `<div style="width:50mm;background: #fff;">
