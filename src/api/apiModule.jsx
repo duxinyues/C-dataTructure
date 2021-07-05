@@ -1,4 +1,7 @@
 import { requestUrl } from "../utils/config";
+import { createBrowserHistory } from "history";
+import { message } from "antd";
+const history = createBrowserHistory();
 /**
  * 登录
  * @param {*} params 
@@ -452,10 +455,7 @@ export const getUserInfo = (callback) => {
     }).then(res => {
         return res.json()
     }).then((res) => {
-        if (res.code === 200) {
-            callback(res);
-            return;
-        }
+        callback(res);
     }).catch((err) => { })
 }
 
@@ -763,6 +763,23 @@ export const getCompanyInfo = (callback) => {
         })
 }
 /**
+ * 公司列表
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const companyList = (params, callback) => {
+    fetch(requestUrl + "/api-basedata/company/findAll?size=" + params.size + "&page=" + params.page, {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        },
+    })
+        .then(res => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+/**
  * 编辑公司
  * @param {*} params 
  * @param {*} callback 
@@ -781,6 +798,41 @@ export const editCompany = (params, callback) => {
             callback(res)
         })
 }
+/**
+ * 织厂禁用
+ * @param {*} id 
+ * @param {*} callback 
+ */
+export const disableCompany = (id, enabled, callback) => {
+    fetch(requestUrl + "/api-basedata/company/modifyEnabled?id=" + id + "&enabled=" + enabled, {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+        },
+    })
+        .then((res) => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+/**
+ * 删除织厂信息
+ * @param {*} id 
+ * @param {*} callback 
+ */
+export const deletedCompany = (id, callback) => {
+    fetch(requestUrl + "/api-basedata/company/delete?id=" + id, {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+        },
+    })
+        .then((res) => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+
 /**
  * 订单下拉框客户列表
  * @param {*} callback 
@@ -864,6 +916,17 @@ export const fabricIoOrder = (params, callback) => {
     })
         .then(res => { return res.json() })
         .then((res) => {
+            callback(res)
+        })
+}
+export const checkYarn = (orderId,callback)=>{
+    fetch(requestUrl + "/api-production/order/findYarnDetail?orderId="+orderId, {
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+        },
+    })
+        .then(res => { return res.json() })
+        .then(res => {
             callback(res)
         })
 }

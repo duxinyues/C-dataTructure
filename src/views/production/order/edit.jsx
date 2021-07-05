@@ -5,6 +5,7 @@ import { createOrderParams } from "../../../actons/action"
 import { connect } from "react-redux"
 import EditCloth from "./clothTable";
 import EditBarcode from "./editBarcode";
+import EditableTable from "./addCloth"
 import 'moment/locale/zh-cn';
 import moment from "moment"
 const { Option } = Select;
@@ -142,7 +143,7 @@ let EditOrder = (props) => {
         props.editOrder(_createOrderParam);
         props.createOrderParams(_createOrderParam);
     }
-    const changeUnitWeight = ({ target: { value } }) => { 
+    const changeUnitWeight = ({ target: { value } }) => {
         _createOrderParam.unitWeight = value;
         props.editOrder(_createOrderParam);
         props.createOrderParams(_createOrderParam);
@@ -315,6 +316,7 @@ let EditOrder = (props) => {
             </div>
             <div className="edit-table">
                 <EditCloth data={defaultData} onAddCloth={onAddCloth} weight={weight} />
+                <EditableTable />
             </div>
             <div>
                 <div className="clothing" style={{ marginTop: "21px", color: "#1890FF", marginBottom: "9px" }}>

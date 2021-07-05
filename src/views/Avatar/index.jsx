@@ -15,6 +15,7 @@ function Avatars(props) {
   const [form] = Form.useForm();
   useEffect(() => {
     getCompanyList((res) => {
+      console.log(res)
       setCompany([...res])
     })
   }, [])

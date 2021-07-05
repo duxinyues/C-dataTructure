@@ -51,7 +51,7 @@ function ClothRecord() {
                 message.success("保存成功！")
                 return;
             }
-            message.success("保存失败")
+            message.error("保存失败")
         })
     }
     const saveAdd = async () => {
@@ -76,7 +76,7 @@ function ClothRecord() {
                 form.resetFields()
                 return;
             }
-            message.success("保存失败")
+            message.error("保存失败")
         })
      }
     const delectClothRecord = (param) => {

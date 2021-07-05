@@ -5,7 +5,7 @@ import JsBarcode from 'jsbarcode';
 import { connect } from "react-redux";
 import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, getNowFormatDate } from "../../../utils/config";
 import { createOrder, clearOrderParams, createOrderParams } from "../../../actons/action";
-import { createOrders, getLoom, getOrderCustomerDownList, getOrderData, orderStatus ,getBarCodes} from "../../../api/apiModule"
+import { createOrders, getLoom, getOrderCustomerDownList, getOrderData, orderStatus, getBarCodes } from "../../../api/apiModule"
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import EditOrder from "./edit";
@@ -25,7 +25,6 @@ function Order(props) {
     const [current, setcurrent] = useState();
     const [size, setsize] = useState();
     const [billStatus, setbillStatus] = useState(1);
-    const [btnTex, setbtnTex] = useState("完工");
     const [visible, setvisible] = useState(false);
     const [orderLoom, setorderLoom] = useState([]);
     const [clothBatch, setClothBatch] = useState([])
@@ -56,12 +55,17 @@ function Order(props) {
             {
                 title: "订单数量",
                 dataIndex: "weight"
+            },
+            {
+                title: "状态",
+                dataIndex: "billStatus",
+                render: (param) => (<span>{param === 1 && "进行中"}{param === 2 && "已完工"}{param === 3 && "作废"}</span>)
             }
         ]);
         getOrderList({
             "page": 1,
             "size": 10,
-            "billStatus": billStatus
+            "billStatus": " "
         });
         getLoom((res) => {
             if (res.code === 200) {
@@ -359,7 +363,7 @@ function Order(props) {
                 settotal(res.data.total);
                 setsize(res.data.size);
                 setcurrent(res.data.current);
-                setorderList(res.data.records);
+                setorderList([...res.data.records]);
                 getOrderDetail(res.data.records[0].id);
             }
         })
@@ -376,6 +380,7 @@ function Order(props) {
             .then(res => {
                 console.log(res)
                 if (res.code === 200) {
+                    setbillStatus(res.data.billStatus)
                     setorderDetail(res.data);
                     setspining(false);
                     setheadType("detail");
@@ -402,17 +407,27 @@ function Order(props) {
     }
     // 完工
     const completeOrder = () => {
-        const _billStatus = billStatus;
+        const _billStatus = "";
+        if (OrderDetail.billStatus === 1) {
+            _billStatus = 2
+        }
+        if (OrderDetail.billStatus === 2) {
+            _billStatus = 1
+        }
         orderStatus(orderDetail.id, _billStatus, (res) => {
             if (res.code === 200) {
-                if (billStatus === 2) {
-                    setbillStatus(1);
-                    setbtnTex("反完工")
-                }
-                if (billStatus === 1) {
-                    setbillStatus(2);
-                    setbtnTex("完工")
-                }
+                getOrderList({
+                    "page": 1,
+                    "size": 10,
+                });
+                // if (billStatus === 2) {
+                //     setbillStatus(1);
+                //     // setbtnTex("反完工")
+                // }
+                // if (billStatus === 1) {
+                //     setbillStatus(2);
+                //     // setbtnTex("完工")
+                // }
             }
         })
     }
@@ -504,8 +519,8 @@ function Order(props) {
                     </div>
                     <div className="custom-right">
                         <Button type="primary" onClick={add}>+新建</Button>
-                        <Button onClick={edit} disabled={orderList.length === 0}>编辑</Button>
-                        <Button onClick={completeOrder} disabled={orderList.length === 0}>{btnTex}</Button>
+                        <Button onClick={edit} disabled={orderList.length === 0 || billStatus === 2 || billStatus === 3}>编辑</Button>
+                        <Button onClick={completeOrder} disabled={orderList.length === 0 || billStatus === 3}>{(billStatus === 1 || billStatus === 3) && "完工"}{billStatus === 2 && "反完工"}</Button>
                         {/* <Button disabled={orderList.length == 0}>打印订单</Button> */}
                         <Button onClick={openPrint} disabled={orderList.length === 0}>打印布票</Button>
                         <Dropdown overlay={menu} trigger={['click']}>
@@ -538,9 +553,10 @@ function Order(props) {
                                 <Col span={6}>
                                     <Form.Item name="billStatus" className="billStatus" style={{ marginRight: "10px" }}>
                                         <Select>
-                                            <Option value="1">进行中</Option>
-                                            <Option value="2">已完工</Option>
-                                            <Option value="3">已作废</Option>
+                                            {
+                                                orderType.map((item) => (<Option value={item.id}>{item.title}</Option>))
+                                            }
+
                                         </Select>
                                     </Form.Item>
                                 </Col>
@@ -596,6 +612,17 @@ function Order(props) {
                                 },
                                 showSizeChanger: false,
                                 showTotal: () => (`共${total}条`)
+                            }}
+                            onHeaderRow={(columns, index) => {
+                                return {
+                                    onClick: () => {
+                                        console.log(columns, "===", index)
+                                    }, // 点击表头行
+                                    onContextMenu: event => {
+                                        event.preventDefault();
+                                        console.log("右键==", columns)
+                                    },
+                                };
                             }}
                         />
                     </div>
@@ -666,7 +693,6 @@ function Order(props) {
     </React.Fragment >
 }
 const mapStateToProps = (state) => {
-    console.log("订单状态==", state)
     return {
         orderParams: state.createOrderParam,
         createOrderState: state.createOrderState

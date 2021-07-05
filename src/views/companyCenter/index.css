@@ -1,0 +1,9 @@
+.option-btn {
+    color: #1890ff;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+textarea {
+    width: 100% !important;
+}

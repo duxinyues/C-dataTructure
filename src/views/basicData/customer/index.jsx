@@ -101,7 +101,7 @@ function CustomerData(props) {
                 message.success("保存成功")
                 return;
             }
-            message.success("保存失败")
+            message.error("保存失败")
         })
     }
     const savaAdd = async () => {
@@ -121,7 +121,7 @@ function CustomerData(props) {
                 form.resetFields();
                 return;
             }
-            message.success("保存失败")
+            message.error("保存失败")
         })
     }
     const delect = (param) => {

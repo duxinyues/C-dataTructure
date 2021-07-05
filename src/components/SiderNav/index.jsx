@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, message } from 'antd';
 import { connect } from "react-redux";
-import { requestUrl } from "../../utils/config";
 import { USER_INFO } from "../../actons/type";
-import {getUserInfo} from "../../api/apiModule"
+import { getUserInfo } from "../../api/apiModule"
+import { fakeAuth } from "../../utils/fakeAuth";
 import './index.css';
 import logo from "../../assets/img/logo1.png";
 const { Sider } = Layout;
@@ -15,11 +15,16 @@ function SiderNav(props) {
     const [menus, setmenus] = useState([]);
     const [openKeys, setOpenKeys] = useState([]);
     useEffect(() => {
-        getUserInfo((res)=>{
+        getUserInfo((res) => {
             if (res.code == 200) {
                 setmenus(res.data.menus);
-                props.userData(res.data)
+                props.userData(res.data);
+                return;
             }
+            message.warning("您的登录信息无效！请重新登录", 1).then(() => {
+                fakeAuth.signout();
+                history.push('/login');
+            })
         })
     }, [])
     const renderMenus = (menu, key) => {

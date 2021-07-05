@@ -1,25 +1,13 @@
 import React, { useState, useEffect } from "react"
 import { Col, Row, Input, Tabs, Table } from "antd";
 import { newOrderType, onlyFormat } from "../../../utils/config";
-import { getBarCodes } from "../../../api/apiModule"
+import { getBarCodes, checkYarn } from "../../../api/apiModule"
 const { TabPane } = Tabs;
-function debounce(fn, delay) {
-    let timer;
-    return function (...arg) {
-        if (timer) clearTimeout(timer)
-        timer = setTimeout(() => {
-            fn(arg)
-            clearTimeout(timer)
-        }, delay)
-    }
-}
-function useDebounce(fn, delay) {
-    return debounce(fn, delay) //我直接复用上面定义的防抖代码
-}
 function OrderDetail(props) {
     const [barCode, setbarCode] = useState([]);
     const [loomData, setloomData] = useState();
-    const [yarnInfoData, setyarnInfoData] = useState([])
+    const [yarnInfoData, setyarnInfoData] = useState([]);
+    const [checkyarn, setcheckyarn] = useState([])
     const yarnBrandBatch = props.orderData ? props.orderData.orderYarnInfos.map((item) => {
         return item.yarnBrandBatch;
     }) : []
@@ -27,7 +15,12 @@ function OrderDetail(props) {
     useEffect(() => {
         if (props.orderData) {
             setyarnInfoData(props.orderData.orderYarnInfos);
-            getCode()
+            getCode();
+            checkYarn(props.orderData.id, (res) => {
+                if (res.code === 200) {
+                    setcheckyarn([...res.data])
+                }
+            })
         }
     }, [props])
     const getCode = () => {
@@ -157,17 +150,19 @@ function OrderDetail(props) {
                     <TabPane tab="收料明细" key="2">
                         <Table
                             columns={[
-                                { title: "生产单号" },
-                                { title: "合同号" },
-                                { title: "布类" },
-                                { title: "纱支" },
-                                { title: "批次" },
-                                { title: "纱比%" },
-                                { title: "织损%" },
-                                { title: "已织重量" },
-                                { title: "用纱数量" },
-                                { title: "库存数量" }
+                                { title: "生产单号", dataIndex: "code" },
+                                { title: "合同号", dataIndex: "customerBillCode" },
+                                { title: "布类", dataIndex: "fabricType" },
+                                { title: "纱支", dataIndex: "yarnName" },
+                                { title: "批次", dataIndex: "yarnBrandBatch" },
+                                { title: "纱比%", dataIndex: "rate" },
+                                { title: "织损%", dataIndex: "knitWastage" },
+                                // { title: "已织重量", dataIndex: "yarnName" },
+                                { title: "用纱数量", dataIndex: "usedWeight" },
+                                { title: "库存数量", dataIndex: "stockWeight" }
                             ]}
+                            dataSource={checkyarn}
+                            pagination={false}
                         />
                     </TabPane>
                 </Tabs>

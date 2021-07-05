@@ -38,9 +38,7 @@ function StaffInfo() {
                 setCurrent(res.data.current);
                 setTotal(res.data.total)
                 setdata(res.data.records);
-                return;
             }
-            message.error("请求错误！")
         })
     }
     const handleOk = async (param) => {
@@ -74,7 +72,7 @@ function StaffInfo() {
                 getPerson(1, 10);
                 return;
             }
-            message.success("保存失败")
+            message.error("保存失败")
         })
     }
     const saveAdd = async () => {
@@ -96,7 +94,7 @@ function StaffInfo() {
                 getPerson(1, 10);
                 return;
             }
-            message.success("保存失败")
+            message.error("保存失败")
         })
     }
     const onCancel = () => {

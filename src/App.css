@@ -111,3 +111,10 @@ input {
 .loom .ant-modal-footer {
     justify-content: flex-end !important;
 }
+
+.jianjie .ant-input {
+    height: auto !important;
+}
+.ant-form-item-control-input-content{
+    display: flex;
+}

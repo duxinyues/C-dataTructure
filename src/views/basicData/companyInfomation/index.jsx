@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-29 11:59:37
+ * @LastEditTime: 2021-07-05 15:55:08
  * @LastEditors: 1638877065@qq.com
  * @Description: 公司信息
  * @FilePath: \cloud-admin\src\views\basicData\companyInfomation\index.jsx
@@ -10,7 +10,6 @@
 import { PageHeader, Input, Form, Button, Cascader, message } from "antd";
 import { useState, useEffect } from "react";
 import { connect } from "react-redux"
-import { requestUrl } from "../../../utils/config"
 import { setAddress } from "../../../actons/action"
 import { getAddressInfo, getCompanyInfo, editCompany } from "../../../api/apiModule"
 import "./index.css";
@@ -19,7 +18,6 @@ function CompanyInfo(props) {
     document.title = "公司信息";
     const [form] = Form.useForm();
     const [addressData, setaddressData] = useState([]);
-
     const [company, setCompany] = useState({})
     const selectId = []
     useEffect(() => {
@@ -40,11 +38,11 @@ function CompanyInfo(props) {
     //提交表单
     const onFinish = (value) => {
         // 没有修改地址
-        if (selectId.length == 0) {
-            selectId.push(company.provinceId)
-            selectId.push(company.cityId)
-            selectId.push(company.townId)
-        }
+        // if (selectId.length == 0) {
+        //     selectId.push(company.provinceId)
+        //     selectId.push(company.cityId)
+        //     selectId.push(company.townId)
+        // }
         const param = {
             "abbr": value.abbr,
             "address": selectId.join(","),
@@ -55,13 +53,15 @@ function CompanyInfo(props) {
             "name": value.name,
             "remark": value.remark
         }
+
+        console.log("====", param)
         editCompany(param, (res) => {
             if (res.code == 200) {
                 getCompanyData();
                 message.success("保存成功")
                 return;
             }
-            message.success("保存失败")
+            message.error("保存失败")
         })
     }
     // 编辑选中的地址信息
@@ -74,7 +74,7 @@ function CompanyInfo(props) {
                 }
             }
         })
-
+        console.log("qqqqqq", selectId)
     }
     const getCompanyData = () => {
         getCompanyInfo((res) => {

@@ -74,7 +74,7 @@ function MachineData(props) {
                 getMachineData(1, 10)
                 return;
             }
-            message.success("保存失败")
+            message.error("保存失败")
         })
     }
     const saveAdd = async (param) => {
@@ -91,7 +91,7 @@ function MachineData(props) {
                 getMachineData(1, 10)
                 return;
             }
-            message.success("保存失败")
+            message.error("保存失败")
         })
     }
     const onCancel = () => {

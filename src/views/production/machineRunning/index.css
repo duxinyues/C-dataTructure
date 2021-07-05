@@ -1,0 +1,85 @@
+.run-title {
+    padding: 18px 20px;
+    border-bottom: 1px solid #999;
+}
+
+.run-title .left {
+    display: flex;
+    align-items: flex-end;
+}
+
+.run-title .left div {
+    font-size: 22px;
+    margin-right: 20px;
+    line-height: 1.1em;
+}
+
+.run-title .left span {
+    margin-right: 5px;
+    position: relative;
+    width: 80px;
+    display: block;
+    padding-left: 16px;
+    font-size: 12px;
+    line-height: 15px;
+}
+
+.run-title .left span::before {
+    content: "";
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-radius: 3px;
+}
+
+.run-title .left span:nth-child(2)::before {
+    background-color: rgb(60, 255, 0);
+}
+
+.run-title .left span:nth-child(3)::before {
+    background-color: rgb(245, 170, 72);
+}
+
+.run-title .left span:nth-child(4)::before {
+    background-color: rgb(179, 180, 178);
+}
+
+.loom-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding-left: 15px;
+}
+
+/* .row{
+    display: flex;
+    justify-content: space-around;
+} */
+.loom-item {
+    width: 200px;
+    height: 200px;
+    border-radius: 5px;
+    margin: 10px;
+}
+
+.runing {
+    border: 3px solid rgb(60, 228, 9);
+    background-color: rgb(98, 233, 56);
+}
+
+.downtime {
+    background-color: rgb(230, 173, 99);
+    border: 1px solid rgb(230, 134, 8);
+}
+
+.close-down {
+    background-color: rgb(199, 199, 198);
+    border: 3px solid #999;
+}
+
+.loom-code {
+    display: flex;
+    justify-content: space-between;
+}

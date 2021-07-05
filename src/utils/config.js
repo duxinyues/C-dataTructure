@@ -1,13 +1,13 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-07-02 19:51:52
+ * @LastEditTime: 2021-07-05 18:35:53
  * @LastEditors: 1638877065@qq.com
  * @Description: 工具函数
  * @FilePath: \cloud-admin\src\utils\config.js
  */
 export const requestUrl = "http://39.104.13.107:8000";
-// export const requestUrl = "http://192.168.2.70:8000";
+// export const requestUrl = "http://192.168.2.86:8000";
 export const onlyFormat = (timeStamp, type) => {
   if (!timeStamp) return;
   var date = new Date(timeStamp);
@@ -25,7 +25,7 @@ export const onlyFormat = (timeStamp, type) => {
 export const stockType = ["采购入库", "调拨入库", "退料入库", "加工入库", "其他入库"]
 // 出库单据类型
 export const stockOutType = ["调拨出库", "销售出库", "退纱出库"]
-export const orderType = [{ id: 1, title: "进行中" }, { id: 2, title: "未审核" }, { id: 3, title: "已完工" }, { id: 3, title: "已作废" }]
+export const orderType = [{ id: " ", title: "全部" }, { id: "1", title: "进行中" }, { id: "2", title: "已完工" }, { id: "3", title: "已作废" },]
 export const orderSearch = [
   { key: 1, title: "生产单号", type: "code" },
   { key: 2, title: "客户", type: "customerName" },
@@ -176,3 +176,203 @@ export const positionValue = (value) => {
 }
 
 export const r = /^\+?[1-9][0-9]*$/
+
+export const testArr = [{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:2
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:3
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:2
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:3
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:3
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:2
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:3
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},{
+  code: "#12",
+  name: "duxin",
+  zhuan: 1472,
+  bulei: "32S精棉双纱平纹",
+  daka: "07-05 07-01",
+  jisu: "25.89 r/min",
+  tiaoshu: 12,
+  tingji1: 1,
+  tingji2: 1903,
+  status:1
+},]
