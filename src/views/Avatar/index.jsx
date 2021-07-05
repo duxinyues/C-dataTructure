@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { fakeAuth } from "../../utils/fakeAuth";
-import { Avatar, Menu, Dropdown, Input, Space, Badge } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Avatar, Menu, Dropdown, Input, Space, Badge, Modal, Form, Button, message } from 'antd';
 import { connect } from "react-redux";
-import { getCompanyList, switchConpany } from "../../api/apiModule";
+import { getCompanyList, switchConpany, changePassword } from "../../api/apiModule";
 import './index.css';
 import img from "../../utils/imgManger"
 const { Search } = Input
 const { SubMenu } = Menu;
 function Avatars(props) {
   console.log("props==", props)
-  const [company, setCompany] = useState([])
+  const [company, setCompany] = useState([]);
+  const [visible, setvisible] = useState(false);
+  const [form] = Form.useForm();
   useEffect(() => {
     getCompanyList((res) => {
       setCompany([...res])
@@ -32,6 +33,28 @@ function Avatars(props) {
       }
     })
   }
+  const onCancel = () => {
+    setvisible(false)
+  }
+  const openModal = () => {
+    setvisible(true)
+  }
+  const handleOk = async () => {
+    const value = await form.validateFields();
+    value.id = props.user.id
+    console.log("dhfbsejdr", value)
+    changePassword(value, (res) => {
+      if (res.code === 200) {
+        message.success("密码修改成功！")
+        fakeAuth.signout();
+        props.history.push('/login');
+        setvisible(false)
+        return;
+      }
+      message.error("密码修改失败！");
+      setvisible(false)
+    })
+  }
   const menu = (
     <Menu>
       {
@@ -41,11 +64,9 @@ function Avatars(props) {
           }
         </SubMenu>
       }
-      {/* <Menu.Item>
-        <Link to="/user">
-          <span className="label">个人设置</span>
-        </Link>
-      </Menu.Item> */}
+      <Menu.Item>
+        <span className="label" onClick={openModal}>修改密码</span>
+      </Menu.Item>
       <Menu.Item>
         <div>
           <span className="label" onClick={_logout}>退出登录</span>
@@ -75,6 +96,37 @@ function Avatars(props) {
         </Dropdown>
         <span>{props.user.nickname}</span>
       </Space>
+      <Modal
+        className="customModal user-center"
+        destroyOnClose={true}
+        title={'修改密码'}
+        visible={visible}
+        footer={[
+          // <span className="modalFooterBtn">{editType === 2 && ""}{editType === 1 && "保存编辑"}</span>,
+          <Button key="submit" type="primary" onClick={handleOk} >
+            保存
+          </Button>,
+          <Button onClick={onCancel}>
+            取消
+          </Button>
+        ]}
+        onCancel={onCancel}
+      >
+        <Form
+          // {...layout}
+          form={form}
+          layout="horizontal"
+          name="form_in_modal"
+          preserve={false}
+        >
+          <Form.Item label="旧密码" name="oldPassword" rules={[{ required: true, message: '请输入密码!' }]}>
+            <Input type="password" />
+          </Form.Item>
+          <Form.Item label="新密码" name="newPassword" rules={[{ required: true, message: '请输入新密码!' }]}>
+            <Input type="password" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }

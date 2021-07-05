@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:31:18
- * @LastEditTime: 2021-06-30 14:32:20
+ * @LastEditTime: 2021-07-02 16:53:00
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布列表和详情
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\index.jsx
@@ -36,6 +36,7 @@ function InStock(props) {
     const [loading, setloading] = useState(true);
     const [outStockOrder, setOutStockOrder] = useState(false);
     const [deliveryOrder, setDeliveryOrder] = useState({});
+    const [disableSave, setdisableSave] = useState(true);
     const data = {
         page: 1,
         size: 10,
@@ -118,6 +119,10 @@ function InStock(props) {
     }
     // 保存
     const onSave = () => {
+        if (!disableSave) {
+            message.warning("由于您操作过于频繁，请稍候再试！");
+            return
+        }
         if (!orderData) return;
         if (!orderData.customerId) {
             message.warning("请先选择客户！");
@@ -134,7 +139,7 @@ function InStock(props) {
         })
             .then(res => { return res.json() })
             .then(res => {
-                console.log(res)
+                setdisableSave(false)
                 if (res.code === 200) {
                     getData(data);
                     setdetailType("detail");
@@ -243,9 +248,9 @@ function InStock(props) {
                 <Button disabled={disabled} onClick={delect}>
                     删除
                 </Button>
-                <Button disabled={disabled}>
+                {/* <Button disabled={disabled}>
                     导出
-                </Button>
+                </Button> */}
                 <Button onClick={openOutStockOrder} disabled={leftData.length == 0}>
                     细码
                 </Button>

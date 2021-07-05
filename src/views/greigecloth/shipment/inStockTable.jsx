@@ -35,11 +35,12 @@ function InSTockTable() {
         })
         getData({ page: 1, size: 10, type: type, beginTime: date[0], endTime: date[1] });
         setcolumns([
+            // {
+            //     title: "#",
+            //     dataIndex: 'id',
+            //     key: 'id',
+            // }, 
             {
-                title: "#",
-                dataIndex: 'id',
-                key: 'id',
-            }, {
                 title: "生产单号",
                 dataIndex: 'code',
                 key: 'code',
@@ -135,11 +136,12 @@ function InSTockTable() {
         getData({ page: 1, size: 10, type: value, beginTime: date[0], endTime: date[1] });
         if (value == "order") {
             setcolumns([
+                // {
+                //     title: "#",
+                //     dataIndex: 'id',
+                //     key: 'id',
+                // }, 
                 {
-                    title: "#",
-                    dataIndex: 'id',
-                    key: 'id',
-                }, {
                     title: "生产单号",
                     dataIndex: 'code',
                     key: 'code',
@@ -199,11 +201,12 @@ function InSTockTable() {
 
         if (value == "fabric") {
             setcolumns([
+                // {
+                //     title: "#",
+                //     dataIndex: 'id',
+                //     key: 'id',
+                // }, 
                 {
-                    title: "#",
-                    dataIndex: 'id',
-                    key: 'id',
-                }, {
                     title: "坯布编码",
                     dataIndex: 'greyFabricCode',
                     key: 'greyFabricCode',
@@ -237,11 +240,12 @@ function InSTockTable() {
         }
         if (value == "customer") {
             setcolumns([
+                // {
+                //     title: "#",
+                //     dataIndex: 'id',
+                //     key: 'id',
+                // }, 
                 {
-                    title: "#",
-                    dataIndex: 'id',
-                    key: 'id',
-                }, {
                     title: "客户",
                     dataIndex: 'customerName',
                     key: 'customerName',
@@ -265,11 +269,12 @@ function InSTockTable() {
 
         if (value == "loom") {
             setcolumns([
-                {
-                    title: "#",
-                    dataIndex: 'id',
-                    key: 'id',
-                }, {
+                // {
+                //     title: "#",
+                //     dataIndex: 'id',
+                //     key: 'id',
+                // },
+                 {
                     title: "机号",
                     dataIndex: 'loomCode',
                     key: 'loomCode',
@@ -310,12 +315,12 @@ function InSTockTable() {
                 <RangePicker onChange={selectDate} defaultValue={[moment(getMonthFE(1), "YYYY-MM-DD"), moment(getMonthFE(2), "YYYY-MM-DD")]} />
             </div>
             <div className="head-bth custom-right">
-                <Button>
+                {/* <Button>
                     打印
                 </Button>
                 <Button >
                     导出
-                </Button>
+                </Button> */}
             </div>
         </div>
 

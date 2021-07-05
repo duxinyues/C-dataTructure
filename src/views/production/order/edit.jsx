@@ -64,9 +64,9 @@ let EditOrder = (props) => {
         props.createOrderParams(_createOrderParam);
     }
     const selectClothType = (value) => {
-        console.log("布类==",value)
+        console.log("布类==", value)
         _createOrderParam.fabricType = value;
-        console.log("_createOrderParam",_createOrderParam)
+        console.log("_createOrderParam", _createOrderParam)
         props.editOrder(_createOrderParam);
         props.createOrderParams(_createOrderParam);
     }
@@ -131,7 +131,19 @@ let EditOrder = (props) => {
         props.createOrderParams(_createOrderParam);
     }
     const changeRemark = ({ target: { value } }) => {
+        console.log("value==", value);
+        console.log("_createOrderParam==", _createOrderParam);
         _createOrderParam.remark = value;
+        props.editOrder(_createOrderParam);
+        props.createOrderParams(_createOrderParam);
+    }
+    const changetareWeight = ({ target: { value } }) => {
+        _createOrderParam.tareWeight = value;
+        props.editOrder(_createOrderParam);
+        props.createOrderParams(_createOrderParam);
+    }
+    const changeUnitWeight = ({ target: { value } }) => { 
+        _createOrderParam.unitWeight = value;
         props.editOrder(_createOrderParam);
         props.createOrderParams(_createOrderParam);
     }
@@ -267,7 +279,7 @@ let EditOrder = (props) => {
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">每匹重量</div>
-                        <div className="c-input"><Input defaultValue={props.orderData.unitWeight} /></div>
+                        <div className="c-input"><Input defaultValue={props.orderData.unitWeight} onChange={changeUnitWeight} /></div>
                     </Col>
                 </Row>
                 <Row className="c-row">
@@ -291,7 +303,7 @@ let EditOrder = (props) => {
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">纸管重量</div>
-                        <div className="c-input"><Input onChange={changeweight} defaultValue={props.orderData.tareWeight} /></div>
+                        <div className="c-input"><Input onChange={changetareWeight} defaultValue={props.orderData.tareWeight} /></div>
                     </Col>
                 </Row>
                 <Row className="c-row">

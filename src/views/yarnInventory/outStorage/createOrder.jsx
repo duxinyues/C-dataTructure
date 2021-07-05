@@ -1,7 +1,8 @@
 import { useEffect, useState, } from "react"
-import { Table, Input, Select, DatePicker } from "antd";
-import { stockType, requestUrl } from "../../../utils/config";
+import { Table, Input, Select, DatePicker, Modal, Form, Row, Button, Col, message } from "antd";
+import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { withRouter } from "react-router-dom";
+import { getCustomer, outYarnModalList } from "../../../api/apiModule"
 import 'moment/locale/zh-cn';
 import moment from "moment"
 import locale from 'antd/es/date-picker/locale/zh_CN';
@@ -11,21 +12,33 @@ const { Option } = Select;
 document.title = "新增退纱出库单"
 function CreateOutStockOrder(props) {
     console.log(props)
+    const [form] = Form.useForm();
     const [customerId, setcustomerId] = useState("");
     const [bizDate, setbizDate] = useState("");
     const [billType, setbillType] = useState(0);
-    const [remark, setremark] = useState("")
+    const [remark, setremark] = useState("");
     const [yarn_stock_detail, setyarn_stock_detail] = useState({});
+    const [outDtls, setoutDtls] = useState([]);
     const [stockTypeIndex, setstockTypeIndex] = useState(0);
-    const [customer, setcustomer] = useState([])
+    const [customer, setcustomer] = useState([]);
+    const [selctRowKeys, setselctRowKeys] = useState([]);
+    const [selectStock, setSelectStock] = useState([]);
+    const [selectoutDtlsRowKeys, setselectoutDtlsRowKeys] = useState([]);
+    const [selectoutDtlsRowData, setselectoutDtlsRowData] = useState([]);
+    const [visible, setvisible] = useState(false);
+    const [records, setRecords] = useState({});
+    const [yarnStock, setYarnStock] = useState([])
     useEffect(() => {
-        getCustomer()
+        getCustomer((data) => {
+            setcustomer(data)
+        })
         if (props.data) {
             setyarn_stock_detail(props.data);
             setcustomerId(props.data.customerId);
             setbizDate(props.data.bizDate);
             setbillType(props.data.billType);
             setremark(props.data.remark);
+            setoutDtls([...props.data.outDtls])
         }
     }, []);
     //选择订单类型
@@ -35,14 +48,29 @@ function CreateOutStockOrder(props) {
         props.save({
             customerId: customerId,
             bizDate: bizDate,
+            remark: remark,
+            outDtls: outDtls
         })
     }
     // 选择客户
     const selectcustomer = (value) => {
         setcustomerId(value)
+        outYarnModalList({
+            "customerBillCode": "",
+            "customerId": value,
+            "page": 1,
+            "size": 10
+        }, (res) => {
+            console.log(res)
+            if (res.code === 200) {
+                setYarnStock([...res.data.records])
+            }
+        })
         props.save({
             customerId: value,
             bizDate: bizDate,
+            remark: remark,
+            outDtls: outDtls
         })
     }
     // 选择入库日期
@@ -51,92 +79,139 @@ function CreateOutStockOrder(props) {
         props.save({
             customerId: customerId,
             bizDate: dateString,
+            remark: remark,
+            outDtls: outDtls
         })
     }
     // 保存备注
-    const saveremark = ({ target: { value } }) => {
+    const saveRemark = ({ target: { value } }) => {
         setremark(value)
         props.save({
             customerId: customerId,
             bizDate: bizDate,
+            remark: value,
+            outDtls: outDtls
         })
     }
     const enter_yarn_colums = [
         {
-            title: '纱别',
+            title: '纱支',
             dataIndex: 'yarnName',
-            key: 'yarnName',
-            width:130
         },
         {
-            title: '纱牌/纱批',
+            title: '批次',
             dataIndex: 'yarnBrandBatch',
-            key: 'yarnBrandBatch',
-            width:130
         },
         {
-            title: '色号',
+            title: '颜色',
             dataIndex: "colorCode",
-            key: "colorCode",
-            width:130
         },
         {
             title: '合同号',
-            dataIndex: 'customerCode',
-            key: 'customerCode',
-            width:130
+            dataIndex: 'customerBillCode',
+
         }, {
             title: '件数',
             dataIndex: 'pcs',
-            key: 'pcs',
-            width:130
+            render: (pcs) => (<Input defaultValue={pcs} onChange={({ target: { value } }) => {
+                changeInput("pcs", value)
+            }} />),
+            width: 130
         },
         {
             title: '规格',
             dataIndex: 'spec',
-            key: 'spec',
-            width:130
-        },
-        {
-            title: '来纱净重',
-            dataIndex: 'netWeight',
-            key: 'netWeight',
-            width:130
-        },
-        {
-            title: '欠重',
-            dataIndex: 'lackWeight',
-            key: 'lackWeight',
-            width:130
-        },
-        {
-            title: '总欠重',
-            dataIndex: 'totalLackWeight',
-            key: 'totalLackWeight',
-            width:70
-        },
-        {
-            title: '实收净重',
+            render: (spec) => (<Input defaultValue={spec} onChange={({ target: { value } }) => {
+                changeInput("spec", value)
+            }} />),
+            width: 130
+        }, {
+            title: '重量',
             dataIndex: 'weight',
-            key: 'weight',
-            width:70
-        }
+            render: (weight) => (<Input defaultValue={weight} onChange={({ target: { value } }) => {
+                changeInput("weight", value)
+            }} />),
+            width: 130
+        },
     ];
-
-    const getCustomer = () => {
-        fetch(requestUrl + "/api-stock/stockCommon/findCustomerDown?companyId=1", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
+    const openModal = () => {
+        if (!customerId) {
+            message.warning("请先选择客户！");
+            return;
+        }
+        setvisible(true)
+    }
+    const closeModal = () => {
+        setvisible(false);
+        setselctRowKeys([]);
+        setSelectStock([])
+    }
+    const addYarnOutStock = () => {
+        setoutDtls([...selectStock]);
+        props.save({
+            customerId: customerId,
+            bizDate: bizDate,
+            remark: remark,
+            outDtls: selectStock
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code == 200) {
-                    setcustomer(res.data)
-                }
+        setvisible(false);
+    }
+    const searchStock = (value) => {
+    }
+    const rowSelection_table = {
+        selectedRowKeys: selctRowKeys,
+        onChange: (_selectedRowKeys, _selectedRows) => {
+            console.log("_selectedRows", _selectedRows)
+            setselctRowKeys(_selectedRowKeys);
+            _selectedRows.map((item) => {
+                delete item.id
             })
+            setSelectStock(_selectedRows);
+        },
+    };
+    const rowoutDtlsSelection = {
+        selectedRowKeys: selectoutDtlsRowKeys,
+        onChange: (_selectedRowKeys, _selectedRows) => {
+            setselectoutDtlsRowKeys(_selectedRowKeys);
+            setselectoutDtlsRowData(_selectedRows)
+        },
+    }
+    // 编辑Input
+    const changeInput = (inputName, value) => {
+        console.log(inputName, value, outDtls)
+        const _records = records; // 选中行
+        outDtls.map((item) => {
+            if (_records.id === item.id) {
+                item[inputName] = value
+                // if (item.hasOwnProperty("pcs")) {
+                //     item.weight = Number(item.pcs) * Number(item.spec)
+                // }
+            }
+        })
+        console.log("======759679845", outDtls)
+        props.save({
+            customerId: customerId,
+            bizDate: bizDate,
+            remark: remark,
+            outDtls: outDtls
+        })
+    }
+    const onDeleteStock = () => {
+        const _outDtls = outDtls;
+        console.log("selectoutDtlsRowKeys==", selectoutDtlsRowKeys)
+        _outDtls.map((item) => {
+            const index = selectoutDtlsRowKeys.indexOf(item.id);
+            if (index > -1) {
+                _outDtls.splice(index, 1)
+            }
+        })
+        setoutDtls([..._outDtls])
+        props.save({
+            customerId: customerId,
+            bizDate: bizDate,
+            remark: remark,
+            outDtls: _outDtls
+        })
     }
     const today = moment();
     return <div className="right">
@@ -163,48 +238,111 @@ function CreateOutStockOrder(props) {
                             showToday />
                     </div>
                 </div>
+                <div className="row">
+                    <div className="col">
+                        <div className="label1">备注</div>
+                        <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} onChange={saveRemark} />
+                    </div>
+                </div>
             </div>
             <div className="enter-yarn-table">
+                <div>
+                    <PlusCircleOutlined style={{ fontSize: '20px', marginRight: "10px" }} onClick={openModal} />
+                    <CloseCircleOutlined style={{ fontSize: '20px' }} onClick={onDeleteStock} />
+                </div>
                 <Table
                     columns={enter_yarn_colums}
-                    dataSource={yarn_stock_detail.inDtls}
+                    dataSource={outDtls}
                     pagination={false}
+                    rowSelection={rowoutDtlsSelection}
                     rowKey={(record, index) => record.id}
-                    summary={pageData => {
-                        if (pageData.length == 0) return;
-                        let pcsTotal = 0;
-                        let netWeight = 0;
-                        let lackWeight = 0;
-                        let totalLackWeight = 0;
-                        let weight = 0;
-                        pageData.forEach((borrow) => {
-                            pcsTotal += borrow.pcs;
-                            netWeight += borrow.netWeight;
-                            lackWeight += borrow.lackWeight;
-                            totalLackWeight += borrow.totalLackWeight;
-                            weight += borrow.weight;
-                            totalLackWeight += borrow.totalLackWeight
-                        });
-                        return (
-                            <>
-                                <Table.Summary.Row>
-                                    <Table.Summary.Cell></Table.Summary.Cell>
-                                    <Table.Summary.Cell></Table.Summary.Cell>
-                                    <Table.Summary.Cell></Table.Summary.Cell>
-                                    <Table.Summary.Cell>合计：</Table.Summary.Cell>
-                                    <Table.Summary.Cell>{pcsTotal}</Table.Summary.Cell>
-                                    <Table.Summary.Cell></Table.Summary.Cell>
-                                    <Table.Summary.Cell>{netWeight}</Table.Summary.Cell>
-                                    <Table.Summary.Cell>{lackWeight}</Table.Summary.Cell>
-                                    <Table.Summary.Cell>{totalLackWeight}</Table.Summary.Cell>
-                                    <Table.Summary.Cell>{weight}</Table.Summary.Cell>
-                                </Table.Summary.Row>
-                            </>
-                        );
+                    onRow={record => {
+                        return {
+                            onClick: event => {
+                                setRecords(record)
+                                console.log("点击了==", record)
+                            }, // 点击行
+                        };
                     }}
                 />
             </div>
         </div>
+        <Modal
+            title="选择库存"
+            visible={visible}
+            onCancel={closeModal}
+            onOk={addYarnOutStock}
+            destroyOnClose
+            width={900}
+        >
+            <Form
+                form={form}
+                layout="horizontal"
+                onFinish={searchStock}
+                preserve={false}
+                initialValues={{
+                    customerId: customerId
+                }}
+            >
+                <Row gutter={24}>
+                    <Col span={6}>
+                        <Form.Item
+                            label="纱支"
+                            name="yarnName"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item
+                            label="合同号"
+                            name="customerBillCode"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item
+                            label="批次"
+                            name="yarnBrandBatch"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                        <Form.Item style={{ marginLeft: "10px" }}>
+                            <Button type="primary" htmlType="submit" style={{ height: "26px", display: "flex", alignItems: "center" }}>
+                                搜索
+                            </Button>
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </Form>
+            <Table
+                columns={[
+                    {
+                        title: "纱支",
+                        dataIndex: "yarnName"
+                    },
+                    {
+                        title: "批次",
+                        dataIndex: "yarnBrandBatch"
+                    },
+                    {
+                        title: "合同号",
+                        dataIndex: "customerBillCode"
+                    },
+                    {
+                        title: "颜色",
+                        dataIndex: "colorCode"
+                    }
+                ]}
+                dataSource={yarnStock}
+                rowKey={(record) => record.id}
+                rowSelection={rowSelection_table}
+                pagination={false}
+            />
+        </Modal>
     </div>
 }
 

@@ -1,12 +1,45 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { withRouter } from "react-router-dom"
 import { Statistic, Table } from "antd";
-// import { Chart, Path, Interval, Tooltip } from 'bizcharts';
+import { monthProduction, totalStock, homeOrder } from "../../api/apiModule"
+import { onlyFormat } from "../../utils/config"
 import Charts from "./monthOutStock"
 import "./index.css";
 function DataContent(props) {
     document.title = "首页"
-    console.log(props)
+    const [inMonth, setinMonth] = useState(0);
+    const [inYesterday, setinYesterday] = useState(0);
+    const [outMonth, setoutMonth] = useState(0);
+    const [outYesterday, setoutYesterday] = useState(0);
+    const [totalVolQty, settotalVolQty] = useState(0);
+    const [totalWeight, settotalWeight] = useState(0)
+    const [stockArr, setstockArr] = useState([]);
+    const [order, setorder] = useState([])
+    const [] = useState()
+    useEffect(() => {
+        monthProduction((res) => {
+            console.log(res)
+            if (res.code === 200) {
+                setinMonth(res.data.inMonth);
+                setinYesterday(res.data.inYesterday);
+                setoutMonth(res.data.outMonth);
+                setoutYesterday(res.data.outYesterday)
+            }
+        });
+        totalStock((res) => {
+            if (res.code === 200) {
+                setstockArr([...res.data.list]);
+                settotalWeight(res.data.totalWeight);
+                settotalVolQty(res.data.totalVolQty);
+            }
+        })
+        homeOrder((res) => {
+            if (res.code === 200) {
+                setorder([...res.data])
+            }
+        })
+        return () => { }
+    }, [])
     const scale = {
         price: {
             min: 0,
@@ -18,28 +51,39 @@ function DataContent(props) {
     }
     const columns = [
         {
-            title: "序号"
+            title: "序号",
+            dataIndex: "id"
         },
         {
-            title: "生产单号"
+            title: "生产单号",
+            dataIndex: "code"
         },
         {
-            title: "客户"
+            title: "客户",
+            dataIndex: "customerName"
         },
         {
-            title: "下单日期"
+            title: "下单日期",
+            dataIndex: "bizDate",
+            render: (time) => (<span>{onlyFormat(time, false)}</span>)
         },
         {
-            title: "交期"
+            title: "交期",
+            dataIndex: "deliveryDate",
+            render: (time) => (<span>{onlyFormat(time, false)}</span>)
         },
         {
-            title: "布类"
+            title: "布类",
+            dataIndex: "fabricType"
         },
         {
-            title: "订单数量"
+            title: "订单数量",
+            dataIndex: "weight"
         },
         {
-            title: "状态"
+            title: "状态",
+            dataIndex: "billStatus",
+            render: (billStatus) => (<span>{billStatus === 1 && "已审核"}{billStatus === 0 && "未审核"}</span>)
         }
     ]
     return <div className="right-container" style={{ background: "transparent" }}>
@@ -47,25 +91,25 @@ function DataContent(props) {
             <div className="basic-head">
                 <div className="basic-item">
                     <div className="center">
-                        <Statistic title="当月产量" value={1000} />
+                        <Statistic title="当月产量" value={inMonth} />
                         <div className="scale">
-                            <span>周环比67%</span>
-                            <span>日环比 0%</span>
+                            {/* <span>周环比67%</span>
+                            <span>日环比 0%</span> */}
                         </div>
                     </div>
                     <div className="yesterday-output">
-                        昨日产量：0
+                        昨日产量：{inYesterday}
                     </div>
                 </div>
                 <div className="basic-item">
                     <div className="center">
-                        <Statistic title="当月出布" value={117} />
+                        <Statistic title="当月出布" value={outMonth} />
                         <div className="scale">
-                            <Charts />
+                            {/* <Charts /> */}
                         </div>
                     </div>
                     <div className="yesterday-output">
-                        昨日出布：0
+                        昨日出布：{outYesterday}
                     </div>
                 </div>
                 <div className="basic-item">
@@ -80,7 +124,7 @@ function DataContent(props) {
                 </div>
                 <div className="basic-item">
                     <div className="center">
-                        <Statistic title="坯布库存" value="124,105.82" />
+                        <Statistic title="坯布库存" value={totalWeight} />
                         <div className="scale">
                             {/* <Chart height={100} autoFit data={[
                                 { year: '1951 年', sales: 100 },
@@ -99,20 +143,21 @@ function DataContent(props) {
 
                     </div>
                     <div className="yesterday-output">
-                        织厂100000703 1,732 条 43,986.42 kg
+                        {totalVolQty}卷 {totalWeight} kg
                     </div>
                 </div>
             </div>
             <div className="basic-table">
                 <div className="left">
-                    订单列表
+                    <div className="orderTitle">订单列表</div>
                     <Table
                         className="order-list"
                         columns={columns}
-                        dataSource={[]}
+                        dataSource={order}
+                        pagination={false}
                     />
                 </div>
-                <div className="right">
+                {/* <div className="right">
                     <div className="system-state">
                         <div className="state-title">最新状态</div>
                         <div className="">
@@ -138,7 +183,7 @@ function DataContent(props) {
                             dataSource={[]}
                         />
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     </div>

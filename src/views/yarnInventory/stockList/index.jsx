@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PageHeader, Form, Row, Input, Button, Select, Table } from "antd";
 import { requestUrl } from "../../../utils/config"
+import { yarnStock, getCustomer } from "../../../api/apiModule";
 const { Option } = Select;
 function StockList() {
     document.title = "库存"
@@ -12,7 +13,9 @@ function StockList() {
     const [current, setcurrent] = useState(1);
     const [size, setsize] = useState(10);
     useEffect(() => {
-        getCustomer();
+        getCustomer((res) => {
+            setcustomer([...res])
+        });
         getData({ page: 1, size: 10 })
     }, [])
     const onFinish = (value) => {
@@ -25,83 +28,54 @@ function StockList() {
             "yarnBrandBatch": value.yarnBrandBatch,
             "yarnName": value.yarnName
         }
-
         console.log("查询表单字段", param)
         getData(param)
     }
 
     //获取库存列表
     const getData = (param) => {
-        fetch(requestUrl + "/api-stock/yarnStock/findAll", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(param)
+        yarnStock(param, (res) => {
+            console.log(res)
+            if (res.code == 200) {
+                settotal(res.data.total);
+                setcurrent(res.data.current);
+                setsize(res.data.size);
+                setloading(false);
+                setyarnStockIo(res.data.records)
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code == 200) {
-                    settotal(res.data.total);
-                    setcurrent(res.data.current);
-                    setsize(res.data.size);
-                    setloading(false);
-                    setyarnStockIo(res.data.records)
-                }
-            })
-    }
-    // 获取客户列表
-    const getCustomer = () => {
-        fetch(requestUrl + "/api-stock/stockCommon/findCustomerDown?companyId=1", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code == 200) {
-                    setcustomer(res.data)
-                }
-            })
     }
     // 选择客户
     const selectcustomer = (value) => {
         console.log(value)
     }
-
     const columns = [
-        {
-            title: "#",
-            dataIndex: 'id',
-            key: 'id'
-        },
+        // {
+        //     title: "#",
+        //     dataIndex: 'id',
+        //     key: 'id'
+        // },
         {
             title: "客户",
             dataIndex: 'customerName',
             key: 'customerName'
 
         }, {
-            title: "纱别",
+            title: "纱支",
             dataIndex: 'yarnName',
             key: 'yarnName'
         }, {
-            title: "纱牌/纱批",
+            title: "批次",
             dataIndex: 'yarnBrandBatch',
             key: 'yarnBrandBatch'
         }, {
-            title: "色号",
+            title: "颜色",
             dataIndex: 'colorCode',
             key: 'colorCode'
         }, {
-            title: "缸号"
-        }, {
             title: "合同号",
-            dataIndex: 'inWeight',
-            key: 'inWeight'
+            dataIndex: 'customerBillCode',
+            key: 'customerBillCode'
         }, {
             title: "收纱",
             dataIndex: 'inWeight',
@@ -131,7 +105,7 @@ function StockList() {
         onChange: (page, pageSize) => {
             getData({ page: page, size: pageSize })
         },
-        showSizeChanger: true,
+        showSizeChanger: false,
         showTotal: () => (`共${total}条`)
     }
     return <div className="right-container">
@@ -163,13 +137,13 @@ function StockList() {
                         <Form.Item
                             className="col2"
                             name="yarnBrandBatch"
-                            label="纱牌/纱批"
+                            label="批次"
                         >
                             <Input />
                         </Form.Item>
                         <Form.Item
                             name="yarnName"
-                            label="纱别"
+                            label="纱支"
                             className="col2"
                         >
                             <Input />

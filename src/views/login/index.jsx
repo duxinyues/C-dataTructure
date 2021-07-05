@@ -11,7 +11,7 @@ import Footer from "../../components/Footer/index"
 import img from "../../utils/imgManger"
 const { TabPane } = Tabs;
 const NormalLoginForm = (props) => {
-  console.log(props)
+  document.title = "登录"
   const [spinning, setspinning] = useState(false)
   const onFinish = (params) => {
     setspinning(true)
@@ -23,7 +23,7 @@ const NormalLoginForm = (props) => {
         message.success('登陆成功', 1);
         getAddressInfo(res.data.access_token, (res) => {
           props.setAddress(res);
-          localStorage.setItem("address",res)
+          localStorage.setItem("address", res)
         })
         return;
       }

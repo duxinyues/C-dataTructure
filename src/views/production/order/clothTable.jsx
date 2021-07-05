@@ -56,10 +56,10 @@ const EditCloth = (props) => {
         _data.push({
             key: new Date().getTime(),
             yarnName: "",
-            yarnBrandBatch: 0,
-            rate: 0,
-            knitWastage: 0,
-            planWeight: 0
+            yarnBrandBatch: "",
+            rate: "",
+            knitWastage: "",
+            planWeight: ""
         });
         setData(_data);
         _createOrderParam.orderYarnInfos = _data;
@@ -122,7 +122,7 @@ const EditCloth = (props) => {
     }
     const columns = [
         {
-            title: '纱支',
+            title: () => (<span><em>*</em>纱支</span>),
             dataIndex: 'yarnName',
             editable: true,
         },

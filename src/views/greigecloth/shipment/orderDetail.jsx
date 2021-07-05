@@ -10,10 +10,10 @@ function OrderDetail(props) {
     document.title = "坯布出货";
     const [visible, setvisible] = useState(false);
     const enter_yarn_colums = [
-        {
-            title: '#',
-            dataIndex: 'id',
-        },
+        // {
+        //     title: '#',
+        //     dataIndex: 'id',
+        // },
         {
             title: '生产单号',
             dataIndex: 'orderDto',
@@ -165,10 +165,12 @@ function OrderDetail(props) {
             onCancel={onCancel}
         >
             <Table
-                columns={[{
-                    title: "#",
-                    dataIndex: "id"
-                }, {
+                columns={[
+                //     {
+                //     title: "#",
+                //     dataIndex: "id"
+                // },
+                 {
                     title: "条码",
                     dataIndex: "barcode"
                 }, {

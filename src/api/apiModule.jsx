@@ -1,4 +1,4 @@
-import { requestUrl } from "../utils/config"
+import { requestUrl } from "../utils/config";
 /**
  * 登录
  * @param {*} params 
@@ -45,6 +45,51 @@ const addressMap = (data) => {
     return data
 }
 /**
+ * 当月产量
+ * @param {*} callback 
+ */
+export const monthProduction = (callback) => {
+    fetch(requestUrl + `/api-production/index/countBarcode`, {
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        }
+    })
+        .then((res) => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+/**
+ * 库存统计
+ * @param {*} callback 
+ */
+export const totalStock = (callback) => {
+    fetch(requestUrl + `/api-production/index/countStock`, {
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        }
+    })
+        .then((res) => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+/**
+ * 首页订单
+ * @param {*} callback 
+ */
+export const homeOrder = (callback) => {
+    fetch(requestUrl + `/api-production/index/countOrder`, {
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        }
+    })
+        .then((res) => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+/**
  * 用户列表
  * @param {*} param 
  * @param {*} callback 
@@ -68,8 +113,8 @@ export const getUserList = (param, callback) => {
  * @param {*} params 
  * @param {*} callback 
  */
-export const resetPassword = (params, callback) => {
-    fetch(requestUrl + `/api-user/user/modifyPassword?id=${params.id}&oldPassword=${params.oldPassword}&newPassword=${params.newPassword}`, {
+export const resetPassword = (id, callback) => {
+    fetch(requestUrl + `/api-user/user/resetPassword?id=${id}`, {
         method: "POST",
         headers: {
             "Authorization": "bearer " + localStorage.getItem("access_token")
@@ -79,7 +124,18 @@ export const resetPassword = (params, callback) => {
         .then((res) => {
             callback(res)
         })
-
+}
+export const changePassword = (params, callback) => {
+    fetch(requestUrl + `/api-user/user/modifyPassword?id=${params.id}&newPassword=${params.newPassword}&oldPassword=${params.oldPassword}`, {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        }
+    })
+        .then((res) => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
 }
 /**
  * 添加或者编辑用户
@@ -396,7 +452,10 @@ export const getUserInfo = (callback) => {
     }).then(res => {
         return res.json()
     }).then((res) => {
-        callback(res)
+        if (res.code === 200) {
+            callback(res);
+            return;
+        }
     }).catch((err) => { })
 }
 
@@ -846,9 +905,213 @@ export const fabricStatement = (params, callback) => {
             callback(res)
         })
 }
-
+/**
+ * 坯布库存
+ * @param {*} params 
+ * @param {*} callback 
+ */
 export const getFabricStock = (params, callback) => {
     fetch(requestUrl + "/api-stock/fabricStock/findAll", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+/**
+ * 纱线入库
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const yarnStockIn = (params, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStockIo/findYarnStockInList", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+/**
+ * 纱线入库明细
+ * @param {*} id 
+ * @param {*} callback 
+ */
+export const yarnStockDetail = (id, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStockIo/findYarnStockInById?id=" + id, {
+        method: "GET",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+        },
+    })
+        .then(res => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+/**
+ * 添加收纱入库单
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const addYarnStock = (params, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStockIo/inSaveOrModify", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+/**
+ * 收纱入库审核,退纱出库审核
+ * @param {*} id 
+ * @param {*} status 
+ * @param {*} callback 
+ */
+export const changeYarnOutStockStatus = (id, status, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStockIo/modifyStatus?id=" + id + "&status=" + status, {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res);
+        })
+}
+/**
+ * 删除纱线入库单
+ * @param {*} id 
+ */
+export const deleteYarn = (id, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStockIo/removeInById?id=" + id, {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+        },
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+/**
+ * 退纱出库列表
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const yarnOutStock = (params, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStockIo/findYarnStockOutList", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then((res) => {
+            callback(res);
+        })
+}
+/**
+ * 退纱出库详情
+ * @param {*} id 
+ * @param {*} callback 
+ */
+export const yarnOutStockDetail = (id, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStockIo/findYarnStockOutById?id=" + id, {
+        method: "GET",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+    })
+        .then(res => { return res.json() })
+        .then((res) => {
+            callback(res)
+        })
+}
+/**
+ * 退纱出库————新增、修改
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const addYarnOutStock = (params, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStockIo/outSaveOrModify", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res);
+        })
+}
+
+/**
+ * 退纱出库弹窗库存数据
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const outYarnModalList = (params, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStockIo/findAllYarnStock", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res);
+        })
+}
+/**
+ * 纱线库存
+ * @param {*} params 
+ * @param {*} callback 
+ */
+export const yarnStock = (params, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStock/findAll", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res);
+        })
+}
+
+export const getYarnStockIoDetail = (params, callback) => {
+    fetch(requestUrl + "/api-stock/yarnStockIo/findAll", {
         method: "POST",
         headers: {
             "Authorization": "bearer " + localStorage.getItem("access_token"),

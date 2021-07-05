@@ -52,7 +52,7 @@ function OpenBarcode(props) {
     >
         <Table
             columns={[
-                { title: "#", dataIndex: "id" },
+                // { title: "#", dataIndex: "id" },
                 { title: "条码", dataIndex: "barcode" },
                 { title: "匹号", dataIndex: "seq" },
                 { title: "入库重量", dataIndex: "weight" },

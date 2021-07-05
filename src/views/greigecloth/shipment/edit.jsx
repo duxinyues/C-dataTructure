@@ -476,7 +476,7 @@ function EditEnterStockOrder(props) {
                         { title: "合同号", width: 130, dataIndex: "orderDto", render: (param) => (<span>{param.customerBillCode}</span>) },
                         { title: "坯布编码", width: 130, dataIndex: "orderDto", render: (param) => (<span>{param.greyFabricCode}</span>) },
                         { title: "布类", width: 130, dataIndex: "orderDto", render: (param) => (<span>{param.fabricType}</span>) },
-                        { title: "纱别", width: 130, dataIndex: "orderDto", render: (param) => (<span>{param.yarnName}</span>) },
+                        { title: "纱支", width: 130, dataIndex: "orderDto", render: (param) => (<span>{param.yarnName}</span>) },
                         { title: "针寸", width: 70, dataIndex: "orderDto", render: (param) => (<span>{param.needles}-{param.inches}</span>) },
                         { title: "客户颜色", width: 70, dataIndex: "orderDto", render: (param) => (<span>{param.customerColor}</span>) },
                         { title: "出货卷数", width: 70, dataIndex: "volQty", render: (item, index) => (<span onClick={() => { openBarcode(index) }} style={{ color: "blue", cursor: "pointer" }}>{item}</span>) },

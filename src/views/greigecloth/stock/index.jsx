@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, Row, Input, Button, Select, Table } from "antd";
+import { Form, Row, Input, Button, Select, Table, Col } from "antd";
 import { getCustomer, getFabricStock } from "../../../api/apiModule"
 const { Option } = Select;
 function Stock() {
@@ -64,11 +64,12 @@ function Stock() {
         showTotal: () => (`共${total}条`)
     }
     const columns = [
-        {
-            title: "#",
-            dataIndex: 'id',
-            key: 'id',
-        }, {
+        // {
+        //     title: "#",
+        //     dataIndex: 'id',
+        //     key: 'id',
+        // },
+         {
             title: "生产单号",
             dataIndex: 'knitOrderCode',
         }, {
@@ -113,12 +114,12 @@ function Stock() {
                 坯布库存
             </div>
             <div className="custom-right">
-                <Button>
+                {/* <Button>
                     打印
                 </Button>
                 <Button >
                     导出
-                </Button>
+                </Button> */}
             </div>
         </div>
 
@@ -126,81 +127,91 @@ function Stock() {
             <div className="search-content">
                 <Form form={form} onFinish={onFinish}>
                     <Row gutter={24}>
-                        <Form.Item
-                            name="knitOrderCode"
-                            label="生产单号"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name="customerBillCode"
-                            label="合同号"
-                            className="col2"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name="customerId"
-                            label="客户"
-                            className="col2"
-                        >
-                            <Select style={{ width: "175px" }}>
-                                {
-                                    customer.map((item, key) => (<Option value={item.id} key={key}>{item.name}</Option>))
-                                }
-                            </Select>
-                        </Form.Item>
-                    </Row>
-                    <Row gutter={24}>
-                        <Form.Item
-                            name="greyFabricCode"
-                            label="坯布编码"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name="fabricType"
-                            label="布类"
-                            className="col2"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name="needles"
-                            label="针数"
-                            className="col2"
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Row>
-                    <Row gutter={24}>
-                        <Form.Item
-                            name="yarnInfo"
-                            label="用料信息"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name="loomId"
-                            label="机号"
-                            className="col2"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item style={{ marginLeft: "60px" }}>
-                            <Button type="primary" htmlType="submit">
-                                搜索
-                            </Button>
-                            <Button
-                                style={{ margin: '0 8px' }}
-                                onClick={() => {
-                                    form.resetFields();
-                                    getData({ page: 1, size: 10 });
-                                }}
+                        <Col span={4}>
+                            <Form.Item
+                                name="knitOrderCode"
+                                label="生产单号"
+                                className="col2"
                             >
-                                清空
-                            </Button>
-                        </Form.Item>
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="greyFabricCode"
+                                label="坯布编码"
+                                className="col2"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item
+                                name="customerBillCode"
+                                label="合同号"
+                                className="col2"
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="fabricType"
+                                label="布类"
+                                className="col2"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item
+                                name="customerId"
+                                label="客户"
+                                className="col2"
+                            >
+                                <Select>
+                                    {
+                                        customer.map((item, key) => (<Option value={item.id} key={key}>{item.name}</Option>))
+                                    }
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                name="needles"
+                                label="针数"
+                                className="col2"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item
+                                name="yarnInfo"
+                                label="用料信息"
+                                className="col2"
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="loomId"
+                                label="机号"
+                                className="col2"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item></Form.Item>
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit">
+                                    搜索
+                                </Button>
+                                <Button
+                                    style={{ margin: '0 8px' }}
+                                    onClick={() => {
+                                        form.resetFields();
+                                        getData({ page: 1, size: 10 });
+                                    }}
+                                >
+                                    清空
+                                </Button>
+                            </Form.Item>
+                        </Col>
                     </Row>
                 </Form>
             </div>

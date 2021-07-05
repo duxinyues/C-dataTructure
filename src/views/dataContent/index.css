@@ -20,7 +20,6 @@
 }
 
 .basic-item .center {
-    border: 1px solid blue;
     height: 150px;
     border-bottom: 1px solid #999;
     padding-bottom: 10px;
@@ -28,7 +27,7 @@
 
 .basic-item .scale {
     height: 85px;
-    border: 1px solid green;
+    /* border: 1px solid green; */
 }
 
 .basic-table {
@@ -36,7 +35,7 @@
 }
 
 .basic-table .left {
-    width: 68%;
+    width: 100%;
     background: #fff;
     padding: 10px;
     height: 60vh;
@@ -69,5 +68,10 @@
 }
 
 .yesterday-output {
-    border: 1px solid red;
+    padding-top: 10px;
+}
+
+.orderTitle {
+    font-size: 20px;
+    line-height: 40px;
 }

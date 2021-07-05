@@ -7,6 +7,7 @@ import "../style.css"
 const { TextArea } = Input;
 const { Option } = Select;
 function Detail(props) {
+    console.log(props)
     const [disable, setdisable] = useState(true);
     const [yarn_stock_detail, setyarn_stock_detail] = useState({});
     const data = {
@@ -21,54 +22,34 @@ function Detail(props) {
 
     const enter_yarn_colums = [
         {
-            title: '纱别',
+            title: '纱支',
             dataIndex: 'yarnName',
-            key: 'yarnName',
-            width:160
         },
         {
-            title: '纱牌/纱批',
+            title: '批次',
             dataIndex: 'yarnBrandBatch',
-            key: 'yarnBrandBatch',
-            width:160
+
         },
         {
-            title: "纱属性",
-            width:170
-        },
-        {
-            title: "缸号",
-            width:170
-        },
-        {
-            title: '色号',
+            title: '颜色',
             dataIndex: "colorCode",
-            key: "colorCode",
-            width:170
         },
         {
             title: '合同号',
             dataIndex: 'customerCode',
-            key: 'customerCode',
-            width:160
         }, {
             title: '件数',
             dataIndex: 'pcs',
-            key: 'pcs',
-            width:160
         },
         {
             title: '重量',
             dataIndex: 'weight',
-            key: 'weight',
-            width:160
         }
     ];
-
-
+    const audit = () => { props.onAudit() }
     return <div className="right">
         <div className="detail-title">
-            <Tag>反审核</Tag>
+            <Tag onClick={audit}>{props.data.billStatus === 0 && "审核"}{props.data.billStatus === 1 && "反审核"}</Tag>
         </div>
         <div className="detail-basicData">
             <div className="row">

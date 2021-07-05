@@ -18,6 +18,7 @@ function UserCenter() {
     const [loading, setloading] = useState(true);
     const [visible, setvisible] = useState(false);
     const [editType, seteditType] = useState(0);
+    const [title, setTitle] = useState("")
     const [selectRecord, setselectRecord] = useState();
     const [size, setSize] = useState(10);
     const [current, setCurrent] = useState(1);
@@ -42,6 +43,9 @@ function UserCenter() {
         setselectRecord(param);
         setvisible(true);
         seteditType(type);
+        if (type === 1) { setTitle("编辑用户") }
+        if (type === 2) { setTitle("新增用户") }
+        if (type === 3) { setTitle("修改密码") }
         if (type === 2) {
             await form.setFieldsValue({
                 companyId: "",
@@ -154,7 +158,6 @@ function UserCenter() {
                 });
             }
         })
-
     }
 
     // 禁用
@@ -203,6 +206,25 @@ function UserCenter() {
     const onClickRow = (record) => {
         setRowId(record.id)
     }
+    const reset = (param) => {
+        confirm({
+            title: "是否重置该用户登录密码？",
+            okText: "是",
+            cancelText: "否",
+            onCancel() { },
+            onOk() {
+                resetPassword(param.id, (res) => {
+                    setvisible(false)
+                    if (res.code == 200) {
+                        message.success("密码重置成功");
+                        userListFn({ page: 1, size: 10 })
+                        return;
+                    }
+                    message.error(res.msg)
+                })
+            }
+        })
+    }
     const columns = [
         {
             title: '姓名',
@@ -242,7 +264,9 @@ function UserCenter() {
                 return <div className="tag-content">
                     <span onClick={() => { modalClick(record, 1) }}>编辑</span>
                     <span onClick={() => { delect(record) }}>删除</span>
-                    <span onClick={() => { modalClick(record, 3) }}>重置密码</span>
+                    <span onClick={() => {
+                        reset(record)
+                    }}>重置密码</span>
                     <span onClick={() => { disable(record) }}>{record.enabled ? "禁用" : "启用"} </span>
                 </div>
             },
@@ -338,10 +362,10 @@ function UserCenter() {
         <Modal
             className="customModal user-center"
             destroyOnClose={true}
-            title={editType == 1 ? "编辑用户" : "新增用户"}
+            title={title}
             visible={visible}
             footer={[
-                <span className="modalFooterBtn">{editType === 1 ? "保存编辑" : "保存并新增"}</span>,
+                // <span className="modalFooterBtn">{editType === 2 && ""}{editType === 1 && "保存编辑"}</span>,
                 <Button key="submit" type="primary" onClick={handleOk} >
                     保存
                 </Button>,

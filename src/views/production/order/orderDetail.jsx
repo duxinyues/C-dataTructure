@@ -3,28 +3,45 @@ import { Col, Row, Input, Tabs, Table } from "antd";
 import { newOrderType, onlyFormat } from "../../../utils/config";
 import { getBarCodes } from "../../../api/apiModule"
 const { TabPane } = Tabs;
+function debounce(fn, delay) {
+    let timer;
+    return function (...arg) {
+        if (timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+            fn(arg)
+            clearTimeout(timer)
+        }, delay)
+    }
+}
+function useDebounce(fn, delay) {
+    return debounce(fn, delay) //我直接复用上面定义的防抖代码
+}
 function OrderDetail(props) {
-    document.title = "订单管理";
     const [barCode, setbarCode] = useState([]);
     const [loomData, setloomData] = useState();
     const [yarnInfoData, setyarnInfoData] = useState([])
     const yarnBrandBatch = props.orderData ? props.orderData.orderYarnInfos.map((item) => {
         return item.yarnBrandBatch;
     }) : []
+    const [refresh, setrefresh] = useState(true);
     useEffect(() => {
         if (props.orderData) {
             setyarnInfoData(props.orderData.orderYarnInfos);
-            getBarCodes(props.orderData.id, yarnBrandBatch.join(","), (res) => {
-                if (res.data.length === 0) {
-                    setloomData([]);
-                    setbarCode([]);
-                    return;
-                }
-                setloomData(res.data);
-                setbarCode(res.data[0].barcodes)
-            });
+            getCode()
         }
-    }, [props.orderData])
+    }, [props])
+    const getCode = () => {
+        getBarCodes(props.orderData.id, yarnBrandBatch.join(","), (res) => {
+
+            if (res.data.length === 0) {
+                setloomData([]);
+                setbarCode([]);
+                return;
+            }
+            setloomData(res.data);
+            setbarCode(res.data[0].barcodes)
+        });
+    }
     return <React.Fragment>
         {/* <div className="detail-title">
             标题
@@ -128,8 +145,8 @@ function OrderDetail(props) {
                         <Table
                             pagination={false}
                             columns={[
-                                { title: "纱别", dataIndex: "yarnName" },
-                                { title: "纱牌/纱批", dataIndex: "yarnBrandBatch" },
+                                { title: "纱支", dataIndex: "yarnName" },
+                                { title: "批次", dataIndex: "yarnBrandBatch" },
                                 { title: "纱比%", dataIndex: "rate" },
                                 { title: "织损%", dataIndex: "knitWastage" },
                                 { title: "计划用量", dataIndex: "planWeight" },
@@ -143,8 +160,8 @@ function OrderDetail(props) {
                                 { title: "生产单号" },
                                 { title: "合同号" },
                                 { title: "布类" },
-                                { title: "纱别" },
-                                { title: "纱牌/纱批" },
+                                { title: "纱支" },
+                                { title: "批次" },
                                 { title: "纱比%" },
                                 { title: "织损%" },
                                 { title: "已织重量" },

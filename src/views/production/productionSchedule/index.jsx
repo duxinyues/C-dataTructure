@@ -14,7 +14,7 @@ function ProductionSchedule() {
     const [szie, setszie] = useState(10);
     const [form] = Form.useForm()
     const columns = [
-        { title: "#", dataIndex: "id" },
+        // { title: "#", dataIndex: "id" },
         { title: "生产单号", dataIndex: "knitOrderCode" },
         { title: "客户", dataIndex: "customerName" },
         { title: "合同号", dataIndex: "customerBillCode" },
@@ -27,7 +27,7 @@ function ProductionSchedule() {
         { title: "机号", dataIndex: "loomId" },
         { title: "库存重量", dataIndex: "stockWeight" },
         { title: "出货重量", dataIndex: "outStockWeight" },
-        { title: "欠织重量", dataIndex: "id" } 
+        { title: "欠织重量", dataIndex: "id" }
     ]
     useEffect(() => {
         listData({ page: 1, size: 10 })
@@ -80,8 +80,8 @@ function ProductionSchedule() {
                     </div> */}
                 </div>
                 <div>
-                    <Button style={{ marginRight: "10px" }}>打印</Button>
-                    <Button>导出</Button>
+                    {/* <Button style={{ marginRight: "10px" }}>打印</Button>
+                    <Button>导出</Button> */}
                 </div>
             </PageHeader>
             <div className="search-content production">
@@ -100,12 +100,7 @@ function ProductionSchedule() {
                             >
                                 <Input />
                             </Form.Item>
-                            <Form.Item
-                                name="customerBillCode"
-                                label="合同号"
-                            >
-                                <Input />
-                            </Form.Item>
+
                         </Col>
                         <Col span={4}>
                             <Form.Item
@@ -124,12 +119,7 @@ function ProductionSchedule() {
                             >
                                 <Input />
                             </Form.Item>
-                            <Form.Item
-                                name="greyFabricCode"
-                                label="坯布编码"
-                            >
-                                <Input />
-                            </Form.Item>
+
 
                         </Col>
                         <Col span={4}>
@@ -145,6 +135,23 @@ function ProductionSchedule() {
                             >
                                 <Input />
                             </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item
+                                name="customerBillCode"
+                                label="合同号"
+                            >
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                name="greyFabricCode"
+                                label="坯布编码"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item></Form.Item>
                             <Form.Item >
                                 <Button type="primary" htmlType="submit">
                                     搜索
@@ -159,7 +166,6 @@ function ProductionSchedule() {
                                 </Button>
                             </Form.Item>
                         </Col>
-
                     </Row>
                 </Form>
             </div>

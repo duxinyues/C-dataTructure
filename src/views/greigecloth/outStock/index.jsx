@@ -7,7 +7,7 @@ import "./index.css"
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 function OutStock() {
-    document.title = "出货明细"
+    document.title = "出入明细"
     const [form] = Form.useForm();
     const [date, setDate] = useState([getMonthFE(1), getMonthFE(2)]);
     const [customer, setcustomer] = useState([]);
@@ -75,11 +75,12 @@ function OutStock() {
         showTotal: () => (`共${total}条`)
     }
     const columns = [
-        {
-            title: "#",
-            dataIndex: 'id',
-            key: 'id',
-        }, {
+        // {
+        //     title: "#",
+        //     dataIndex: 'id',
+        //     key: 'id',
+        // },
+         {
             title: "单号",
             dataIndex: 'code',
             key: 'code',
@@ -153,10 +154,10 @@ function OutStock() {
                 <span className="title">出入明细</span>
                 <RangePicker onChange={selectDate} defaultValue={[moment(getMonthFE(1), "YYYY-MM-DD"), moment(getMonthFE(2), "YYYY-MM-DD")]} />
             </div>
-            <div className="head-bth">
+            {/* <div className="head-bth">
                 <Button>打印</Button>
                 <Button>导出</Button>
-            </div>
+            </div> */}
         </div>
         <div className="inventory-container outStock">
             <div className="search-content">
@@ -184,7 +185,7 @@ function OutStock() {
                                 label="客户"
                                 className="col2"
                             >
-                                <Select onChange={selectcustomer} style={{ minWidth: "145px" }} >
+                                <Select onChange={selectcustomer} >
                                     {
                                         customer.map((item, key) => (<Option value={item.id} key={key}>{item.name}</Option>))
                                     }
@@ -204,7 +205,7 @@ function OutStock() {
                                 label="类型"
                                 className=" col2"
                             >
-                                <Select onChange={selectcustomer} style={{ minWidth: "145px" }} >
+                                <Select onChange={selectcustomer}  >
                                     <Option value="1" >入库</Option>
                                     <Option value="0" >出库</Option>
                                 </Select>

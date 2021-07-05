@@ -75,7 +75,7 @@ export const menus = [
             {
                 "id": 11,
                 "parentId": 1,
-                "name": "纱别",
+                "name": "纱支",
                 "icon": null,
                 "url": null,
                 "path": "/dashboard11",

@@ -214,7 +214,7 @@ function CreateOrder(props) {
                 </Row>
                 <Row className="c-row">
                     <Col span={8} className="c-col">
-                        <div className="c-label"><em>*</em>合同号</div>
+                        <div className="c-label">合同号</div>
                         <div className="c-input"><Input onChange={onchangeCode} /></div>
                     </Col>
                     <Col span={8} className="c-col">
@@ -282,7 +282,7 @@ function CreateOrder(props) {
                         <div className="c-input"><Input onChange={changeProductPrice} /></div>
                     </Col>
                     <Col span={8} className="c-col">
-                        <div className="c-label c-right"><em>*</em>订单数量</div>
+                        <div className="c-label c-right">订单数量</div>
                         <div className="c-input"><Input onChange={changeweight} type="number" /></div>
                     </Col>
                 </Row>

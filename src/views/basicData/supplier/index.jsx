@@ -177,10 +177,10 @@ function Supplier(props) {
         setRowId(record.id)
     }
     const columns = [
-        {
-            title: "#",
-            dataIndex: 'id',
-        },
+        // {
+        //     title: "#",
+        //     dataIndex: 'id',
+        // },
         {
             title: '编码',
             dataIndex: 'code',

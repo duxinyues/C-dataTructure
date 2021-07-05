@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react"
-import { Table, PageHeader, Button, Modal } from "antd";
+import { Table, PageHeader, Button, Modal, message } from "antd";
 import { onlyFormat, requestUrl, getNowFormatDate } from "../../../utils/config";
+import { yarnStockIn, yarnStockDetail, addYarnStock, deleteYarn, changeYarnOutStockStatus } from "../../../api/apiModule"
 import { withRouter } from "react-router-dom";
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
@@ -28,45 +29,30 @@ function EnterStorage(props) {
 
     //  收纱入库
     const getData = (param) => {
-        fetch(requestUrl + "/api-stock/yarnStockIo/findYarnStockInList", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(param)
-        })
-            .then(res => { return res.json() })
-            .then((res) => {
-                console.log("收纱入库==", res)
-                if (res.code == 200) {
-                    setloading(false);
-
-                    setleftData(res.data.records);
-                    setleftTotal(res.data.total);
-                    setSize(res.data.size);
-                    setcurrent(res.data.current);
-                    setSelectId(res.data.records[0].id)
-                    getYarnStockDetail(res.data.records[0].id)
+        yarnStockIn(param, (res) => {
+            setloading(false);
+            if (res.code == 200) {
+                if (res.data.records.length === 0) {
+                    setleftData([]);
+                    setSelectId()
+                    return;
                 }
-            })
+                setleftData(res.data.records);
+                setleftTotal(res.data.total);
+                setSize(res.data.size);
+                setcurrent(res.data.current);
+                setSelectId(res.data.records[0].id)
+                getYarnStockDetail(res.data.records[0].id)
+            }
+        })
     }
-    // 入库单明细
+    // 入库单详情
     const getYarnStockDetail = (id) => {
-        fetch(requestUrl + "/api-stock/yarnStockIo/findYarnStockInById?id=" + id, {
-            method: "GET",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
+        yarnStockDetail(id, (res) => {
+            if (res.code == 200) {
+                setyarn_stock_detail(res.data)
+            }
         })
-            .then(res => { return res.json() })
-            .then((res) => {
-                console.log("入库单详情", res)
-                if (res.code == 200) {
-                    setyarn_stock_detail(res.data)
-                }
-            })
     }
     // 新增
     const add = () => {
@@ -78,33 +64,40 @@ function EnterStorage(props) {
     const cancel = () => {
         setdetailType("detail")
     }
-    // 保存
+    // 保存收纱入库
     const onSave = () => {
-        if (!orderData) return;
-        // 添加入库单
-        orderData.inDtls = [
-            {
-                "colorCode": "12",
-                "customerCode": "25435",
-                "inCheckDtls": [
-                    {
-                        "grossWeight": 0,
-                        "lackWeight": 0,
-                        "spec": 0,
-                        "tareWeight": 0,
-                        "weight": 0
-                    }
-                ],
-                "lackWeight": 0,
-                "netWeight": 0,
-                "pcs": 0,
-                "spec": 0,
-                "totalLackWeight": 0,
-                "weight": 0,
-                "yarnBrandBatch": "4654",
-                "yarnName": "测试名称"
+        if (!orderData) {
+            // 数据没有更新，则直接关闭编辑组件
+            if (detailType === "edit" && detailType === "add") {
+                setdetailType("detail")
             }
-        ]
+            return
+        };
+        // 添加入库单
+        if (!orderData.customerId) {
+            message.error("请选择客户！");
+            return;
+        }
+        console.log("收纱入库单==", orderData)
+        if (!orderData.inDtls) {
+            message.warning("请完善纱线信息！");
+            return;
+        }
+        const yarnNameIsEmpty = orderData.inDtls.every((item) => {
+            return item.yarnName !== ""
+        })
+        if (!yarnNameIsEmpty) {
+            message.warning("纱支不能为空！");
+            return;
+        }
+        const netWeightIsEmpty = orderData.inDtls.every((item) => {
+            console.log(item.netWeight)
+            return Number(item.netWeight) > 0
+        })
+        if (!netWeightIsEmpty) {
+            message.warning("请设置来纱净重！");
+            return;
+        }
         setloading(true)
         if (detailType == "add") { }
         if (detailType == "edit") {
@@ -113,22 +106,16 @@ function EnterStorage(props) {
 
         if (orderData.bizDate == "") orderData.bizDate = getNowFormatDate();
         console.log("新增或者编辑的表单字段==", orderData)
-        fetch(requestUrl + "/api-stock/yarnStockIo/inSaveOrModify", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(orderData)
+        addYarnStock(orderData, (res) => {
+            console.log(res)
+            if (res.code == 200) {
+                getData(data);
+                message.success("保存成功！")
+                setdetailType("detail");
+                return;
+            }
+            message.error("保存失败！")
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code == 200) {
-                    getData(data);
-                    setdetailType("detail");
-                }
-            })
     }
     //  获取子组件参数
     const save = (value) => {
@@ -139,26 +126,25 @@ function EnterStorage(props) {
         confirm({
             content: '确定要删除该条数据',
             onOk() {
-                console.log('OK');
-                delectRequest(yarn_stock_detail.id)
+                deleteYarn(yarn_stock_detail.id, (res) => {
+                    if (res.code == 200) {
+                        getData(data)
+                    }
+                });
             },
             onCancel() { },
         });
     }
-    const delectRequest = (id) => {
-        fetch(requestUrl + "/api-stock/yarnStockIo/removeInById?id=" + id, {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-            },
+    // 审核
+    const onAudit = () => {
+        const status = yarn_stock_detail.billStatus === 1 ? 0 : 1
+        changeYarnOutStockStatus(yarn_stock_detail.id, status, (res) => {
+            if (res.code === 200) {
+                yarn_stock_detail.billStatus === 1 ? message.success("反审核成功！") : message.success("审核成功！")
+
+                getData(data)
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                // 删除成功，刷新列表
-                if (res.code == 200) {
-                    getData(data)
-                }
-            })
     }
     const columns = [
         {
@@ -253,7 +239,7 @@ function EnterStorage(props) {
                 />
             </div>
             <div className="right">
-                {detailType === "detail" && <OrderDetail data={yarn_stock_detail} />}
+                {detailType === "detail" && <OrderDetail data={yarn_stock_detail} onAudit={onAudit} />}
                 {detailType === "add" && <CreateOrder save={save} />}
                 {detailType === "edit" && <CreateOrder data={yarn_stock_detail} save={save} />}
             </div>

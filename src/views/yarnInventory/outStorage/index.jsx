@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
-import { Table, PageHeader, Button } from "antd";
-import { onlyFormat, requestUrl, getNowFormatDate } from "../../../utils/config";
+import { Table, Button, message } from "antd";
+import { onlyFormat, getNowFormatDate } from "../../../utils/config";
+import { yarnOutStock, yarnOutStockDetail, addYarnOutStock, changeYarnOutStockStatus } from "../../../api/apiModule"
 import { withRouter } from "react-router-dom";
 import Detail from "./detail";
 import CreateOrder from "./createOrder";
@@ -28,44 +29,27 @@ function OutStorage(props) {
 
     //  退纱出库
     const getData = (param) => {
-        fetch(requestUrl + "/api-stock/yarnStockIo/findYarnStockOutList", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(param)
+        yarnOutStock(param, (res) => {
+            console.log(res)
+            seloading(false)
+            if (res.code == 200 && res.data.records.length > 0) {
+                setcurrent(res.data.current);
+                setsize(res.data.size);
+                setleftData(res.data.records);
+                setleftTotal(res.data.total);
+                setSelectId(res.data.records[0].id)
+                getYarnStockDetail(res.data.records[0].id)
+            }
         })
-            .then(res => { return res.json() })
-            .then((res) => {
-                console.log(res)
-                seloading(false)
-                if (res.code == 200 && res.data.records.length > 0) {
-                    setcurrent(res.data.current);
-                    setsize(res.data.size);
-                    setleftData(res.data.records);
-                    setleftTotal(res.data.total);
-                    setSelectId(res.data.records[0].id)
-                    getYarnStockDetail(res.data.records[0].id)
-                }
-            })
     }
     // 出库单明细
     const getYarnStockDetail = (id) => {
-        fetch(requestUrl + "/api-stock/yarnStockIo/findYarnStockOutById?id=" + id, {
-            method: "GET",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
+        yarnOutStockDetail(id, (res) => {
+            console.log("出库单详情", res)
+            if (res.code == 200) {
+                setyarn_stock_detail(res.data);
+            }
         })
-            .then(res => { return res.json() })
-            .then((res) => {
-                console.log("出库单详情", res)
-                if (res.code == 200) {
-                    setyarn_stock_detail(res.data)
-                }
-            })
     }
     // 
     const add = () => {
@@ -77,50 +61,22 @@ function OutStorage(props) {
     // 保存
     const onSave = () => {
         seloading(true)
-        // 添加出库单
-        orderData.outDtls = [
-            {
-                "colorCode": "12",
-                "customerCode": "25435",
-                "inCheckDtls": [
-                    {
-                        "grossWeight": 0,
-                        "lackWeight": 0,
-                        "spec": 0,
-                        "tareWeight": 0,
-                        "weight": 0
-                    }
-                ],
-                "lackWeight": 0,
-                "netWeight": 0,
-                "pcs": 0,
-                "spec": 0,
-                "totalLackWeight": 0,
-                "weight": 0,
-                "yarnBrandBatch": "4654",
-                "yarnName": "测试名称"
-            }
-        ]
+        // 添加退纱出库单
         orderData.billType = 0; // 订单类型
-
         if (orderData.bizDate == "") orderData.bizDate = getNowFormatDate()
-        console.log("获取子组件的参数==", orderData)
-        fetch(requestUrl + "/api-stock/yarnStockIo/outSaveOrModify", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(orderData)
+        console.log("获取子组件的参数==", orderData);
+        orderData.outDtls.map((item) => {
+            item.customerCode = item.customerBillCode
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code == 200) {
-                    getData(data);
-                    setdetailType("detail")
-                }
-            })
+        if (detailType === "edit") {
+            orderData.id = yarn_stock_detail.id
+        }
+        addYarnOutStock(orderData, (res) => {
+            if (res.code == 200) {
+                getData(data);
+                setdetailType("detail")
+            }
+        })
     }
     //  获取子组件参数
     const save = (value) => {
@@ -150,6 +106,20 @@ function OutStorage(props) {
             render: (billStatus) => (<div>{billStatus == 1 ? <span color="green">已审核</span> : <span color="magenta">未审核</span>}</div>)
         }
     ];
+    // 审核
+    const onAudit = () => {
+        const status = yarn_stock_detail.billStatus === 1 ? 0 : 1
+        changeYarnOutStockStatus(yarn_stock_detail.id, status, (res) => {
+            console.log(res)
+            if (res.code === 200) {
+                getData(data)
+                yarn_stock_detail.billStatus === 1 ? message.success("反审核成功！") : message.success("审核成功！");
+                return;
+            }
+            yarn_stock_detail.billStatus === 1 ? message.error("反审核失败")
+                : message.error("审核失败");
+        })
+    }
     const pagination = {
         total: leftTotal,
         pageSize: size,
@@ -170,7 +140,7 @@ function OutStorage(props) {
                 <Button type="primary" onClick={add}>
                     +新增
                 </Button>
-                <Button disabled>
+                <Button disabled={leftData.length === 0} onClick={() => { setdetailType("edit") }}>
                     编辑
                 </Button>
             </div>
@@ -204,7 +174,7 @@ function OutStorage(props) {
                     }}
                 />
             </div>
-            {detailType === "detail" && <Detail data={yarn_stock_detail} />}
+            {detailType === "detail" && <Detail data={yarn_stock_detail} onAudit={onAudit} />}
             {detailType === "add" && <CreateOrder save={save} />}
             {detailType === "edit" && <CreateOrder data={yarn_stock_detail} save={save} />}
         </div>

@@ -29,6 +29,11 @@
 
 .delivery-order {
     margin-bottom: 20px;
+    height: 127mm;
+    /* border: 1px solid red; */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .o-title {

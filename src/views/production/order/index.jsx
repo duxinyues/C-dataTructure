@@ -5,7 +5,7 @@ import JsBarcode from 'jsbarcode';
 import { connect } from "react-redux";
 import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, getNowFormatDate } from "../../../utils/config";
 import { createOrder, clearOrderParams, createOrderParams } from "../../../actons/action";
-import { createOrders, getLoom, getOrderCustomerDownList, getOrderData, orderStatus } from "../../../api/apiModule"
+import { createOrders, getLoom, getOrderCustomerDownList, getOrderData, orderStatus ,getBarCodes} from "../../../api/apiModule"
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import EditOrder from "./edit";
@@ -36,7 +36,8 @@ function Order(props) {
     const [selectSeq, setselectSeq] = useState();
     const [companyName, setcompanyName] = useState();
     const [orderParams, setorderParams] = useState({});
-    const [inoutValue, setInputValue] = useState("")
+    const [inoutValue, setInputValue] = useState("");
+    const [loomData, setloomData] = useState();
     const [form] = Form.useForm();
     useEffect(() => {
         setcolumns([
@@ -57,7 +58,6 @@ function Order(props) {
                 dataIndex: "weight"
             }
         ]);
-
         getOrderList({
             "page": 1,
             "size": 10,
@@ -82,7 +82,6 @@ function Order(props) {
     }
     //保存
     const onSave = () => {
-
         const params = orderParams;
         delete params.orderParams;
 
@@ -118,19 +117,15 @@ function Order(props) {
             message.error("请设置类型！");
             return;
         }
-        if (!params.customerBillCode) {
-            message.error("请输入合同号！");
-            return;
-        }
+        // if (!params.customerBillCode) {
+        //     message.error("请输入合同号！");
+        //     return;
+        // }
         if (!params.orderYarnInfos || params.orderYarnInfos.length === 0) {
             message.error("必须添加用料信息");
             return;
         }
 
-        if (!params.weight) {
-            message.error("请输入订单");
-            return;
-        }
         const yarnInfo = params.orderYarnInfos.some((item) => (item.yarnName === ""));
         if (yarnInfo) {
             message.error("请完善用料信息");
@@ -153,7 +148,7 @@ function Order(props) {
                     "billStatus": 1
                 })
             } else {
-                message.error("保存成功！")
+                message.error("保存失败！")
             }
             setorderParams({});
             setheadType("detail");
@@ -379,13 +374,11 @@ function Order(props) {
         })
             .then(res => { return res.json() })
             .then(res => {
+                console.log(res)
                 if (res.code === 200) {
                     setorderDetail(res.data);
                     setspining(false);
                     setheadType("detail");
-                    const yarnBrandBatch = res.data.orderYarnInfos.map((item) => {
-                        return item.yarnBrandBatch
-                    });
                 }
             })
     }
@@ -426,6 +419,7 @@ function Order(props) {
     //  订单作废
     const orderInvalid = () => {
         if (orderList.length === 0) return;
+        if (orderDetail.billStatus !== 1) return;
         orderStatus(orderDetail.id, 3, (res) => {
             if (res.code === 200) {
                 getOrderList({
@@ -482,7 +476,7 @@ function Order(props) {
             <Menu.Item onClick={orderInvalid}>
                 作废
             </Menu.Item>
-            <Menu.Item key="2">
+            {/* <Menu.Item key="2">
                 导出
             </Menu.Item>
             <Menu.Item key="3">
@@ -490,7 +484,7 @@ function Order(props) {
             </Menu.Item>
             <Menu.Item key="4">
                 设计布票
-            </Menu.Item>
+            </Menu.Item> */}
         </Menu>
     );
 
@@ -501,7 +495,6 @@ function Order(props) {
     const tailLayout = {
         wrapperCol: { offset: 16, span: 8 },
     };
-
     return <React.Fragment>
         <Spin spinning={spining}>
             <div className="right-container">

@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-31 23:45:05
- * @LastEditTime: 2021-06-25 17:30:18
+ * @LastEditTime: 2021-07-01 17:24:12
  * @LastEditors: 1638877065@qq.com
  * @Description: 坯布出货单【新增组件】
  * @FilePath: \cloud-admin\src\views\greigecloth\shipment\createOrder.jsx
@@ -422,7 +422,7 @@ function CreateEnterStockOrder(props) {
                         { title: "合同号", width: 130, dataIndex: "customerBillCode" },
                         { title: "坯布编码", width: 130, dataIndex: "greyFabricCode" },
                         { title: "布类", width: 130, dataIndex: "fabricType" },
-                        { title: "纱别", width: 130, dataIndex: "yarnInfo" },
+                        { title: "纱支", width: 130, dataIndex: "yarnInfo" },
                         { title: "针寸", width: 70, dataIndex: "inches" },
                         { title: "客户颜色", width: 70, dataIndex: "customerCode" },
                         {

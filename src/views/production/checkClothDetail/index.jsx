@@ -92,8 +92,8 @@ function ProductionSchedule() {
                     </div> */}
                 </div>
                 <div>
-                    <Button style={{ marginRight: "10px" }}>打印</Button>
-                    <Button>导出</Button>
+                    {/* <Button style={{ marginRight: "10px" }}>打印</Button>
+                    <Button>导出</Button> */}
                 </div>
             </PageHeader>
             <div className="search-content production">
@@ -116,19 +116,7 @@ function ProductionSchedule() {
                             >
                                 <Input />
                             </Form.Item>
-                            <Form.Item >
-                                <Button type="primary" htmlType="submit">
-                                    搜索
-                                </Button>
-                                <Button
-                                    style={{ margin: '0 8px' }}
-                                    onClick={() => {
-                                        form.resetFields();
-                                    }}
-                                >
-                                    清空
-                                </Button>
-                            </Form.Item>
+
                         </Col>
                         <Col span={4}>
                             <Form.Item
@@ -182,6 +170,22 @@ function ProductionSchedule() {
                                 label="用料信息"
                             >
                                 <Input />
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Form.Item></Form.Item>
+                            <Form.Item >
+                                <Button type="primary" htmlType="submit">
+                                    搜索
+                                </Button>
+                                <Button
+                                    style={{ margin: '0 8px' }}
+                                    onClick={() => {
+                                        form.resetFields();
+                                    }}
+                                >
+                                    清空
+                                </Button>
                             </Form.Item>
                         </Col>
                     </Row>
