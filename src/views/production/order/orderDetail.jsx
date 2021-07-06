@@ -25,7 +25,6 @@ function OrderDetail(props) {
     }, [props])
     const getCode = () => {
         getBarCodes(props.orderData.id, yarnBrandBatch.join(","), (res) => {
-
             if (res.data.length === 0) {
                 setloomData([]);
                 setbarCode([]);

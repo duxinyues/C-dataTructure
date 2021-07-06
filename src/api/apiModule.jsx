@@ -886,6 +886,23 @@ export const orderStatus = (id, status, callback) => {
         })
 }
 /**
+ * 条码
+ * @param {*} orderId 
+ * @param {*} yarnBrandBatch 
+ * @param {*} callback 
+ */
+export const barCodes = (orderId, yarnBrandBatch, callback) => {
+    fetch(requestUrl + "/api-production/order/findLoomDetailByOrderId?id=" + orderId + "&yarnBatch=" + yarnBrandBatch, {
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        },
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+/**
  * 布类
  * @param {*} callback 
  */
@@ -919,8 +936,8 @@ export const fabricIoOrder = (params, callback) => {
             callback(res)
         })
 }
-export const checkYarn = (orderId,callback)=>{
-    fetch(requestUrl + "/api-production/order/findYarnDetail?orderId="+orderId, {
+export const checkYarn = (orderId, callback) => {
+    fetch(requestUrl + "/api-production/order/findYarnDetail?orderId=" + orderId, {
         headers: {
             "Authorization": "bearer " + localStorage.getItem("access_token"),
         },

@@ -27,14 +27,13 @@ const EditBarCode = (props) => {
         });
         if (props.data) {
             props.data.map((item) => {
-                item.clothData = clothData;
-                item.checkClothData = checkClothData;
-                item.runMachinePerson = runMachinePerson;
+                // item.clothData = clothData;
+                // item.checkClothData = checkClothData;
+                // item.runMachinePerson = runMachinePerson;
             })
             setData([...props.data])
         }
     }, [props.data])
-    const isEditing = (record) => record.id === editingKey;
 
     const edit = (record) => {
         form.setFieldsValue({
@@ -57,8 +56,6 @@ const EditBarCode = (props) => {
         try {
             const row = await form.validateFields();
             const newData = [...data];
-            console.log("row", row)
-            console.log("newData", newData)
             setData(newData);
             props.editCode(newData)
             setEditingKey('');
@@ -95,29 +92,9 @@ const EditBarCode = (props) => {
             title: '操作',
             dataIndex: 'operation',
             render: (_, record) => {
-                const editable = isEditing(record);
-                return editable ? (
-                    <React.Fragment>
-                        <Typography.Link
-                            onClick={() => save(record.id)}
-                            style={{ marginRight: 8 }}
-                        >
-                            保存
-                        </Typography.Link>
-                        <Popconfirm title="要取消保存吗?" onConfirm={cancel}>
-                            <Typography.Link>取消</Typography.Link>
-                        </Popconfirm>
-                    </React.Fragment>
-                ) : (
-                    <React.Fragment>
-                        <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-                            编辑
-                        </Typography.Link>
-                        <Popconfirm title="确定删除？" onConfirm={() => { handleDelete(record.id) }}>
-                            <span style={{ marginLeft: "10px" }} >删除</span>
-                        </Popconfirm>
-                    </React.Fragment>
-                );
+                return <Popconfirm title="确定删除？" onConfirm={() => { handleDelete(record.id) }}>
+                    <span style={{ marginLeft: "10px" }} >删除</span>
+                </Popconfirm>
             },
         }
     ];
@@ -132,7 +109,7 @@ const EditBarCode = (props) => {
                 inputType: col.dataIndex,
                 dataIndex: col.dataIndex,
                 title: col.title,
-                editing: isEditing(record),
+                editing: true
             }),
         };
     });
@@ -151,57 +128,70 @@ const EditBarCode = (props) => {
                             children,
                             ...restProps
                         }) => {
+                            console.log("record====", record)
                             const _data = data;
+                            // 修改查布记录
                             const selectFlawInfo = (value) => {
                                 _data.map((item) => {
                                     if (item.id == record.id) {
                                         item.flawInfo = value.join(",")
                                     }
                                 });
+                                setData([..._data]);
+                                props.editCode(_data)
                             }
+                            // 修改重量
                             const changeWeight = ({ target: { value } }) => {
                                 _data.map((item) => {
                                     if (item.id == record.id) {
                                         item.weight = value
                                     }
                                 });
+                                setData([..._data]);
+                                props.editCode(_data)
                             }
+                            // 修改查布员
                             const selectQc = (value) => {
                                 _data.map((item) => {
                                     if (item.id == record.id) {
                                         item.qcId = value
                                     }
                                 });
+                                setData([..._data]);
+                                props.editCode(_data)
                             }
+                            // 修改值机工
                             const selectWeaver = (value) => {
                                 _data.map((item) => {
                                     if (item.id == record.id) {
                                         item.weaverId = value
                                     }
                                 });
+                                setData([..._data]);
+                                props.editCode(_data)
                             }
                             return (
                                 <td {...restProps}>
                                     {editing ? (
                                         <Form.Item
-                                            name={dataIndex}
+                                            name={dataIndex + record.id}
                                             style={{
                                                 margin: 0,
                                             }}
                                         >
                                             {inputType === 'weight' && <Input defaultValue={record.weight} onBlur={changeWeight} />}
-                                            {inputType === 'flawInfo' && <Select defaultValue={record.flawInfo ? record.flawInfo : null} mode="multiple" onChange={selectFlawInfo} >
-                                                {record.clothData.map((item) => (<Option value={item.name}>{item.name}</Option>))}
+                                            {inputType === 'flawInfo' && <Select defaultValue={record.flawInfo ? record.flawInfo : []} mode="multiple" onChange={selectFlawInfo} >
+                                                {clothData.map((item) => (<Option value={item.name}>{item.name}</Option>))}
                                             </Select>
                                             }
                                             {
-                                                inputType === "qcId" && <Select onChange={selectQc} defaultValue={getQcName(record.qcId)}>
-                                                    {record.checkClothData.map((item) => (<Option value={item.id}>{item.name}</Option>))}
+                                                inputType === "qcId" && <Select onChange={selectQc} defaultValue={record.qcId}>
+                                                    {checkClothData.map((item) => (<Option value={item.id}>{item.name}</Option>))}
                                                 </Select>
                                             }
                                             {
-                                                inputType === "weaverId" && <Select onChange={selectWeaver} defaultValue={getWeaverName(record.weaverId)}>
-                                                    {record.runMachinePerson.map((item) => (<Option value={item.id}>{item.name}</Option>))}
+                                                inputType === "weaverId" && <Select onChange={selectWeaver} defaultValue={record.weaverId}>
+                                                    {runMachinePerson.map((item) => (<Option value={item.id}>{item.name}</Option>))}
                                                 </Select>
                                             }
                                         </Form.Item>

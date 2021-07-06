@@ -1,16 +1,16 @@
 import React, { useState, useEffect, } from "react"
 import { Col, Row, Input, Table, DatePicker, Select, AutoComplete } from "antd";
-import { newOrderType, requestUrl, onlyFormat } from "../../../utils/config"
-import { createOrderParams } from "../../../actons/action"
-import { connect } from "react-redux"
+import { newOrderType } from "../../../utils/config";
+import { createOrderParams } from "../../../actons/action";
+import { barCodes, getClothType, getOrderCustomerDownList } from "../../../api/apiModule"
+import { connect } from "react-redux";
 import EditCloth from "./clothTable";
-import EditBarcode from "./editBarcode";
-import EditableTable from "./addCloth"
+import EditBarcode from "./editBarcode_copy";
+import EditableTable from "./addCloth";
 import 'moment/locale/zh-cn';
-import moment from "moment"
+import moment from "moment";
 const { Option } = Select;
 let EditOrder = (props) => {
-    console.log("编辑信息==", props)
     document.title = "编辑订单";
     const today = moment();
     const _createOrderParam = props.orderData;
@@ -26,25 +26,20 @@ let EditOrder = (props) => {
     _createOrderParam.code = props.orderData.code;
     useEffect(() => {
         getcustomer();
-        getClothType();
-        getLoom();
-        getBarCodes()
+        getClothType((res) => {
+            if (res.code === 200) {
+                setclothType(res.data)
+            }
+        });
+        getBarCodes();
     }, [props.orderData])
 
     const getBarCodes = () => {
-        fetch(requestUrl + "/api-production/order/findLoomDetailByOrderId?id=" + props.orderData.id + "&yarnBatch=" + yarnBrandBatch.join(","), {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
+        barCodes(props.orderData.id, yarnBrandBatch.join(","), (res) => {
+            _createOrderParam.orderLooms = res.data;
+            setloomData(res.data);
+            setbarCode(res.data[0])
         })
-            .then(res => { return res.json() })
-            .then(res => {
-
-                _createOrderParam.orderLooms = res.data;
-                setloomData(res.data);
-
-                setbarCode(res.data[0])
-            })
     }
     // 选择日期
     const selectDate = (date, dateString) => {
@@ -65,9 +60,7 @@ let EditOrder = (props) => {
         props.createOrderParams(_createOrderParam);
     }
     const selectClothType = (value) => {
-        console.log("布类==", value)
         _createOrderParam.fabricType = value;
-        console.log("_createOrderParam", _createOrderParam)
         props.editOrder(_createOrderParam);
         props.createOrderParams(_createOrderParam);
     }
@@ -132,8 +125,6 @@ let EditOrder = (props) => {
         props.createOrderParams(_createOrderParam);
     }
     const changeRemark = ({ target: { value } }) => {
-        console.log("value==", value);
-        console.log("_createOrderParam==", _createOrderParam);
         _createOrderParam.remark = value;
         props.editOrder(_createOrderParam);
         props.createOrderParams(_createOrderParam);
@@ -148,50 +139,17 @@ let EditOrder = (props) => {
         props.editOrder(_createOrderParam);
         props.createOrderParams(_createOrderParam);
     }
-    // 布类型
-    const getClothType = () => {
-        fetch(requestUrl + "/api-production/order/getFabricTypeDownList", {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-            }
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code === 200) {
-                    setclothType(res.data)
-                }
-            })
-    }
     const getcustomer = () => {
-        fetch(requestUrl + "/api-production/order/getCustomerDownList", {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
+        getOrderCustomerDownList(res => {
+            if (res.code === 200) {
+                setcustomer(res.data)
             }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code === 200) {
-                    setcustomer(res.data)
-                }
-            })
-    }
-    const getLoom = () => {
-        fetch(requestUrl + "/api-production/order/getLoomDownList", {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-            }
-        })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-            })
     }
     const onAddCloth = (params) => {
         _createOrderParam.orderYarnInfos = params;
         props.editOrder(_createOrderParam);
     }
-
     const editCode = (params) => {
         const _barcode = barCode;
         _barcode.barcodes = params
@@ -286,7 +244,7 @@ let EditOrder = (props) => {
                 <Row className="c-row">
                     <Col span={8} className="c-col">
                         <div className="c-label">订单交期</div>
-                        <div className="c-input"><DatePicker onChange={selectDeliveryDate} defaultValue={moment(props.orderData.deliveryDate ? props.orderData.deliveryDate : "")} /></div>
+                        <div className="c-input"><DatePicker onChange={selectDeliveryDate} defaultValue={props.orderData.deliveryDate ? moment(props.orderData.deliveryDate) : ""} /></div>
                     </Col>
                     <Col span={8} className="c-col">
                         <div className="c-label c-right">加工单价</div>
@@ -315,8 +273,8 @@ let EditOrder = (props) => {
                 </Row>
             </div>
             <div className="edit-table">
-                <EditCloth data={defaultData} onAddCloth={onAddCloth} weight={weight} />
-                <EditableTable />
+                {/* <EditCloth data={defaultData} onAddCloth={onAddCloth} weight={weight} /> */}
+                <EditableTable data={defaultData} onAddCloth={onAddCloth} weight={weight} />
             </div>
             <div>
                 <div className="clothing" style={{ marginTop: "21px", color: "#1890FF", marginBottom: "9px" }}>

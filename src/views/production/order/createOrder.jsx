@@ -6,6 +6,7 @@ import { getClothType } from "../../../api/apiModule"
 import { connect } from "react-redux";
 import EditCloth from './clothTable';
 import EditLoom from "./loomTable";
+import EditableTable from "./addCloth"
 import 'moment/locale/zh-cn';
 import moment from "moment";
 const { Option } = Select;
@@ -304,7 +305,8 @@ function CreateOrder(props) {
                 </Row>
             </div>
             <div className="edit-table" style={{ marginTop: "20px" }}>
-                <EditCloth onAddCloth={onAddCloth} weight={weight} data={[]} />
+                <EditableTable onAddCloth={onAddCloth} weight={weight} data={[]} />
+                {/* <EditCloth onAddCloth={onAddCloth} weight={weight} data={[]} /> */}
             </div>
             <div style={{ marginTop: "20px" }}>
                 <EditLoom onAddLoom={onAddLoom} data={loom} />

@@ -36,7 +36,6 @@ function Order(props) {
     const [companyName, setcompanyName] = useState();
     const [orderParams, setorderParams] = useState({});
     const [inoutValue, setInputValue] = useState("");
-    const [loomData, setloomData] = useState();
     const [form] = Form.useForm();
     useEffect(() => {
         setcolumns([
@@ -65,7 +64,7 @@ function Order(props) {
         getOrderList({
             "page": 1,
             "size": 10,
-            "billStatus": " "
+            "billStatus": ""
         });
         getLoom((res) => {
             if (res.code === 200) {
@@ -78,8 +77,6 @@ function Order(props) {
             }
         })
     }, []);
-
-
     const add = () => { setheadType("add") }
     const edit = () => {
         setheadType("edit")
@@ -88,7 +85,7 @@ function Order(props) {
     const onSave = () => {
         const params = orderParams;
         delete params.orderParams;
-
+        var rate = 0
         params.bizDate = params.bizDate ? params.bizDate : getNowFormatDate();
         console.log("订单信息===", params)
         if (params.techType1 && params.techType2) {
@@ -121,27 +118,30 @@ function Order(props) {
             message.error("请设置类型！");
             return;
         }
-        // if (!params.customerBillCode) {
-        //     message.error("请输入合同号！");
-        //     return;
-        // }
         if (!params.orderYarnInfos || params.orderYarnInfos.length === 0) {
             message.error("必须添加用料信息");
             return;
         }
 
+        if (headType === "add") {
+            params.orderYarnInfos.map((item) => {
+                delete item.id;
+            })
+        }
         const yarnInfo = params.orderYarnInfos.some((item) => (item.yarnName === ""));
         if (yarnInfo) {
             message.error("请完善用料信息");
             return;
         }
 
-        // 删除多余的key值
+        // 
         params.orderYarnInfos.map((item) => {
-            delete item.key;
-            return item;
+            rate += Number(item.rate)
         })
-
+        if (rate < 100 || rate > 100) {
+            message.warning("纱比总和需要等于100！");
+            return;
+        }
         createOrders(params, (res) => {
             console.log(res)
             if (res.code === 200) {
@@ -149,7 +149,7 @@ function Order(props) {
                 getOrderList({
                     "page": 1,
                     "size": 10,
-                    "billStatus": 1
+                    "billStatus": ""
                 })
             } else {
                 message.error("保存失败！")
@@ -160,6 +160,7 @@ function Order(props) {
     }
     //取消创建订单组件
     const cancel = () => {
+        getOrderDetail(orderDetail.id)
         setheadType("detail");
         setorderParams({});
     }
@@ -225,9 +226,9 @@ function Order(props) {
             console.log(loomId);
             return item.id === loomId
         })[0].code
-        console.log("机号==", loomCode)
         let LODOP = getLodop();
         LODOP.PRINT_INIT(""); //打印初始化
+        LODOP.SET_LICENSES("", "136D37EB1E2DCC52B2B90A1538277BEA", "", "");
         const strHtml = `<div style="width:50mm;background: #fff;">
         <div class="cloth-circle" style="width: 90px;height: 90px;border: 1px dashed #999;border-radius: 50%; margin: 20px auto;"></div>
         <div style="margin: 0 auto;border:1px solid #999">
@@ -294,6 +295,7 @@ function Order(props) {
        </div>`
         LODOP.SET_PRINT_MODE("PRINT_PAGE_PERCENT", "Full-Page");
         LODOP.ADD_PRINT_HTML(0, 0, "100%", "100%", strHtml);
+
         // LODOP.PREVIEW(); // 打印预览
         LODOP.PRINT(); // 直接打印
     }
@@ -420,14 +422,6 @@ function Order(props) {
                     "page": 1,
                     "size": 10,
                 });
-                // if (billStatus === 2) {
-                //     setbillStatus(1);
-                //     // setbtnTex("反完工")
-                // }
-                // if (billStatus === 1) {
-                //     setbillStatus(2);
-                //     // setbtnTex("完工")
-                // }
             }
         })
     }
@@ -440,7 +434,7 @@ function Order(props) {
                 getOrderList({
                     "page": 1,
                     "size": 10,
-                    "billStatus": billStatus
+                    "billStatus": ""
                 })
             }
         })
@@ -450,8 +444,8 @@ function Order(props) {
         setselectClothLoom(value)
     }
     const changeClothYarnBatch = (value) => {
-        setselectClothYarnBatch(value.replace("+", ","))
-        const params = value.replace("+", ",")
+        setselectClothYarnBatch(value.replace(/\+/g, ","))
+        const params = value.replace(/\+/g, ",")
         getseq(params)
     }
     const getseq = (clothYarnBatch) => {

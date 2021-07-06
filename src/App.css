@@ -1,7 +1,5 @@
 @import "~antd/dist/antd.css";
 
-
-
 .clickRowStyl,
 .clickRowStyl:hover>td {
     background-color: #e6f7ff !important;
@@ -76,26 +74,17 @@
     margin-left: 10px;
 }
 
-input {
-    height: 26px;
-}
-
-
-.ant-input {
-    height: 26px !important;
-}
-
-.ant-select-selector {
+.ant-input,
+.ant-picker,
+input,
+.ant-select-selector,
+.ant-select {
     height: 26px !important;
 }
 
 .ant-select-single .ant-select-selector .ant-select-selection-item,
 .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
     line-height: 26px;
-}
-
-.ant-select {
-    height: 26px !important;
 }
 
 .ant-pagination-prev,
@@ -115,6 +104,12 @@ input {
 .jianjie .ant-input {
     height: auto !important;
 }
-.ant-form-item-control-input-content{
+
+.ant-form-item-control-input-content {
     display: flex;
+}
+
+.custom-btn {
+    color: #1890ff;
+    cursor: pointer;
 }

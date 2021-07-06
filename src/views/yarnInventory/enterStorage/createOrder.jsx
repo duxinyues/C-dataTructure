@@ -336,8 +336,8 @@ function CreateEnterStockOrder(props) {
 
                 <div className="row">
                     <div className="col">
-                        <div className="label1">备注</div>
-                        <TextArea autoSize={{ minRows: 2, maxRows: 6 }} defaultValue={props.data ? props.data.remark : ""} onChange={saveremark} />
+                        <div className="label">备注</div>
+                        <TextArea autoSize={{ minRows: 2, maxRows: 6 }} style={{ width: "170px" }} defaultValue={props.data ? props.data.remark : ""} onChange={saveremark} />
                     </div>
                 </div>
             </div>
