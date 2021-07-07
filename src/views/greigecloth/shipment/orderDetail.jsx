@@ -30,57 +30,48 @@ function OrderDetail(props) {
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.greyFabricCode ? item.greyFabricCode : ""}</span>),
-            // width: 100
         },
         {
             title: '布类',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.fabricType ? item.fabricType : ""}</span>),
-            // width: 200
         },
         {
             title: '纱支',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.yarnName ? item.yarnName : ""}</span>),
-            // width: 160
         }, {
             title: '批次',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.yarnBatch ? item.yarnBatch : ""}</span>),
-            // width: 100
         },
         {
             title: '针寸',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.inches ? item.inches : ""}-{item.needles ? item.needles : ""}</span>),
-            // width: 70
         },
         {
             title: '颜色',
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.customerColor ? item.customerColor : ""}</span>),
-            // width: 70
         },
         {
             title: '出库条数',
             dataIndex: 'volQty',
             key: 'volQty',
-            // width: 70,
             render: (item, index) => (<span onClick={() => { props.getOutStockOrderBarCode(props.data.id, index.knitOrderId); setvisible(true); }} style={{ color: "blue", cursor: "pointer" }}>{item}</span>)
         },
         {
             title: '出货重量',
             dataIndex: 'weight',
-            // width: 70
         },
         {
             title: '单位',
-            // width: 40,
             render: () => (<span>kg</span>)
         },
         {
@@ -88,12 +79,10 @@ function OrderDetail(props) {
             dataIndex: 'orderDto',
             key: 'orderDto',
             render: (item) => (<span>{item.productPrice}</span>),
-            // width: 70
         },
         {
             title: '金额',
             dataIndex: 'totalMoney',
-            // width: 100,
             render: (item) => (<span>{Number(item).toFixed(2)}</span>)
         }
     ];
@@ -145,8 +134,8 @@ function OrderDetail(props) {
             </div>
             <div className="row">
                 <div className="col">
-                    <div className="label1">备注</div>
-                    <TextArea disabled autoSize={{ minRows: 2, maxRows: 6 }} value={props.data.remark} />
+                    <div className="label">备注</div>
+                    <TextArea disabled autoSize={{ minRows: 2, maxRows: 8 }} value={props.data.remark} />
                 </div>
             </div>
         </div>
@@ -166,27 +155,23 @@ function OrderDetail(props) {
         >
             <Table
                 columns={[
-                //     {
-                //     title: "#",
-                //     dataIndex: "id"
-                // },
-                 {
-                    title: "条码",
-                    dataIndex: "barcode"
-                }, {
-                    title: "匹号",
-                    dataIndex: "seq"
-                }, {
-                    title: "重量",
-                    dataIndex: "weight"
-                }, {
-                    title: "出库时间",
-                    dataIndex: "outStockTime",
-                    render: (time) => (<span>{day(time)}</span>)
-                }, {
-                    title: "查布记录",
-                    dataIndex: "flawInfo"
-                }]}
+                    {
+                        title: "条码",
+                        dataIndex: "barcode"
+                    }, {
+                        title: "匹号",
+                        dataIndex: "seq"
+                    }, {
+                        title: "重量",
+                        dataIndex: "weight"
+                    }, {
+                        title: "出库时间",
+                        dataIndex: "outStockTime",
+                        render: (time) => (<span>{day(time)}</span>)
+                    }, {
+                        title: "查布记录",
+                        dataIndex: "flawInfo"
+                    }]}
                 dataSource={props.barCodeData}
                 pagination={false}
             />

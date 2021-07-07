@@ -13,6 +13,7 @@ const today = moment();
 function CreateEnterStockOrder(props) {
     console.log(props)
     const [form] = Form.useForm();
+    const formss = form.validateFields()
     const [customerId, setcustomerId] = useState("");
     const [bizDate, setbizDate] = useState("");
     const [billType, setbillType] = useState(0);
@@ -35,7 +36,23 @@ function CreateEnterStockOrder(props) {
             setbillType(props.data.billType);
             setcustomerBillCode(props.data.customerBillCode)
             setremark(props.data.remark);
-            if (props.data.inDtls.length > 0) { setData([...props.data.inDtls]) }
+            if (props.data.inDtls.length > 0) {
+                props.data.inDtls.map((item) => {
+                    item.key = new Date().getTime();
+                    formss["yarnName" + item.id] = item.yarnName;
+                    formss["yarnBrandBatch" + item.id] = item.yarnBrandBatch;
+                    formss["colorCode" + item.id] = item.colorCode;
+                    formss["customerCode" + item.id] = item.customerCode;
+                    formss["pcs" + item.id] = item.pcs;
+                    formss["spec" + item.id] = item.spec;
+                    formss["netWeight" + item.id] = item.netWeight;
+                    formss["lackWeight" + item.id] = item.lackWeight;
+                    formss["totalLackWeight" + item.id] = item.totalLackWeight;
+                    formss["weight" + item.id] = item.weight;
+                })
+                form.setFieldsValue({ ...formss })
+                setData([...props.data.inDtls])
+            }
         }
     }, []);
     //选择订单类型
@@ -95,7 +112,6 @@ function CreateEnterStockOrder(props) {
             customerBillCode: value
         })
     }
-    const isEditing = (record) => record.key === editingKey;
     const addData = () => {
         const _data = [...data]
         _data.push({
@@ -121,43 +137,7 @@ function CreateEnterStockOrder(props) {
             inDtls: _data
         })
     }
-    const edit = (record) => {
-        form.setFieldsValue({
-            ...record,
-        });
-        setEditingKey(record.key);
-    };
-    const cancel = () => {
-        setEditingKey('');
-    };
-    const save = async (key) => {
-        try {
-            const row = await form.validateFields();
-            const newData = [...data];
-            const index = newData.findIndex((item) => key === item.key);
-            if (index > -1) {
-                console.log("这是什么", row)
-                const item = newData[index];
 
-                row.netWeight = row.pcs * row.spec; // 净重
-                row.totalLackWeight = row.pcs * row.lackWeight;//总欠重
-                row.weight = row.netWeight - row.totalLackWeight; // 实收净重
-                newData.splice(index, 1, { ...item, ...row });
-                setData(newData);
-                props.save({
-                    customerId: customerId,
-                    bizDate: bizDate,
-                    billType: billType,
-                    remark: remark,
-                    customerBillCode: customerBillCode,
-                    inDtls: newData
-                })
-                setEditingKey('');
-            }
-        } catch (errInfo) {
-            console.log('Validate Failed:', errInfo);
-        }
-    };
     const handleDelete = (key) => {
         const _data = [...data];
         const newData = _data.filter((item) => item.key !== key)
@@ -224,30 +204,13 @@ function CreateEnterStockOrder(props) {
         {
             title: '操作',
             dataIndex: 'operation',
+            width: 80,
             render: (_, record) => {
-                const editable = isEditing(record);
-                return editable ? (
-                    <React.Fragment>
-                        <Typography.Link
-                            onClick={() => save(record.key)}
-                            style={{ marginRight: 8 }}
-                        >
-                            保存
-                        </Typography.Link>
-                        <Popconfirm title="要取消保存吗?" onConfirm={cancel}>
-                            <Typography.Link>取消</Typography.Link>
-                        </Popconfirm>
-                    </React.Fragment>
-                ) : (
-                    <React.Fragment>
-                        <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-                            编辑
-                        </Typography.Link>
-                        <Popconfirm title="确定删除？" onConfirm={() => { handleDelete(record.key) }}>
-                            <span style={{ marginLeft: "10px" }} >删除</span>
-                        </Popconfirm>
-                    </React.Fragment>
-                );
+                return <React.Fragment>
+                    <Popconfirm title="确定删除？" onConfirm={() => { handleDelete(record.key) }}>
+                        <span style={{ marginLeft: "10px" }} >删除</span>
+                    </Popconfirm>
+                </React.Fragment>
             },
         }
     ];
@@ -255,7 +218,6 @@ function CreateEnterStockOrder(props) {
         if (!col.editable) {
             return col;
         }
-
         return {
             ...col,
             onCell: (record) => ({
@@ -263,7 +225,7 @@ function CreateEnterStockOrder(props) {
                 inputType: (col.dataIndex === 'pcs' || col.dataIndex === 'spec' || col.dataIndex === 'netWeight' || col.dataIndex === 'lackWeight' || col.dataIndex === 'totalLackWeight' || col.dataIndex === 'weight') ? 'number' : 'text',
                 dataIndex: col.dataIndex,
                 title: col.title,
-                editing: isEditing(record),
+                editing: true
             }),
         };
     });
@@ -277,16 +239,87 @@ function CreateEnterStockOrder(props) {
         children,
         ...restProps
     }) => {
+        const _data = data;
+        const changeRow = ({ target: { value, id } }) => {
+            _data.map((item) => {
+                if (item.key === record.key) {
+                    if (id.includes("yarnName")) {
+                        item.yarnName = value
+                    }
+                    if (id.includes("yarnBrandBatch")) {
+                        item.yarnBrandBatch = value
+                    }
+                    if (id.includes("colorCode")) {
+                        item.colorCode = value
+                    }
+                    if (id.includes("customerCode")) {
+                        item.customerCode = value
+                    }
+                    if (id.includes("pcs")) { // 件数
+                        item.pcs = value;
+                        item.netWeight = (value * Number(item.spec)).toFixed(2); // 净重
+                        item.totalLackWeight = (value * Number(item.lackWeight)).toFixed(2);//总欠重
+                        item.weight = (item.netWeight - item.totalLackWeight).toFixed(2); // 实收净重
+                        formss["netWeight" + record.key] = item.netWeight;
+                        formss["totalLackWeight" + record.key] = item.totalLackWeight;
+                        formss["weight" + record.key] = item.weight;
+                        form.setFieldsValue({ ...formss })
+                    }
+                    if (id.includes("spec")) { // 规格
+                        item.spec = value;
+                        item.netWeight = (value * Number(item.pcs)).toFixed(2); // 净重
+                        item.weight = (item.netWeight - item.totalLackWeight).toFixed(2); // 实收净重
+                        formss["netWeight" + record.key] = item.netWeight;
+                        formss["weight" + record.key] = item.weight;
+                        form.setFieldsValue({ ...formss })
+                    }
+                    if (id.includes("netWeight")) {
+                        // 净重
+                        item.netWeight = value;
+                        item.weight = (value - Number(item.totalLackWeight)).toFixed(2); // 实收净重
+                        formss["weight" + record.key] = item.weight;
+                        form.setFieldsValue({ ...formss })
+                    }
+                    if (id.includes("lackWeight")) {
+                        // 欠重
+                        item.lackWeight = value;
+                        item.totalLackWeight = (value * Number(item.pcs)).toFixed(2);//总欠重
+                        item.weight = (Number(item.netWeight) - Number(item.totalLackWeight)).toFixed(2); // 实收净重
+                        formss["weight" + record.key] = item.weight;
+                        formss["totalLackWeight" + record.key] = item.totalLackWeight;
+                        form.setFieldsValue({ ...formss })
+                    }
+                    if (id.includes("totalLackWeight")) {
+                        item.totalLackWeight = value;
+                        item.weight = (Number(item.netWeight) - value).toFixed(2);
+                        formss["weight" + record.key] = item.weight;
+                        form.setFieldsValue({ ...formss })
+                    }
+                    if (id.includes("weight")) {
+                        item.weight = value
+                    }
+                }
+            });
+            props.save({
+                customerId: customerId,
+                bizDate: bizDate,
+                billType: billType,
+                remark: remark,
+                customerBillCode: customerBillCode,
+                inDtls: _data
+            });
+            setData([..._data]);
+        }
         return (
             <td {...restProps}>
                 {editing ? (
                     <Form.Item
-                        name={dataIndex}
+                        name={dataIndex + record.key}
                         style={{
                             margin: 0,
                         }}
                     >
-                        <Input type={(dataIndex === 'pcs' || dataIndex === 'spec' || dataIndex === 'netWeight' || dataIndex === 'lackWeight' || dataIndex === 'totalLackWeight' || dataIndex === 'weight') ? 'number' : 'text'} />
+                        <Input type={(dataIndex === 'pcs' || dataIndex === 'spec' || dataIndex === 'netWeight' || dataIndex === 'lackWeight' || dataIndex === 'totalLackWeight' || dataIndex === 'weight') ? 'number' : 'text'} onPressEnter={changeRow} />
                     </Form.Item>
                 ) : (
                     children

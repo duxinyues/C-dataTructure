@@ -78,6 +78,7 @@
 .ant-picker,
 input,
 .ant-select-selector,
+.ant-picker-input,
 .ant-select {
     height: 26px !important;
 }
@@ -112,4 +113,14 @@ input,
 .custom-btn {
     color: #1890ff;
     cursor: pointer;
+}
+
+.ant-table-tbody>tr>td {
+    border: none;
+}
+
+.custom-cel {
+    width: 65px;
+    text-align: right;
+    display: inline-block;
 }

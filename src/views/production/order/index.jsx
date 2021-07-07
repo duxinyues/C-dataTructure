@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Table, Form, Row, Select, Button, Input, Dropdown, Menu, Spin, Modal, message, Col, DatePicker } from "antd";
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import JsBarcode from 'jsbarcode';
 import { connect } from "react-redux";
 import { orderType, orderSearch, requestUrl, newOrderType, onlyFormat, getNowFormatDate } from "../../../utils/config";
 import { createOrder, clearOrderParams, createOrderParams } from "../../../actons/action";
-import { createOrders, getLoom, getOrderCustomerDownList, getOrderData, orderStatus, getBarCodes } from "../../../api/apiModule"
+import { createOrders, getLoom, getOrderCustomerDownList, getOrderData, orderStatus, printBarCode, onOrderDetail, onClothBatch } from "../../../api/apiModule"
 import OrderDetail from "./orderDetail";
 import CreateOrder from "./createOrder";
 import EditOrder from "./edit";
@@ -27,7 +27,7 @@ function Order(props) {
     const [billStatus, setbillStatus] = useState(1);
     const [visible, setvisible] = useState(false);
     const [orderLoom, setorderLoom] = useState([]);
-    const [clothBatch, setClothBatch] = useState([])
+    const [clothBatch, setClothBatch] = useState([1])
     const [barcode, setbarcode] = useState();
     const [selectClothLoom, setselectClothLoom] = useState();
     const [selectClothYarnBatch, setselectClothYarnBatch] = useState();
@@ -36,6 +36,7 @@ function Order(props) {
     const [companyName, setcompanyName] = useState();
     const [orderParams, setorderParams] = useState({});
     const [inoutValue, setInputValue] = useState("");
+    const [rowId, setrowId] = useState()
     const [form] = Form.useForm();
     useEffect(() => {
         setcolumns([
@@ -53,7 +54,8 @@ function Order(props) {
             },
             {
                 title: "订单数量",
-                dataIndex: "weight"
+                dataIndex: "weight",
+                render:(params)=>(<span className="custom-cel">{params}</span>)
             },
             {
                 title: "状态",
@@ -64,7 +66,7 @@ function Order(props) {
         getOrderList({
             "page": 1,
             "size": 10,
-            "billStatus": ""
+            "billStatus": 1
         });
         getLoom((res) => {
             if (res.code === 200) {
@@ -180,24 +182,14 @@ function Order(props) {
             "seq": selectSeq,
             "yarnBrandBatch": selectClothYarnBatch
         }
-        fetch(requestUrl + "/api-production/orderBarcode/printBarcode", {
-            method: "POST",
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(param)
+        printBarCode(param, (res) => {
+            if (res.code === 200) {
+                res.data.map((item) => {
+                    getOrderDetail(orderDetail.id)
+                    createBarCode(item.barcode, item.seq, value.loomId);
+                })
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-
-                if (res.code === 200) {
-                    res.data.map((item) => {
-                        getOrderDetail(orderDetail.id)
-                        createBarCode(item.barcode, item.seq, value.loomId);
-                    })
-                }
-            })
         form.resetFields()
         setvisible(false);
     }
@@ -312,11 +304,12 @@ function Order(props) {
         setInputValue(value)
     }
     // 搜索
-    const onFinish = (value) => {
-        // setspining(true)
+    const onFinish = async () => {
+        const value = await form.validateFields()
+
         const param = value;
         if (value.billStatus === "进行中") {
-            param.billStatus = 1
+            param.billStatus = "1"
         } else {
             param.billStatus = value.billStatus
         }
@@ -340,18 +333,64 @@ function Order(props) {
 
         param.page = 1;
         param.size = 10;
-
-        console.log(searchType)
-        console.log("parama===", param)
         getOrderList(param)
     }
     // 选择机台
     const selectLoom = (value) => {
-        setInputValue(value)
+        setInputValue(value);
+        const param = {
+            billStatus: billStatus,
+            loomId: value,
+            page: 1,
+            size: 10
+        }
+        getOrderList(param)
     }
     // 选择日期
     const selectDate = (date, dateString) => {
-        setInputValue(dateString)
+        setInputValue(dateString);
+    }
+    // 选择类型
+    const selectType = (value) => {
+        setInputValue(value);
+        const param = {
+            billStatus: billStatus,
+            type: value,
+            page: 1,
+            size: 10
+        }
+        getOrderList(param)
+    }
+    // 选择状态
+    const changeBillStatus = (value) => {
+        setbillStatus(value);
+        const param = {
+            page: 1,
+            size: 10,
+            billStatus: value
+        }
+        if (searchType === "code") param.code = inoutValue;
+        if (searchType === "customerBillCode") { param.customerBillCode = inoutValue }
+        if (searchType === "beginTime") { param.beginTime = inoutValue }
+        if (searchType === "greyFabricCode") { param.greyFabricCode = inoutValue }
+        if (searchType === "customerName") { param.customerName = inoutValue }
+        if (searchType === "fabricType") { param.fabricType = inoutValue }
+        if (searchType === "needles") { param.needles = inoutValue }
+        if (searchType === "inches") { param.inches = inoutValue }
+        if (searchType === "totalInches") { param.totalInches = inoutValue }
+        if (searchType === "techType") { param.techType = inoutValue }
+        if (searchType === "remark") { param.remark = inoutValue }
+        if (searchType === "yarnName") { param.yarnName = inoutValue }
+        if (searchType === "yarnBrandBatch") { param.yarnBrandBatch = inoutValue }
+        if (searchType === "loomId") { param.loomId = inoutValue }
+        if (searchType === "barcode") { param.barcode = inoutValue }
+        if (searchType === "type") { param.type = inoutValue }
+        console.log(param)
+        getOrderList(param)
+    }
+    // 搜索类型
+    const selectSearchTyle = (value) => {
+        setsearchType(value)
     }
     /**
      * 订单列表
@@ -361,11 +400,14 @@ function Order(props) {
         getOrderData(param, (res) => {
             if (res.code === 200) {
                 setspining(false);
-                if (res.data.records.length === 0) return;
                 settotal(res.data.total);
                 setsize(res.data.size);
                 setcurrent(res.data.current);
                 setorderList([...res.data.records]);
+                if (res.data.records.length === 0) {
+                    getOrderDetail(0)
+                    return;
+                };
                 getOrderDetail(res.data.records[0].id);
             }
         })
@@ -373,40 +415,25 @@ function Order(props) {
     // 订单详情
     const getOrderDetail = (id) => {
         getClothBatch(id)
-        fetch(requestUrl + "/api-production/order/findById?id=" + id, {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
+        onOrderDetail(id, (res) => {
+            if (res.code === 200) {
+                if (!res.data) return;
+                setbillStatus(res.data.billStatus)
+                setorderDetail(res.data);
+                setspining(false);
+                setheadType("detail");
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                console.log(res)
-                if (res.code === 200) {
-                    setbillStatus(res.data.billStatus)
-                    setorderDetail(res.data);
-                    setspining(false);
-                    setheadType("detail");
-                }
-            })
     }
     // 布票批次
     const getClothBatch = (orderId) => {
-        fetch(requestUrl + "/api-production/orderBarcode/yarnDownList?orderId=" + orderId, {
-            headers: {
-                "Authorization": "bearer " + localStorage.getItem("access_token")
-            },
+        onClothBatch(orderId, (res) => {
+            if (res.code === 200) {
+                setClothBatch(res.data)
+            }
         })
-            .then(res => { return res.json() })
-            .then(res => {
-                if (res.code === 200) {
-                    setClothBatch(res.data)
-                }
-            })
     }
-    // 搜索类型
-    const selectSearchTyle = (value) => {
-        setsearchType(value)
-    }
+
     // 完工
     const completeOrder = () => {
         const _billStatus = "";
@@ -509,7 +536,7 @@ function Order(props) {
             <div className="right-container">
                 {headType === "detail" && <div className="custom">
                     <div className="title">
-                        单据详情
+                        订单管理
                     </div>
                     <div className="custom-right">
                         <Button type="primary" onClick={add}>+新建</Button>
@@ -539,33 +566,40 @@ function Order(props) {
                             className='header-form'
                             onFinish={onFinish}
                             initialValues={{
-                                billStatus: orderType[0].title,
+                                billStatus: orderType[1].title,
                                 searchType: orderSearch[0].title
                             }}
+                            form={form}
                         >
                             <Row span={24}>
                                 <Col span={6}>
                                     <Form.Item name="billStatus" className="billStatus" style={{ marginRight: "10px" }}>
-                                        <Select>
+                                        <Select onChange={changeBillStatus}>
                                             {
                                                 orderType.map((item) => (<Option value={item.id}>{item.title}</Option>))
                                             }
-
                                         </Select>
                                     </Form.Item>
                                 </Col>
-                                <Col span={14}>
+                                <Col span={16}>
                                     <Form.Item name={searchType} className="searchType">
                                         <Input.Group compact>
-                                            <Select defaultValue={orderSearch[0].title} style={{ width: "100px" }} className="cu" onChange={selectSearchTyle} >
+                                            <Select defaultValue={searchType} className="cu" onChange={selectSearchTyle} >
                                                 {
                                                     orderSearch.map((item, key) => (<Option value={item.type} key={key}>{item.title}</Option>))
                                                 }
                                             </Select>
                                             {
-                                                searchType === "loomId" && <Select style={{ width: "120px", borderRight: "1px solid #ccc" }} onChange={selectLoom}>
+                                                searchType === "loomId" && <Select style={{ minWidth: "160px", borderRight: "1px solid #ccc" }} onChange={selectLoom}>
                                                     {
                                                         orderLoom.map((item) => (<Option value={item.id}>{item.code}</Option>))
+                                                    }
+                                                </Select>
+                                            }
+                                            {
+                                                searchType === "type" && <Select style={{ minWidth: "160px", borderRight: "1px solid #ccc" }} onChange={selectType}>
+                                                    {
+                                                        newOrderType.map((item) => (<Option value={item.key}>{item.name}</Option>))
                                                     }
                                                 </Select>
                                             }
@@ -573,25 +607,29 @@ function Order(props) {
                                                 searchType === "beginTime" && <DatePicker onChange={selectDate} style={{}} />
                                             }
                                             {
-                                                (searchType !== "loomId" && searchType !== "beginTime") && <Input style={{ width: "120px" }} onChange={getValue} />
+                                                (searchType !== "loomId" && searchType !== "beginTime" && searchType !== "type") && <Input className="searchType" style={{ width: "160px" }} onChange={getValue} onPressEnter={onFinish} suffix={<SearchOutlined onClick={onFinish} style={{ fontSize: "10px", color: "rgba(0, 0, 0, 0.25)" }} />} />
                                             }
                                         </Input.Group>
                                     </Form.Item>
                                 </Col>
-                                <Col span={4}>
+                                {/* <Col span={4}>
                                     <Form.Item>
                                         <Button style={{ height: "26px", display: "flex", alignItems: "center" }} type="primary" htmlType="submit">搜索</Button>
                                     </Form.Item>
-                                </Col>
+                                </Col> */}
                             </Row>
                         </Form>
                         <Table
                             columns={columns}
                             dataSource={orderList}
+                            rowKey={record => record.id}
                             onRow={record => {
                                 return {
-                                    onClick: () => { getOrderDetail(record.id) },
+                                    onClick: () => { getOrderDetail(record.id); setrowId(record.id) },
                                 };
+                            }}
+                            rowClassName={(record) => {
+                                return record.id === rowId ? 'clickRowStyl' : '';
                             }}
                             pagination={{
                                 total: total,

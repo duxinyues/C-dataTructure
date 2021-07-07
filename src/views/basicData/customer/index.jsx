@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-29 11:51:54
+ * @LastEditTime: 2021-07-07 16:58:19
  * @LastEditors: 1638877065@qq.com
  * @Description: 客户
  * @FilePath: \cloud-admin\src\views\basicData\customer\index.jsx
@@ -191,10 +191,10 @@ function CustomerData(props) {
         setRowId(record.id)
     }
     const columns = [
-        {
-            title: '#',
-            dataIndex: 'id',
-        },
+        // {
+        //     title: '#',
+        //     dataIndex: 'id',
+        // },
         {
             title: '编码',
             dataIndex: 'code',
@@ -320,8 +320,8 @@ function CustomerData(props) {
                 <Form.Item label="联系方式" name="contactInfo" >
                     <Input placeholder="联系方式" />
                 </Form.Item>
-                <Form.Item label="重量" name="tareWeight" >
-                    <Input placeholder="重量" />
+                <Form.Item label="加重" name="tareWeight" >
+                    <Input placeholder="加重" />
                 </Form.Item>
                 <Form.Item label="小数位" name="weightDecimal">
                     <Input placeholder="小数位" />

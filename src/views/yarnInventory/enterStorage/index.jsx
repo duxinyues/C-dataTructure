@@ -66,6 +66,7 @@ function EnterStorage(props) {
     }
     // 保存收纱入库
     const onSave = () => {
+        console.log("orderData", orderData)
         if (!orderData) {
             // 数据没有更新，则直接关闭编辑组件
             if (detailType === "edit" && detailType === "add") {
@@ -83,6 +84,9 @@ function EnterStorage(props) {
             message.warning("请完善纱线信息！");
             return;
         }
+        orderData.inDtls.map((item) => {
+            delete item.key;
+        })
         const yarnNameIsEmpty = orderData.inDtls.every((item) => {
             return item.yarnName !== ""
         })

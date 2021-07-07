@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-06-29 12:07:55
+ * @LastEditTime: 2021-07-07 16:40:20
  * @LastEditors: 1638877065@qq.com
  * @Description: 供应商
  * @FilePath: \cloud-admin\src\views\basicData\supplier\index.jsx
@@ -9,7 +9,7 @@
  */
 import { useState, useEffect } from "react";
 import { PageHeader, Table, Modal, Button, Form, Input, message, Cascader, Tag } from "antd";
-import {  onlyFormat } from "../../../utils/config";
+import { onlyFormat } from "../../../utils/config";
 import { addEditSupplier, delectSupplier, disableSupplier, getSupplier, getAddressInfo } from "../../../api/apiModule"
 import { connect } from "react-redux"
 import { setAddress } from "../../../actons/action"
@@ -157,7 +157,7 @@ function Supplier(props) {
     const onChange = (value) => {
         edit(value, addressData)
     }
-        
+
     // 编辑选中的地址信息
     const edit = (selectAddr, addressData) => {
         addressData.map((item) => {
@@ -225,7 +225,7 @@ function Supplier(props) {
         },
     ]
     const pagination = {
-        showSizeChanger: true,
+        showSizeChanger: false,
         total: total,
         pageSize: size,
         current: current,

@@ -441,7 +441,74 @@ export const getBarCodes = (orderId, yarnBrandBatch, callback) => {
             callback(res)
         })
 }
-
+/**
+ * 打印条码
+ * @param {*} params 
+ * @param {*} callbacl 
+ */
+export const printBarCode = (params, callback) => {
+    fetch(requestUrl + "/api-production/orderBarcode/printBarcode", {
+        method: "POST",
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params)
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+/**
+ * 订单详情
+ * @param {*} orderId 
+ * @param {*} callback 
+ */
+export const onOrderDetail = (orderId, callback) => {
+    fetch(requestUrl + "/api-production/order/findById?id=" + orderId, {
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        },
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+/**
+ * 布票批次，下拉框数据
+ * @param {*} id 
+ * @param {*} callback 
+ */
+export const onClothBatch = (id, callback) => {
+    fetch(requestUrl + "/api-production/orderBarcode/yarnDownList?orderId=" + id, {
+        headers: {
+            "Authorization": "bearer " + localStorage.getItem("access_token")
+        },
+    })
+        .then(res => { return res.json() })
+        .then(res => {
+            callback(res)
+        })
+}
+/**
+ * 条码起始号【匹号】
+ * @param {*} orderId 
+ * @param {*} yarnBatch 
+ * @param {*} loom 
+ */
+export const onSeq = (orderId, yarnBatch, loom,) => {
+    // fetch(requestUrl + `/api-production/orderBarcode/findToPrintBarcode?id=${orderDetail.id}&yarnBatch=${clothYarnBatch}&loomId=${selectClothLoom}`, {
+    //     headers: {
+    //         "Authorization": "bearer " + localStorage.getItem("access_token")
+    //     }
+    // })
+    //     .then(res => { return res.json() })
+    //     .then(res => {
+            
+    //     })
+}
 /**
  * 获取用户信息
  * @param {*} callback 

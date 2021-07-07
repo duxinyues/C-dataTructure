@@ -1,7 +1,7 @@
 /*
  * @Author: 1638877065@qq.com
  * @Date: 2021-05-27 13:49:51
- * @LastEditTime: 2021-07-06 17:32:33
+ * @LastEditTime: 2021-07-07 14:59:36
  * @LastEditors: 1638877065@qq.com
  * @Description: 工具函数
  * @FilePath: \cloud-admin\src\utils\config.js
@@ -30,7 +30,7 @@ export const orderSearch = [
   { key: 1, title: "生产单号", type: "code" },
   { key: 2, title: "客户", type: "customerName" },
   { key: 3, title: "合同号", type: "customerBillCode" },
-  { key: 4, title: "下单日期", type: "beginTime" },
+  // { key: 4, title: "下单日期", type: "beginTime" },
   { key: 5, title: "坯布编码", type: "greyFabricCode" },
   { key: 6, title: "布类", type: "fabricType" },
   { key: 7, title: "针数", type: "needles" },
@@ -129,7 +129,11 @@ export const checkPhone = (phone) => {
 
   return false;
 }
-
+/**
+ * 时间格式 MM-YY
+ * @param {*} timeStamp 
+ * @returns 
+ */
 export const day = (timeStamp) => {
   if (!timeStamp) return;
   var date = new Date(timeStamp);
@@ -137,7 +141,20 @@ export const day = (timeStamp) => {
   var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
   return M + D;
 };
-
+/**
+ * 时间格式 MM-DD HH:MM
+ * @param {*} timeStamp 
+ * @returns 
+ */
+export const dayHM = (timeStamp) => {
+  if (!timeStamp) return;
+  var date = new Date(timeStamp);
+  var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+  var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+  var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+  var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
+  return M + D + " " + h + m;
+};
 // 订单参数
 export const createOrderDefaultState = {
   "billStatus": 0,
@@ -187,8 +204,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:2
-},{
+  status: 2
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -198,8 +215,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:3
-},{
+  status: 3
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -209,8 +226,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
-},{
+  status: 1
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -220,8 +237,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:2
-},{
+  status: 2
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -231,8 +248,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
-},{
+  status: 1
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -242,8 +259,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
-},{
+  status: 1
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -253,8 +270,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
-},{
+  status: 1
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -264,8 +281,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:3
-},{
+  status: 3
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -275,8 +292,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:3
-},{
+  status: 3
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -286,8 +303,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
-},{
+  status: 1
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -297,8 +314,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
-},{
+  status: 1
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -308,8 +325,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:2
-},{
+  status: 2
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -319,8 +336,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
-},{
+  status: 1
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -330,8 +347,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
-},{
+  status: 1
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -341,8 +358,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:3
-},{
+  status: 3
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -352,8 +369,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
-},{
+  status: 1
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -363,8 +380,8 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
-},{
+  status: 1
+}, {
   code: "#12",
   name: "duxin",
   zhuan: 1472,
@@ -374,5 +391,5 @@ export const testArr = [{
   tiaoshu: 12,
   tingji1: 1,
   tingji2: 1903,
-  status:1
+  status: 1
 },]

@@ -3,7 +3,7 @@
  * @Author: 1638877065@qq.com
  * @Date: 2021-06-29 23:50:37
  * @LastEditors: 1638877065@qq.com
- * @LastEditTime: 2021-07-06 17:38:10
+ * @LastEditTime: 2021-07-07 18:27:15
  * @FilePath: \cloud-admin\src\views\production\order\addCloth.jsx
  * @Description: 编辑表格
  */
@@ -127,6 +127,7 @@ const EditableTable = (props) => {
               const _data = data;
               const changeRow = ({ target: { value, id } }) => {
                 var totalRate = 0;
+
                 _data.map((item) => {
                   console.log("item.rate==", item.rate)
                   totalRate += Number(item.rate)
@@ -138,11 +139,13 @@ const EditableTable = (props) => {
                       item.yarnBrandBatch = value
                     }
                     if (id.includes("rate")) {
+                      console.log("纱比==", value.length)
+                      if(value.length>3){
+                        return
+                      }
                       item.rate = value;
-                      console.log("totalRate + value==", totalRate + Number(value))
-                      console.log("totalRate ==", totalRate)
                       if (totalRate + Number(value) > 100 || value > 100) {
-                        message.warning("纱比总和需要等于100%");
+                        // message.warning("纱比总和需要等于100%");
                       }
                       item.planWeight = (props.weight * value * (1 + Number(item.knitWastage) / 100) / 100).toFixed(2);
                       console.log("planWeight==", item.planWeight)
@@ -167,7 +170,7 @@ const EditableTable = (props) => {
                   return;
                 }
                 _createOrderParam.orderYarnInfos = _data;
-                // props.createOrderParams(_createOrderParam);
+                props.createOrderParams(_createOrderParam);
                 props.onAddCloth(_data)
               }
               return (

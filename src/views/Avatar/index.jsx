@@ -79,11 +79,11 @@ function Avatars(props) {
     <div className="userInfo">
       <Space>
         <Search onSearch={onSearch} />
-        <div className="msg-box">
+        {/* <div className="msg-box">
           <Badge>
             <img src={img.msg} className="msg" alt="消息提示" />
           </Badge>
-        </div>
+        </div> */}
         <Dropdown overlay={menu} placement="bottomCenter" className="dropMenu">
           <Avatar
             style={{

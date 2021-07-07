@@ -173,7 +173,17 @@
     align-items: center;
 }
 
-.ant-select-selection-overflow{
+.ant-select-selection-overflow {
     flex-wrap: nowrap !important;
     overflow: hidden;
+}
+.searchType{
+    padding: 0 !important;
+    border-left: none !important;
+}
+.searchType .ant-input {
+    height: 24px !important;
+}
+.ant-input-prefix, .ant-input-suffix{
+    margin-right: 5px;
 }

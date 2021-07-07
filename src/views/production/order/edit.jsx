@@ -197,9 +197,9 @@ let EditOrder = (props) => {
                                 onChange={selectClothType}
                                 defaultValue={props.orderData.fabricType}
                             >
-                                {clothType.map((email) => (
-                                    <Option key={email} value={email}>
-                                        {email}
+                                {clothType.map((item) => (
+                                    <Option key={item} value={item}>
+                                        {item}
                                     </Option>
                                 ))}
                             </AutoComplete>

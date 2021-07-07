@@ -128,7 +128,6 @@ const EditBarCode = (props) => {
                             children,
                             ...restProps
                         }) => {
-                            console.log("record====", record)
                             const _data = data;
                             // 修改查布记录
                             const selectFlawInfo = (value) => {

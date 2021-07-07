@@ -20,7 +20,6 @@ const NormalLoginForm = (props) => {
       if (res.code === 200) {
         fakeAuth.setToken(res.data.access_token);
         props.history.push('/home');
-        message.success('登陆成功', 1);
         getAddressInfo(res.data.access_token, (res) => {
           props.setAddress(res);
           localStorage.setItem("address", res)
@@ -81,9 +80,9 @@ const NormalLoginForm = (props) => {
                 <Checkbox>自动登录</Checkbox>
               </Form.Item>
 
-              <a className="login-form-forgot" href="">
+              {/* <a className="login-form-forgot" href="">
                 忘记密码
-              </a>
+              </a> */}
             </Form.Item>
             <Form.Item className="btn">
               <Button type="primary" htmlType="submit" className="login-form-button">

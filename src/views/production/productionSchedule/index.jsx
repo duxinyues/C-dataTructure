@@ -27,7 +27,7 @@ function ProductionSchedule() {
         { title: "机号", dataIndex: "loomId" },
         { title: "库存重量", dataIndex: "stockWeight" },
         { title: "出货重量", dataIndex: "outStockWeight" },
-        { title: "欠织重量", dataIndex: "id" }
+        { title: "欠织重量", dataIndex: "unwovenWeight" }
     ]
     useEffect(() => {
         listData({ page: 1, size: 10 })

@@ -26,51 +26,41 @@ function OrderDetail(props) {
         {
             title: '纱支',
             dataIndex: 'yarnName',
-            key: 'yarnName',
         },
         {
             title: '批次',
             dataIndex: 'yarnBrandBatch',
-            key: 'yarnBrandBatch',
         },
         {
             title: '颜色',
             dataIndex: "colorCode",
-            key: "colorCode",
         },
         {
             title: '合同号',
             dataIndex: 'customerCode',
-            key: 'customerCode',
         }, {
             title: '件数',
             dataIndex: 'pcs',
-            key: 'pcs',
         },
         {
             title: '规格',
             dataIndex: 'spec',
-            key: 'spec',
         },
         {
             title: '来纱净重',
             dataIndex: 'netWeight',
-            key: 'netWeight',
         },
         {
             title: '欠重',
             dataIndex: 'lackWeight',
-            key: 'lackWeight',
         },
         {
             title: '总欠重',
             dataIndex: 'totalLackWeight',
-            key: 'totalLackWeight',
         },
         {
             title: '实收净重',
             dataIndex: 'weight',
-            key: 'weight',
         }
     ];
 
@@ -114,7 +104,7 @@ function OrderDetail(props) {
             </div>
             <div className="row">
                 <div className="col">
-                    <div className="label1">备注</div>
+                    <div className="label">备注</div>
                     <TextArea disabled={disable} autoSize={{ minRows: 2, maxRows: 6 }} value={props.data.remark} />
                 </div>
             </div>
