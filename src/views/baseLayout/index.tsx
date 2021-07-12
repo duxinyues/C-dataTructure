@@ -12,7 +12,7 @@ import {
   MenuFoldOutlined,
 } from '@ant-design/icons';
 import SiderCustom from "../../components/sliderMenux";
-// import ContentRouter  from "./config/route"
+import ContentRouter from "../../router/router"
 const { Header, Sider, Content } = Layout;
 function App() {
   const [collapsed, setcollapsed] = useState(false);
@@ -39,8 +39,7 @@ function App() {
 
           }}
         >
-            内容
-          {/* <ContentRouter auth="auth" /> */}
+          <ContentRouter auth="auth" />
         </Content>
       </Layout>
     </Layout>

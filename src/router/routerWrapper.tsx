@@ -10,7 +10,7 @@ const RouteWrapper = (props: any) => {
             const queryParams = restProps.location.search.match(reg);
             return queryParams ? queryParams[0] : '{}';
         };
-        return queryString.parse(matchQuery(queryReg));
+        return matchQuery(queryReg);
     }, [restProps.location.search]);
     const mergeQueryToProps = () => {
         const queryReg = /\?\S*/g;
