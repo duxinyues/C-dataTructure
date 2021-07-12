@@ -1,26 +1,19 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+// import { HashRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+// import NotFound from './components/notFound';
+import App from './views/baseLayout/index';
+const { HashRouter, Route, Switch, Redirect } = require('react-router-dom')
+const Page = () => (
+  <HashRouter>
+    <Switch>
+      <Route exact path="/" render={() => <Redirect to="/app/dashboard/index" push />} />
+      <Route path="/app" component={App} />
+      {/* <Route path="/404" component={NotFound} />
+            <Route component={NotFound} /> */}
+    </Switch>
+  </HashRouter>
+);
 
-export default App;
+
+export default Page;
