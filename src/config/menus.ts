@@ -1,3 +1,13 @@
+/*
+ * @Author: duxinyue
+ * @Date: 2021-07-11 18:50:13
+ * @LastEditTime: 2021-07-14 22:47:59
+ * @LastEditors: duxinyue
+ * @Description: 
+ * @FilePath: \works_space\src\config\menus.ts
+ * 
+ */
+
 export const menus = [
     // 菜单相关路由
     { key: '/app/dashboard/index', title: '首页', icon: 'mobile', component: 'Home' },
@@ -6,6 +16,10 @@ export const menus = [
         key: '/app/charts',
         title: '图表',
         icon: 'scan',
-        subs: []
+        subs: [{
+            key:"/charts/bar",
+            title: '条形图',
+            component:"ChartsBar"
+        }]
     }
 ]
