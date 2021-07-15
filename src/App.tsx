@@ -1,7 +1,7 @@
 /*
  * @Author: yongyuan at <yongyuan253015@gmail.com>
  * @Date: 2021-07-14 23:56:38
- * @LastEditTime: 2021-07-15 22:53:09
+ * @LastEditTime: 2021-07-15 23:27:41
  * @LastEditors: yongyuan at <yongyuan253015@gmail.com>
  * @Description: 
  * @FilePath: \works_space\src\App.tsx
@@ -14,6 +14,7 @@ import {
     MenuUnfoldOutlined,
     MenuFoldOutlined,
 } from '@ant-design/icons';
+import SiderCustom from "./components/sliderMenu";
 const { Header, Sider, Content } = Layout;
 
 function App() {
@@ -23,8 +24,7 @@ function App() {
     };
     return <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
-            {/* <SiderCustom /> */}
-            菜单导航
+            <SiderCustom />
         </Sider>
         <Layout className="site-layout">
             <Header className="site-layout-background" style={{ padding: 0 }}>
