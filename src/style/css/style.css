@@ -1,0 +1,40 @@
+/*
+ * @Author       : duxinyue
+ * @Date         : 2021-04-28 09:35:38
+ * @LastEditors: duxinyue
+ * @LastEditTime: 2021-04-28 15:57:14
+ * @FilePath: \app1\src\style\css\style.css
+ */
+.notFound {
+    height: 100vh;
+    background: url("../imgs/404.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.editor-content {
+    border: 1px solid red;
+    display: flex;
+    height: calc(100vh - 200px);
+}
+.my-component {
+    max-width: 50%;
+    border: 1px solid green;
+}
+.bf-content {
+    min-height: calc(100vh - 300px) !important;
+    border: 1px solid black;
+}
+.review {
+    width: calc(100vw - 50%);
+    border: 1px solid blue;
+    margin-left: 10px;
+    height: 100%;
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+pre{
+    overflow-x: scroll;
+    border: 1px solid red;
+}

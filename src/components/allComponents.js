@@ -1,14 +1,16 @@
 /*
- * @Author: yongyuan at <yongyuan253015@gmail.com>
- * @Date: 2021-07-15 23:14:14
- * @LastEditTime: 2021-07-15 23:15:07
- * @LastEditors: yongyuan at <yongyuan253015@gmail.com>
- * @Description: 所有组件汇总
- * @FilePath: \works_space\src\components\allComponents.ts
- *
+ * @Author: duxinyue
+ * @Date: 2021-04-27 17:41:51
+ * @LastEditors: duxinyue
+ * @LastEditTime: 2021-05-19 15:41:21
+ * @FilePath: \app1\src\components\AllComponents.js
  */
-import Home from "./views/home"
 
+import Home from "./pages/home/home"
+import Editor from "./pages/editor/editor"
+import Menue1 from "./pages/sub1"
 export default {
-    Home
+    Home,
+    Editor,
+    Menue1
 }

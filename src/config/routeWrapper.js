@@ -1,27 +1,30 @@
 /*
- * @Author: yongyuan at <yongyuan253015@gmail.com>
- * @Date: 2021-07-15 22:57:20
- * @LastEditTime: 2021-07-15 23:08:55
- * @LastEditors: yongyuan at <yongyuan253015@gmail.com>
- * @Description: 
- * @FilePath: \works_space\src\routes\RouteWrapper.tsx
- * 
+ * @Author       : duxinyue
+ * @Date         : 2021-04-27 16:23:36
+ * @LastEditors: duxinyue
+ * @LastEditTime: 2021-05-19 13:26:11
+ * @FilePath: \app1\src\config\routeWrapper.js
  */
-import { useMemo } from "react";
-const { DocumentTitle } = require('react-document-title')
-function RouteWrapper(props: any) {
+
+import {useMemo}  from "react";
+import DocumentTitle from 'react-document-title';
+import queryString from 'query-string';
+
+const RouteWrapper = (props) => {
+    console.log(props)
     let { Comp, route, ...restProps } = props;
+    /** useMemo 缓存query，避免每次生成生的query */
     const queryMemo = useMemo(() => {
         const queryReg = /\?\S*/g;
-        const matchQuery = (reg: any) => {
+        const matchQuery = (reg) => {
             const queryParams = restProps.location.search.match(reg);
             return queryParams ? queryParams[0] : '{}';
         };
-        return matchQuery(queryReg);
+        return queryString.parse(matchQuery(queryReg));
     }, [restProps.location.search]);
     const mergeQueryToProps = () => {
         const queryReg = /\?\S*/g;
-        const removeQueryInRouter = (restProps: any, reg: any) => {
+        const removeQueryInRouter = (restProps, reg) => {
             const { params } = restProps.match;
             Object.keys(params).forEach((key) => {
                 params[key] = params[key] && params[key].replace(reg, '');
@@ -36,10 +39,11 @@ function RouteWrapper(props: any) {
         };
         return merge;
     };
+    return (
+        <DocumentTitle title={route.title}>
+            <Comp {...mergeQueryToProps()} />
+        </DocumentTitle>
+    );
+};
 
-    return <DocumentTitle>
-        <Comp {...mergeQueryToProps()} />
-    </DocumentTitle>
-}
-
-export default RouteWrapper
+export default RouteWrapper;
