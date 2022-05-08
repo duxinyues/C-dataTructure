@@ -1,7 +1,0 @@
-@import '~antd/dist/antd.css';
-#root{
-  height: 100vh;
-}
-.ant-layout-header,.ant-layout-sider{
-  background: #fff ;
-}
